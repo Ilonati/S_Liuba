@@ -35,35 +35,26 @@ a {
 
 /* HEADER */
 
-
 .header {
-
-    /** Position relative car l'image est placée en position: absolute; */
     position: relative;
     display: flex;
     flex-direction: column;
     height: 300px;
-    /** Place au centre l'élément **/
-    place-items: center;
-    place-content: center;
-    /** Empêche le scroll */
+    align-items: flex-start;
+    justify-content: center;
     overflow: hidden;
-    /* padding: var(--padding-lg) 0; */
+    padding-left: 20px;
 }
 
 .header-logo {
     position: relative;
-    /** Placée au dessus de tous les autres éléments avec z-index */
     z-index: 99;
-
-    /* Aligné au centre car text-align: center fonctionne que sur du texte */
-    margin: 0 auto;
-
-    img {
-        max-height: 150px;
-    }
-
+    margin: 0;
     transition: all 0.3s ease-in-out;
+}
+
+.header-logo img {
+    max-height: 200px;
 }
 
 .header-logo:hover {
@@ -89,10 +80,11 @@ a {
 
 .nav {
     position: relative;
-    top: 50px;
+    top: 25px;
     padding: 5px 30px 5px 30px;
     display: flex;
     justify-content: center;
+    align-self: center;
     gap: 40px;
     background: rgba(0, 0, 0, 0.3);
     /* backdrop-filter: blur(10px); */
@@ -561,10 +553,19 @@ h1 {
 /* Mobile */
 @media (max-width: 767px) {
     .header {
-        /* background: url("/images/head.jpeg") center/cover no-repeat; */
         height: 150px;
         flex-direction: row;
-        justify-content: space-between;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+
+
+    .header-logo {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 100;
     }
 
     .header-logo img {
@@ -572,7 +573,14 @@ h1 {
     }
 
 
+    .burger {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        z-index: 2000;
+    }
 }
+
 
 /* SCROLL */
 #scrollTopBtn {
