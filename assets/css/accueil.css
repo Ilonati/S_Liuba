@@ -136,7 +136,7 @@ a {
     font-size: 32px;
     color: white;
     cursor: pointer;
-    z-index: 2000;
+    z-index: 4000;
     display: none;
 }
 
@@ -149,11 +149,11 @@ a {
 
 @media (max-width: 768px) {
     .nav {
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
-        width: 200px;
-        height: 80vh;
+        width: 220px;
+        height: 100vh;
         background: rgba(0, 0, 0, 0.4);
         backdrop-filter: blur(10px);
         display: none;
@@ -161,7 +161,7 @@ a {
         padding: 20px 20px;
         padding-top: 5px;
         gap: 25px;
-        z-index: 1500;
+        z-index: 3000;
     }
 
     .nav.active {
@@ -260,8 +260,8 @@ a {
 }
 
 .btn:hover {
-    background: #FF5A5F;
-    background: linear-gradient(90deg, rgba(255, 90, 95, 1) 0%, rgba(219, 144, 121, 1) 95%);
+    background: #020024;
+    background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(9, 9, 121, 1) 35%, rgba(0, 212, 255, 1) 100%);
 }
 
 
@@ -285,8 +285,8 @@ a {
     position: relative;
     height: 300px;
     overflow: hidden;
-    background: #f9f9f9;
-    padding: 10px;
+    /* background: #f9f9f9; */
+    padding: 5px;
     padding-bottom: 10px;
     border-radius: 12px;
     width: 250px;
@@ -309,7 +309,7 @@ a {
 
 }
 
-.text-overlay {
+/* .text-overlay {
     position: absolute;
     top: 35%;
     left: 50%;
@@ -322,7 +322,7 @@ a {
     border-radius: 3px;
     font-family: 'Great Vibes', cursive;
     font-size: 2.0rem;
-}
+} */
 
 
 
@@ -346,15 +346,15 @@ h1 {
 }
 
 .faq-container {
-    max-width: 900px;
-    margin: auto;
+    max-width: 600px;
+    margin-left: 20px;
 
 }
 
 
 
 .faq-item {
-    background: rgb(70, 68, 68);
+    /* background: rgb(70, 68, 68); */
     border-radius: 8px;
     margin-bottom: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -373,12 +373,12 @@ h1 {
     justify-content: space-between;
     align-items: center;
     font-weight: bold;
-    background: #f0f0f0;
+    /* background: #f0f0f0; */
 
 
     &:hover {
-        background: #FF5A5F;
-        background: linear-gradient(90deg, rgba(255, 90, 95, 1) 0%, rgba(219, 144, 121, 1) 95%);
+        background: #00D4FF;
+        background: linear-gradient(90deg, rgba(0, 212, 255, 1) 1%, rgba(3, 151, 215, 1) 30%, rgba(9, 9, 121, 1) 100%, rgba(2, 0, 36, 1) 100%);
     }
 }
 
@@ -619,7 +619,7 @@ h1 {
 @media (max-width: 768px) {
     #scrollTopBtn {
         bottom: 20px;
-        right: 250px;
+        /* right: 250px; */
         width: 45px;
         height: 45px;
         font-size: 18px;
@@ -631,7 +631,7 @@ h1 {
     position: fixed;
     top: 40px;
     right: 20px;
-    z-index: 500;
+    z-index: 100;
     font-family: 'Playfair Display', serif;
 }
 

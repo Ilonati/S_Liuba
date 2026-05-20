@@ -71,23 +71,23 @@ wrapWords(document.getElementById("beauty-text"));
 const faqs = [
     {
         question: "Comment prendre rendez-vous ?",
-        answer: "Vous pouvez réserver un rendez-vous en m’écrivant sur WhatsApp, par e-mail, ou simplement en appelant le 0786606313."
+        answer: "Vous pouvez réserver un rendez-vous sur le site ou simplement en appelant le 0783714349."
     },
     {
         question: "Est-il nécessaire de faire une consultation préalable ?",
-        answer: "Oui, il est possible de réserver une consultation gratuite de 30 minutes. Cela permet de répondre à vos questions, d’évaluer vos besoins et de choisir ensemble la meilleure solution pour vous."
+        answer: "Oui, il est possible de réserver une consultation  de 30 minutes. Cela permet de répondre à vos questions, d’évaluer vos besoins et de choisir ensemble la meilleure solution pour vous."
     },
     {
         question: "Quelles mesures d’hygiène et de stérilisation utilisez-vous ?",
-        answer: "J’utilise uniquement des matériaux certifiés et conformes aux normes d’hygiène. De plus, j’ai suivi une formation en désinfection et stérilisation à Bayonne, afin de garantir à mes clientes un maximum de sécurité et de qualité."
+        answer: "J’utilise uniquement des matériaux certifiés et conformes aux normes d’hygiène. De plus, j’ai suivi une formation en désinfection et stérilisation à Tarbes, afin de garantir à mes clientes un maximum de sécurité et de qualité."
     },
     {
         question: "Quels sont les tarifs et proposez-vous des forfaits ou réductions ?",
-        answer: "Les tarifs sont indiqués directement sur le site. Des réductions sont proposées pour les clientes fidèles."
+        answer: "Les tarifs sont indiqués directement sur le site."
     },
     {
         question: "Quelles techniques de maquillage permanent utilisez-vous ?",
-        answer: "Quelles techniques de maquillage permanent utilisez-vous ? J’utilise différentes techniques adaptées aux besoins de chaque cliente : • Sourcils : technique poudrée et technique poil par poil naturel • Lèvres : technique aquarelle et technique « rouge à lèvres mat » • Yeux : technique poudrée avec effet « ras de cils poudré » En manucure, j’emploie également plusieurs techniques modernes pour un résultat élégant et soigné."
+        answer: "J’utilise différentes techniques adaptées aux besoins de chaque cliente : • Sourcils : technique poudrée et technique poil par poil naturel • Lèvres : technique aquarelle et technique « rouge à lèvres mat » • Yeux : technique poudrée avec effet « ras de cils poudré » et technique classic « ras de cils classic »."
     },
     {
         question: "Faut-il une retouche après la première séance ?",
@@ -103,7 +103,7 @@ const faqs = [
     },
     {
         question: "Quels moyens de paiement acceptez-vous ?",
-        answer: "Le règlement peut se faire par carte bancaire, en espèces ou par virement. Les chèques ne sont pas acceptés. Pour réserver un rendez-vous de maquillage permanent, un acompte de 50 € est obligatoire. Ce montant sera ensuite déduit du prix total de la prestation."
+        answer: "Le règlement peut se faire par carte bancaire ou espèces . Les chèques ne sont pas acceptés. Pour réserver un rendez-vous de maquillage permanent, un acompte de 50 € est obligatoire. Ce montant sera ensuite déduit du prix total de la prestation."
     }
 ];
 
