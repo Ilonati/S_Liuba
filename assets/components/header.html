@@ -1,15 +1,36 @@
 <!-- HEADER -->
 
 <header class="header">
+
+
+    <div class="header-logo">
+        <a href="/"><img src="/images/Logo_S_Luba.png" alt="Logo" /></a>
+    </div>
+    <video autoplay muted loop playsinline class="header-video">
+        <source src="/images/Video Project 2.mp4" type="video/mp4">
+    </video>
+
     <div class="burger" id="burger">☰</div>
+
+    <nav class="nav" id="nav">
+        <a href="index.html">Accueil</a>
+        <a href="#services">Services</a>
+        <a href="galerie.html#manucure">Galerie</a>
+        <a href="galerie.html#manucure">RDV</a>
+        <a href="certificats.html">Certificats</a>
+        <a href="price.html#price">Price</a>
+        <a href="index.html#faqList">FAQ</a>
+        <a href="contact.html#h1">Contact</a>
+    </nav>
+
 </header>
-<nav class="nav" id="nav">
-    <div class="close-btn" id="close-btn">✕</div>
-    <a href="index.html">Accueil</a>
-    <a href="#services reveal">Services</a>
-    <a href="galerie.html">Galerie</a>
-    <a href="#">Certificats</a>
-    <a href="#">Price</a>
-    <a href="#faqList">FAQ</a>
-    <a href="contact.html">Contact</a>
-</nav>
+<div class="translate-widget">
+    <button id="translateBtn">🌍 <strong>Langues</strong></button>
+    <div id="translateMenu" class="hidden">
+        <a href="#" onclick="changeLang('fr')">🇫🇷 Français</a>
+        <a href="#" onclick="changeLang('en')">🇬🇧 English</a>
+        <a href="#" onclick="changeLang('uk')">🇺🇦 Українська</a>
+    </div>
+</div>
+
+<div id="google_translate_element" style="display:none;"></div>

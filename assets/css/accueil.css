@@ -143,6 +143,12 @@ a {
 @media (max-width: 768px) {
     .burger {
         display: block;
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        z-index: 5000;
+        color: white;
+        font-size: 32px;
     }
 }
 
@@ -308,22 +314,6 @@ a {
     border-radius: 12px;
 
 }
-
-/* .text-overlay {
-    position: absolute;
-    top: 35%;
-    left: 50%;
-    transform: translateX(-50%);
-    color: white;
-    font-size: 20px;
-    font-weight: bold;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 5px 10px;
-    border-radius: 3px;
-    font-family: 'Great Vibes', cursive;
-    font-size: 2.0rem;
-} */
-
 
 
 /* REVIEWS */
@@ -572,13 +562,6 @@ h1 {
         max-height: 120px;
     }
 
-
-    .burger {
-        position: absolute;
-        top: 15px;
-        left: 15px;
-        z-index: 2000;
-    }
 }
 
 

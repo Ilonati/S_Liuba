@@ -126,3 +126,79 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+// images
+const images = document.querySelectorAll('.gallery-grid img');
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightbox-img');
+const lightboxCloseBtn = document.getElementById('lightbox-close');
+
+
+const prevBtn = document.createElement('div');
+const nextBtn = document.createElement('div');
+prevBtn.className = 'lightbox-prev';
+nextBtn.className = 'lightbox-next';
+prevBtn.innerHTML = '❮';
+nextBtn.innerHTML = '❯';
+lightbox.appendChild(prevBtn);
+lightbox.appendChild(nextBtn);
+
+let currentIndex = 0;
+
+
+function openLightbox(index) {
+    currentIndex = index;
+    lightboxImg.src = images[currentIndex].src;
+    lightbox.style.display = 'flex';
+}
+
+
+images.forEach((img, index) => {
+    img.addEventListener('click', () => openLightbox(index));
+});
+
+lightboxCloseBtn.addEventListener('click', () => (lightbox.style.display = 'none'));
+lightbox.addEventListener('click', e => {
+    if (e.target === lightbox) lightbox.style.display = 'none';
+});
+
+
+function showNext() {
+    currentIndex = (currentIndex + 1) % images.length;
+    lightboxImg.src = images[currentIndex].src;
+}
+function showPrev() {
+    currentIndex = (currentIndex - 1 + images.length) % images.length;
+    lightboxImg.src = images[currentIndex].src;
+}
+
+nextBtn.addEventListener('click', showNext);
+prevBtn.addEventListener('click', showPrev);
+
+
+document.addEventListener('keydown', e => {
+    if (lightbox.style.display === 'flex') {
+        if (e.key === 'ArrowRight') showNext();
+        if (e.key === 'ArrowLeft') showPrev();
+        if (e.key === 'Escape') lightbox.style.display = 'none';
+    }
+});
+// accordion-title
+const titles = document.querySelectorAll('.accordion-title');
+titles.forEach(title => {
+    title.addEventListener('click', () => {
+        const content = title.nextElementSibling;
+        const isActive = content.classList.contains('active');
+
+
+        document.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.accordion-title').forEach(t => t.classList.remove('active'));
+
+
+        if (!isActive) {
+            title.classList.add('active');
+            content.classList.add('active');
+        }
+    });
+});
+
+

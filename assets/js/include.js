@@ -1,13 +1,8 @@
-
 async function loadComponent(id, file) {
-    const el = document.getElementById(id);
-    if (el) {
-        const res = await fetch(file);
-        const html = await res.text();
-        el.innerHTML = html;
-    }
+    const response = await fetch(file);
+    const data = await response.text();
+    document.getElementById(id).innerHTML = data;
 }
 
-
-loadComponent("header-placeholder", "assets/components/header.html");
-loadComponent("footer-placeholder", "assets/components/footer.html");
+loadComponent("header", "/components/header.html");
+loadComponent("footer", "/components/footer.html");
