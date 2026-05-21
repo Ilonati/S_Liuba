@@ -1,13 +1,4 @@
 
-//clic header 
-const header = document.querySelector('.header');
-const burger = document.getElementById('burger');
-
-header.addEventListener('click', (e) => {
-
-    if (e.target === burger) return;
-    window.location.href = 'index.html';
-});
 /* translateMenu */
 function googleTranslateElementInit() {
     new google.translate.TranslateElement({
