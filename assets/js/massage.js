@@ -1,42 +1,3 @@
-//clic header 
-const header = document.querySelector('.header');
-const burger = document.getElementById('burger');
-
-header.addEventListener('click', (e) => {
-
-    if (e.target === burger) return;
-    window.location.href = 'index.html';
-});
-// Burger menu
-
-const nav = document.getElementById('nav');
-
-burger.addEventListener('click', () => {
-
-
-    nav.classList.toggle('active');
-
-
-    if (nav.classList.contains('active')) {
-        burger.textContent = "✖";
-    } else {
-        burger.textContent = "☰";
-    }
-});
-function revealOnScroll() {
-    const reveals = document.querySelectorAll('.reveal');
-
-    for (let i = 0; i < reveals.length; i++) {
-        const windowHeight = window.innerHeight;
-        const revealTop = reveals[i].getBoundingClientRect().top;
-        const revealPoint = 150;
-
-        if (revealTop < windowHeight - revealPoint) {
-            reveals[i].classList.add('active');
-        }
-    }
-}
-
 
 /* translateMenu */
 function googleTranslateElementInit() {
@@ -66,7 +27,43 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// scroll
+
+// Burger menu
+
+const nav = document.getElementById('nav');
+
+burger.addEventListener('click', () => {
+
+
+    nav.classList.toggle('active');
+
+
+    if (nav.classList.contains('active')) {
+        burger.textContent = "✖";
+    } else {
+        burger.textContent = "☰";
+    }
+});
+
+function revealOnScroll() {
+    const reveals = document.querySelectorAll('.reveal');
+
+    for (let i = 0; i < reveals.length; i++) {
+        const windowHeight = window.innerHeight;
+        const revealTop = reveals[i].getBoundingClientRect().top;
+        const revealPoint = 150;
+
+        if (revealTop < windowHeight - revealPoint) {
+            reveals[i].classList.add('active');
+        }
+    }
+}
+
+//pour charger la page //
+window.addEventListener('scroll', revealOnScroll);
+revealOnScroll();
+
+//  scroll 
 const scrollBtn = document.getElementById('scrollTopBtn');
 
 window.addEventListener('scroll', () => {
@@ -83,3 +80,7 @@ scrollBtn.addEventListener('click', () => {
         behavior: 'smooth'
     });
 });
+
+
+
+

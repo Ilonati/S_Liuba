@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!--SEO -->
+        <meta name="description"
+            content="S.Liuba institut beauté à Tarbes : massage, maquillage permanent, sourcils, lèvres, cils, soigne visage. Découvrez mes services professionnels.">
+        <meta name="keywords"
+            content="institut beauté, massage, maquillage permanent, tarbes, sourcils, lèvres, cils, soigne visage">
+        <meta name="author" content="S.Liuba institut beauté">
+
+
+        <meta name="robots" content="index, follow">
+        <meta name="language" content="French">
+
+
+
+
+        <title></title>
+        <link rel="stylesheet" href="/assets/css/rdv.css">
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap"
+            rel="stylesheet">
+        <link
+            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Great+Vibes&display=swap"
+            rel="stylesheet">
+
+
+    </head>
+
+    <body>
+        <!-- HEADER -->
+
+        <header class="header">
+
+
+            <div class="header-logo">
+                <a href="/"><img src="/images/Logo_S_Luba.png" alt="Logo" /></a>
+            </div>
+            <video autoplay muted loop playsinline class="header-video">
+                <source src="/images/Video Project 2.mp4" type="video/mp4">
+            </video>
+
+            <div class="burger" id="burger">☰</div>
+
+            <nav class="nav" id="nav">
+                <a href="index.html">Accueil</a>
+                <a href="index.html#services">Services</a>
+                <a href="certificats.html">Certificats</a>
+                <a href="RDV.html">RDV</a>
+                <a href="">Cartes Cadeau</a>
+                <a href="index.html#faqList">FAQ</a>
+                <a href="contact.html#h1">Contact</a>
+            </nav>
+
+
+        </header>
+        <div class="translate-widget">
+            <button id="translateBtn">🌍 <strong>Langues</strong></button>
+            <div id="translateMenu" class="hidden">
+                <a href="#" onclick="changeLang('fr')">🇫🇷 Français</a>
+                <a href="#" onclick="changeLang('en')">🇬🇧 English</a>
+                <a href="#" onclick="changeLang('uk')">🇺🇦 Українська</a>
+            </div>
+        </div>
+
+        <div id="google_translate_element" style="display:none;"></div>
+        <main>
+            <section class="rdv-hero">
+                <div class="hero-content">
+                    <div class="rdv-eyebrow">Votre moment de beauté</div>
+                    <h1>Réservez votre <span>rendez-vous</span></h1>
+                    <p>
+                        Choisissez votre prestation, la date et l’heure qui vous conviennent.
+                        Je vous recontacterai rapidement pour confirmer votre réservation.
+                    </p>
+                    <div class="hero-actions">
+                        <a class="btn-primary" href="#booking">Réserver maintenant →</a>
+                        <a class="btn-secondary" href="tel:0783714349">Appeler l’institut</a>
+                    </div>
+                </div>
+
+                <div class="hero-photo">
+                    <img src="images/photos/massage (1).jpg" alt="Soin beauté et relaxation">
+                    <div class="floating-card">
+                        <strong>S.Liuba Institut</strong>
+                        <p>Un espace doux et élégant pour prendre soin de vous à Tarbes.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="booking-section" id="booking">
+                <div class="booking-shell">
+                    <div class="steps">
+                        <div class="step active">
+                            <div class="step-number">1</div>
+                            <div>
+                                <div class="step-title">Service</div>
+                                <div class="step-subtitle">Choisissez votre prestation</div>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div>
+                                <div class="step-title">Date</div>
+                                <div class="step-subtitle">Sélectionnez une date</div>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div>
+                                <div class="step-title">Heure</div>
+                                <div class="step-subtitle">Choisissez un créneau</div>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div>
+                                <div class="step-title">Informations</div>
+                                <div class="step-subtitle">Vos coordonnées</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="booking-grid">
+                        <div class="left-column">
+                            <h2 class="panel-title">Choisissez votre prestation</h2>
+
+                            <div class="service-list">
+                                <div class="service-option selected" data-service="Massage détente" data-price="60 €">
+                                    <img src="images/photos/massage du dos (1).jpg" alt="Massage détente">
+                                    <div>
+                                        <h3>Massage détente</h3>
+                                        <p>Relaxation profonde du corps</p>
+                                        <strong>60 min · 60 €</strong>
+                                    </div>
+                                    <div class="radio-dot"></div>
+                                </div>
+
+                                <div class="service-option" data-service="Maquillage permanent sourcils"
+                                    data-price="250 €">
+                                    <img src="images/photos/permanante maquiage.jpg"
+                                        alt="Maquillage permanent sourcils">
+                                    <div>
+                                        <h3>Maquillage permanent</h3>
+                                        <p>Sourcils · technique naturelle</p>
+                                        <strong>120 min · 250 €</strong>
+                                    </div>
+                                    <div class="radio-dot"></div>
+                                </div>
+
+                                <div class="service-option" data-service="Maquillage permanent lèvres"
+                                    data-price="250 €">
+                                    <img src="images/photos/levres.jpg" alt="Maquillage permanent lèvres">
+                                    <div>
+                                        <h3>Lèvres</h3>
+                                        <p>Effet aquarelle ou rouge à lèvres</p>
+                                        <strong>120 min · 250 €</strong>
+                                    </div>
+                                    <div class="radio-dot"></div>
+                                </div>
+
+                                <div class="service-option" data-service="Soin du visage" data-price="65 €">
+                                    <img src="images/photos/massage (1).jpg" alt="Soin du visage">
+                                    <div>
+                                        <h3>Soin du visage</h3>
+                                        <p>Soin hydratant et éclat</p>
+                                        <strong>60 min · 65 €</strong>
+                                    </div>
+                                    <div class="radio-dot"></div>
+                                </div>
+                            </div>
+
+                            <div class="help-card">
+                                <strong>Besoin d’aide ?</strong>
+                                <p>Appelez-moi au <a href="tel:0783714349">07 83 71 43 49</a> ou écrivez-moi sur
+                                    WhatsApp.</p>
+                            </div>
+                        </div>
+
+                        <div class="right-column">
+                            <h2 class="panel-title">Sélectionnez une date</h2>
+
+                            <div class="calendar-head">
+                                <button type="button" id="prevMonth" aria-label="Mois précédent">‹</button>
+                                <div class="calendar-month" id="calendarMonth"></div>
+                                <button type="button" id="nextMonth" aria-label="Mois suivant">›</button>
+                            </div>
+
+                            <div class="calendar-grid" id="calendarGrid"></div>
+
+                            <h2 class="panel-title">Choisissez un créneau</h2>
+                            <div class="time-grid" id="timeGrid">
+                                <button type="button" class="time-btn">09:00</button>
+                                <button type="button" class="time-btn selected">10:00</button>
+                                <button type="button" class="time-btn">11:00</button>
+                                <button type="button" class="time-btn">12:00</button>
+                                <button type="button" class="time-btn">14:00</button>
+                                <button type="button" class="time-btn">15:00</button>
+                                <button type="button" class="time-btn">16:00</button>
+                                <button type="button" class="time-btn">17:00</button>
+                                <button type="button" class="time-btn">18:00</button>
+                                <button type="button" class="time-btn">19:00</button>
+                            </div>
+
+                            <h2 class="panel-title">Vos informations</h2>
+                            <form class="client-form" id="bookingForm">
+                                <div class="form-row">
+                                    <input type="text" id="clientName" placeholder="Nom complet" required>
+                                    <input type="tel" id="clientPhone" placeholder="Téléphone" required>
+                                </div>
+
+                                <input type="email" id="clientEmail" placeholder="Email">
+                                <textarea id="clientMessage" placeholder="Message optionnel"></textarea>
+
+                                <label class="checkbox-line">
+                                    <input type="checkbox" required>
+                                    <span>J’accepte d’être contactée pour confirmer mon rendez-vous.</span>
+                                </label>
+
+                                <button type="submit" class="submit-btn">Confirmer mon rendez-vous</button>
+                                <div class="success-message" id="successMessage"></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-container">
+                    <div class="footer-box-left">
+                        <div class="reso">
+                            <a href="https://www.instagram.com/maquillage_permanent_tarbes/" title="instagram"><img
+                                    src="/images/instagram (1).svg" alt="intagram" title="instagram"></a>
+
+                        </div>
+
+
+                        <div class="footer-left-title">S.Liuba institut beauté</div>
+                        <ul class="footer-left-list">
+                            <li>8 Bis Bd Claude Debussy </li>
+                            <li>65000 Tarbes, France</li>
+                            <li>Téléphone: 0783714349</li>
+                            <li></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-box-centre">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2907.473654693379!2d0.059732112102351395!3d43.22052798018634!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x884ad52e11e71b4b%3A0x971a3a4d303c928e!2sMassage%20Bien%20Etre%2C%20Massage%20Sensuel%2C%20S.Liuba%20institut%20beaut%C3%A9!5e0!3m2!1sfr!2sfr!4v1744813907975!5m2!1sfr!2sfr"
+                            style="border:0;" allowfullscreen="" loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                    <div class="footer-box-right">
+                        <div class="footer-right-title">Horaires d’ouverture</div>
+                        <ul class="footer-grid-right-list">
+                            <li>sur rendez-vous uniquement</li>
+                            <li>Lundi au Samedi :</li>
+                            <li>09:00–19:00 </li>
+                            <li>Dimanche :</li>
+                            <li>14:00–18:00</li>
+                            <li>Mardi Fermé </li>
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <button id="scrollTopBtn" title="Remonter en haut">↑</button>
+
+
+        <script src="/assets/js/rdv.js"></script>
+        <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    </body>
+
+</html>

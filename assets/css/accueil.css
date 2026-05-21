@@ -266,8 +266,7 @@ a {
 }
 
 .btn:hover {
-    background: #020024;
-    background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(9, 9, 121, 1) 35%, rgba(0, 212, 255, 1) 100%);
+    background: linear-gradient(135deg, #e3b56f, #bf812f);
 }
 
 
@@ -367,8 +366,7 @@ h1 {
 
 
     &:hover {
-        background: #00D4FF;
-        background: linear-gradient(90deg, rgba(0, 212, 255, 1) 1%, rgba(3, 151, 215, 1) 30%, rgba(9, 9, 121, 1) 100%, rgba(2, 0, 36, 1) 100%);
+        background: linear-gradient(135deg, #e3b56f, #bf812f);
     }
 }
 
