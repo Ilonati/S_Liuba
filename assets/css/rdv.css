@@ -468,12 +468,6 @@ a {
 }
 
 
-/* ===============================
-   RDV MAIN CONTENT ONLY
-   Исправленный блок страницы внутри <main>
-   Не трогает header, nav, burger, footer, translate
-================================ */
-
 :root {
     --gold: #c99547;
     --gold-dark: #a8752d;

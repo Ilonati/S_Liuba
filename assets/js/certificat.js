@@ -85,29 +85,33 @@ scrollBtn.addEventListener('click', () => {
 });
 
 // SLIDES
+const slider = document.querySelector('.slider-container');
 const slides = document.querySelectorAll('.certificat-slider .slide');
 const prevBtn = document.querySelector('.certificat-slider .prev');
 const nextBtn = document.querySelector('.certificat-slider .next');
+
 let currentIndex = 0;
 
 function updateSlides() {
-    slides.forEach((slide, index) => {
-        slide.classList.remove('active');
-        if (index === currentIndex) slide.classList.add('active');
-    });
+    slider.style.transform = `translateX(-${currentIndex * 100}%)`;
 
-    const offset = -currentIndex * (slides[0].offsetWidth + 5);
-    document.querySelector('.slider-container').style.transform = `translateX(${offset}px)`;
+    slides.forEach((slide, index) => {
+        slide.classList.toggle('active', index === currentIndex);
+    });
 }
 
-nextBtn.addEventListener('click', () => {
-    currentIndex = (currentIndex + 1) % slides.length;
-    updateSlides();
-});
+if (slider && slides.length && prevBtn && nextBtn) {
+    nextBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        currentIndex = (currentIndex + 1) % slides.length;
+        updateSlides();
+    });
 
-prevBtn.addEventListener('click', () => {
-    currentIndex = (currentIndex - 1 + slides.length) % slides.length;
-    updateSlides();
-});
+    prevBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+        updateSlides();
+    });
 
-updateSlides();
+    updateSlides();
+}
