@@ -192,357 +192,6 @@ a {
 }
 
 
-/* HERO */
-.page {
-    position: relative;
-    min-height: 100vh;
-    overflow: hidden;
-    background-color: #fffaf9;
-
-}
-
-
-.page::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-
-    width: 100%;
-
-    height: 1100px;
-
-
-    background: url("/images/12.jpg") left / contain no-repeat;
-    background-size: cover;
-    opacity: 0.15;
-
-    pointer-events: none;
-    z-index: 1;
-
-}
-
-
-.page>* {
-    position: relative;
-    z-index: 2;
-}
-
-
-
-
-
-.permanente-hero {
-    text-align: justify;
-    padding: 3rem 1rem 2rem;
-}
-
-.permanente-hero ul {
-    padding: 10px;
-}
-
-.permanente-hero li {
-    margin-left: 20px;
-}
-
-.permanente h1 {
-    text-align: center;
-    font-family: 'Great Vibes', cursive;
-    font-size: 2.5rem;
-    margin: 20px;
-    color: black;
-}
-
-
-.permanente p {
-    max-width: auto;
-    margin: 10 auto;
-    line-height: 1.6;
-    color: #555;
-    padding: 20px;
-}
-
-
-
-
-.permanente-sections {
-    display: flex;
-    flex-direction: row;
-    align-items: normal;
-    gap: 3rem;
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 2rem 1rem 4rem;
-}
-
-
-
-.permanente-block {
-    background-color: #fff;
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    width: 100%;
-    max-width: 800px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    transition: transform 0.3s ease;
-}
-
-.permanente-block:hover {
-    transform: translateY(-5px);
-}
-
-.permanente-block img {
-    width: 100%;
-    max-height: 280px;
-    object-fit: cover;
-}
-
-.permanente-text {
-    padding: 1.5rem;
-}
-
-.permanente-text h2 {
-    color: black;
-    margin-bottom: 0.8rem;
-    font-family: "Montserrat", sans-serif;
-}
-
-.permanente-text p {
-    font-size: 0.95rem;
-    color: #444;
-    line-height: 1.6;
-    margin-bottom: 1.2rem;
-}
-
-.permanente-text .btn {
-    display: inline-block;
-    background-color: #a22d5c;
-    color: #fff;
-    text-decoration: none;
-    padding: 0.6rem 1.4rem;
-    border-radius: 25px;
-    transition: background 0.3s;
-}
-
-.permanente-text .btn:hover {
-    background-color: #c33d70;
-}
-
-
-@media (max-width: 768px) {
-    .permanente-hero {
-        text-align: center;
-        padding: 3rem 1rem 2rem;
-    }
-
-    .permanente-hero li {
-        text-align: start;
-    }
-
-    .permanente-hero h1 {
-        font-size: 1.7rem;
-    }
-
-    .permanente-block img {
-        max-height: 350px;
-    }
-
-    .permanente-text {
-        padding: 1rem;
-    }
-
-    .permanente-sections {
-        display: flex;
-        flex-direction: column;
-        align-items: normal;
-        gap: 3rem;
-        margin: 0 auto;
-        padding: 2rem 1rem 4rem;
-    }
-}
-
-/* PHOTO */
-
-.gallery-section {
-    margin-bottom: 40px;
-    padding: 20px;
-}
-
-.gallery-section h2 {
-    text-align: center;
-    font-family: 'Great Vibes', cursive;
-    font-size: 2.5rem;
-    margin: 20px;
-    color: black;
-}
-
-.gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-}
-
-.gallery-grid img {
-    width: 100%;
-    height: 250px;
-    object-fit: cover;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-.gallery-grid img:hover {
-    transform: scale(1.05);
-}
-
-/* Lightbox */
-.lightbox {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.8);
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.lightbox-img {
-    max-width: 90%;
-    max-height: 80%;
-    border-radius: 10px;
-}
-
-.close {
-    position: absolute;
-    top: 40px;
-    right: 60px;
-    font-size: 40px;
-    color: white;
-    cursor: pointer;
-}
-
-
-.lightbox-prev,
-.lightbox-next {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 3rem;
-    color: white;
-    cursor: pointer;
-    padding: 10px 0px;
-    /* background: rgba(0, 0, 0, 0.3); */
-    border-radius: 50%;
-    user-select: none;
-    transition: background 0.3s ease;
-}
-
-.lightbox-prev:hover,
-.lightbox-next:hover {
-    background: rgba(0, 0, 0, 0.6);
-}
-
-.lightbox-prev {
-    left: 40px;
-}
-
-.lightbox-next {
-    right: 40px;
-}
-
-
-.lightbox-img {
-    max-width: 90%;
-    max-height: 80%;
-    border-radius: 10px;
-    box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
-    transition: transform 0.3s ease;
-}
-
-.lightbox-img:hover {
-    transform: scale(1.05);
-}
-
-
-.accordion-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 2rem;
-    font-weight: 600;
-    margin: 30px 0 10px;
-    cursor: pointer;
-    color: white;
-    transition: color 0.3s ease;
-    position: relative;
-}
-
-.accordion-title::after {
-    content: '+';
-    position: relative;
-    right: -10px;
-    font-size: 2rem;
-    transition: transform 0.3s ease;
-}
-
-.accordion-title.active::after {
-    content: '–';
-    transform: rotate(180deg);
-}
-
-.accordion-title:hover {
-    color: #090979;
-}
-
-
-.accordion-content {
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    transition: all 0.6s ease;
-}
-
-.accordion-content.active {
-    max-height: 1000px;
-    opacity: 1;
-}
-
-
-.gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 15px;
-    padding: 10px 0;
-}
-
-.gallery-grid img {
-    width: 100%;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-.gallery-grid img:hover {
-    transform: scale(1.05);
-}
-
-.accordion-content {
-    transition: max-height 0.6s ease, opacity 0.6s ease;
-}
-
-.reveal {
-    opacity: 0;
-    transform: translateY(50px);
-    transition: all 0.8s ease;
-}
-
-.reveal.active {
-    opacity: 1;
-    transform: translateY(0);
-}
-
 /* SCROLL */
 .reveal {
     opacity: 0;
@@ -837,12 +486,44 @@ a {
     padding-left: 5px;
 }
 
-.permanent-accordion-section {
+
+/* MASSAGES  */
+
+.container {
     max-width: 1100px;
-    margin: 40px auto 70px;
+    margin: 0 auto;
     padding: 0 20px;
 }
 
+.main {
+    padding-bottom: 60px;
+}
+
+.apropos h1 {
+    text-align: center;
+    font-family: 'Great Vibes', cursive;
+    font-size: 3rem;
+    margin: 20px 0 40px;
+    color: black;
+}
+
+/* Back button */
+.back-link {
+    display: inline-block;
+    margin: 20px;
+    text-decoration: none;
+    color: #b88a6a;
+    font-size: 18px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.back-link:hover {
+    color: #9d7358;
+    padding-left: 5px;
+}
+
+/* Accordion cards */
 .massage {
     max-width: 1000px;
     margin: 25px auto;
@@ -850,10 +531,6 @@ a {
     overflow: hidden;
     background: #fff;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10);
-}
-
-.massage_bloc {
-    width: 100%;
 }
 
 .massage_title {
@@ -880,12 +557,15 @@ a {
 
 .caret {
     justify-self: end;
-    font-size: 28px;
-    font-weight: bold;
+}
+
+.caret-down {
+    width: 22px;
+    height: 22px;
     transition: transform 0.3s ease;
 }
 
-.massage_bloc.active .caret {
+.massage_bloc.active .caret-down {
     transform: rotate(180deg);
 }
 
@@ -903,16 +583,16 @@ a {
     font-size: 16px;
 }
 
-.massage-price {
-    color: #a22d5c;
-    font-size: 18px;
+.massage_answer p {
+    margin-top: 20px;
     font-weight: 700;
+    color: #a22d5c;
 }
 
-.massage-note {
-    color: #666;
-    font-size: 15px;
-    font-style: italic;
+.massage-price {
+    margin-top: 20px;
+    font-weight: 700;
+    color: #a22d5c;
 }
 
 .massage-btn {
@@ -932,27 +612,47 @@ a {
     transform: translateY(-2px);
 }
 
+.massage-intro {
+    max-width: 850px;
+    margin: 20px auto 40px;
+
+    text-align: center;
+
+    font-size: 18px;
+    line-height: 1.8;
+
+    color: #555;
+}
+
+/* Mobile */
 @media (max-width: 768px) {
-    .permanent-accordion-section {
+    .container {
         padding: 0 15px;
+    }
+
+    .apropos h1 {
+        font-size: 2.4rem;
+        margin: 15px 0 30px;
     }
 
     .massage {
         width: 100%;
         margin: 20px auto;
+        border-radius: 14px;
     }
 
     .massage_title {
         grid-template-columns: 1fr;
         text-align: center;
         padding: 20px;
-        gap: 15px;
+        gap: 14px;
         font-size: 19px;
     }
 
     .massage_title img {
         width: 120px;
         height: 120px;
+        order: -1;
     }
 
     .caret {
@@ -962,5 +662,9 @@ a {
     .massage_answer {
         padding: 20px;
         font-size: 15px;
+    }
+
+    .back-link {
+        margin: 15px;
     }
 }

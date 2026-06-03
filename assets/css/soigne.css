@@ -468,3 +468,191 @@ a {
         right: 0;
     }
 }
+
+.back-container {
+    max-width: 1200px;
+    margin: 15px auto 0;
+    padding: 0 20px;
+}
+
+.back-link {
+    text-decoration: none;
+    color: #b88a6a;
+    font-size: 18px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.back-link:hover {
+    color: #9d7358;
+    padding-left: 5px;
+}
+
+.main {
+    padding-bottom: 70px;
+}
+
+.soigne-hero {
+    max-width: 1000px;
+    margin: 0 auto 35px;
+    padding: 30px 20px 10px;
+    text-align: center;
+}
+
+.soigne-hero h1 {
+    font-family: 'Great Vibes', cursive;
+    font-size: 3rem;
+    color: black;
+    margin-bottom: 15px;
+}
+
+.soigne-hero p {
+    max-width: 780px;
+    margin: 0 auto;
+    line-height: 1.7;
+    color: #555;
+}
+
+.soigne-accordion-section {
+    max-width: 1100px;
+    margin: 30px auto 70px;
+    padding: 0 20px;
+}
+
+.massage {
+    max-width: 1000px;
+    margin: 25px auto;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10);
+}
+
+.massage_bloc {
+    width: 100%;
+}
+
+.massage_title {
+    min-height: 130px;
+    padding: 20px 30px;
+    display: grid;
+    grid-template-columns: 150px 1fr 40px;
+    align-items: center;
+    gap: 25px;
+    cursor: pointer;
+    background: #fff;
+    color: #333;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.massage_title img {
+    width: 130px;
+    height: 130px;
+    border-radius: 16px;
+    object-fit: cover;
+    justify-self: center;
+}
+
+.caret {
+    justify-self: end;
+    font-size: 28px;
+    font-weight: bold;
+    transition: transform 0.3s ease;
+}
+
+.massage_bloc.active .caret {
+    transform: rotate(180deg);
+}
+
+.massage_answer-bloc {
+    height: 0;
+    overflow: hidden;
+    transition: height 0.35s ease;
+    background: #fffaf9;
+}
+
+.massage_answer {
+    padding: 25px 35px;
+    line-height: 1.7;
+    color: #444;
+    font-size: 16px;
+}
+
+.massage_answer p {
+    margin-bottom: 14px;
+}
+
+.massage-time {
+    color: #555;
+    font-size: 15px;
+}
+
+.massage-price {
+    color: #a22d5c;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.massage-btn {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 12px 24px;
+    background-color: #a22d5c;
+    color: white;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.massage-btn:hover {
+    background-color: #c33d70;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .soigne-hero {
+        padding: 25px 15px 5px;
+    }
+
+    .soigne-hero h1 {
+        font-size: 2.4rem;
+    }
+
+    .soigne-accordion-section {
+        padding: 0 15px;
+        margin-bottom: 50px;
+    }
+
+    .massage {
+        width: 100%;
+        margin: 20px auto;
+    }
+
+    .massage_title {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding: 20px;
+        gap: 15px;
+        font-size: 19px;
+    }
+
+    .massage_title img {
+        width: 120px;
+        height: 120px;
+    }
+
+    .caret {
+        justify-self: center;
+    }
+
+    .massage_answer {
+        padding: 20px;
+        font-size: 15px;
+    }
+
+    .massage-price {
+        font-size: 17px;
+    }
+}

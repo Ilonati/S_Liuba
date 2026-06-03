@@ -90,8 +90,8 @@ if (scrollBtn) {
 // Service selection
 const serviceOptions = document.querySelectorAll('.service-option');
 
-let selectedService = 'Massage détente';
-let selectedPrice = '60 €';
+let selectedService = 'Massage Palmaire';
+let selectedPrice = '35 €';
 
 serviceOptions.forEach((option) => {
     option.addEventListener('click', () => {
@@ -157,17 +157,18 @@ function renderCalendar() {
             today.getMonth(),
             today.getDate()
         );
-
+        //добавляем  день недели который отключаем
         const isPast = date < todayStart;
         const isTuesday = date.getDay() === 2;
+        const isSunday = date.getDay() === 0;
 
         const isSelected =
             selectedDate &&
             date.getDate() === selectedDate.getDate() &&
             date.getMonth() === selectedDate.getMonth() &&
             date.getFullYear() === selectedDate.getFullYear();
-
-        if (isPast || isTuesday) {
+        //меняем день недели 
+        if (isPast || isTuesday || isSunday) {
             button.classList.add('disabled');
             button.disabled = true;
         }
@@ -293,3 +294,39 @@ if (bookingForm && successMessage) {
         `;
     });
 }
+// Service category accordion
+function initServiceCategoryAccordion() {
+    const categories = document.querySelectorAll('.service-category');
+
+    categories.forEach((category) => {
+        const header = category.querySelector('.service-category-header');
+        const content = category.querySelector('.service-category-content');
+
+        if (!header || !content) return;
+
+        if (category.classList.contains('active')) {
+            content.style.height = content.scrollHeight + 'px';
+        }
+
+        header.addEventListener('click', () => {
+            const isOpen = category.classList.contains('active');
+
+            categories.forEach((item) => {
+                const itemContent = item.querySelector('.service-category-content');
+
+                item.classList.remove('active');
+
+                if (itemContent) {
+                    itemContent.style.height = '0';
+                }
+            });
+
+            if (!isOpen) {
+                category.classList.add('active');
+                content.style.height = content.scrollHeight + 'px';
+            }
+        });
+    });
+}
+
+initServiceCategoryAccordion();

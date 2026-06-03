@@ -201,4 +201,48 @@ titles.forEach(title => {
     });
 });
 
+function closeAllMassage(exceptBloc = null) {
+    const blocs = document.querySelectorAll('.massage_bloc');
 
+    blocs.forEach(bloc => {
+        if (bloc !== exceptBloc) {
+            bloc.classList.remove('active');
+
+            const wrapper = bloc.querySelector('.massage_answer-bloc');
+            if (wrapper) {
+                wrapper.style.height = '0';
+            }
+        }
+    });
+}
+
+function toggleMassage(bloc) {
+    const isOpen = bloc.classList.contains('active');
+    const wrapper = bloc.querySelector('.massage_answer-bloc');
+    const content = bloc.querySelector('.massage_answer');
+
+    if (!wrapper || !content) return;
+
+    if (isOpen) {
+        bloc.classList.remove('active');
+        wrapper.style.height = '0';
+    } else {
+        closeAllMassage(bloc);
+        bloc.classList.add('active');
+        wrapper.style.height = content.scrollHeight + 'px';
+    }
+}
+
+function initMassage() {
+    const blocs = document.querySelectorAll('.massage_bloc');
+
+    blocs.forEach(bloc => {
+        const title = bloc.querySelector('.massage_title');
+
+        if (title) {
+            title.addEventListener('click', () => toggleMassage(bloc));
+        }
+    });
+}
+
+initMassage();

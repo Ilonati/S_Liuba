@@ -584,3 +584,22 @@ a {
         letter-spacing: 2px;
     }
 }
+
+.back-container {
+    max-width: 1200px;
+    margin: 15px auto 0;
+    padding: 0 20px;
+}
+
+.back-link {
+    text-decoration: none;
+    color: #b88a6a;
+    font-size: 18px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.back-link:hover {
+    color: #9d7358;
+    padding-left: 5px;
+}
