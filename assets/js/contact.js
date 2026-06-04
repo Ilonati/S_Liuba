@@ -84,7 +84,11 @@ scrollBtn.addEventListener('click', () => {
 });
 
 // formulaire 
-document.getElementById("contactForm").addEventListener("submit", async function (e) {
+const contactForm = document.getElementById("contactForm");
+const successModal = document.getElementById("successModal");
+const closeModal = document.getElementById("closeModal");
+
+contactForm.addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const formData = {
@@ -97,7 +101,7 @@ document.getElementById("contactForm").addEventListener("submit", async function
     };
 
     try {
-        const response = await fetch("https://beauty-salon-9n0o.onrender.com/formulaireRoutes/send", {
+        const response = await fetch("cccc", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formData)
@@ -106,8 +110,8 @@ document.getElementById("contactForm").addEventListener("submit", async function
         const result = await response.json();
 
         if (result.success) {
-            document.getElementById("successModal").style.display = "block";
-            document.getElementById("contactForm").reset();
+            successModal.classList.add("show");
+            contactForm.reset();
         } else {
             alert("Erreur. Impossible d'envoyer votre message.");
         }
@@ -118,14 +122,12 @@ document.getElementById("contactForm").addEventListener("submit", async function
     }
 });
 
+closeModal.addEventListener("click", function () {
+    successModal.classList.remove("show");
+});
 
-document.getElementById("closeModal").onclick = function () {
-    document.getElementById("successModal").style.display = "none";
-};
-
-window.onclick = function (event) {
-    const modal = document.getElementById("successModal");
-    if (event.target === modal) modal.style.display = "none";
-};
-
-
+window.addEventListener("click", function (event) {
+    if (event.target === successModal) {
+        successModal.classList.remove("show");
+    }
+});

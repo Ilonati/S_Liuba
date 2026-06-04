@@ -534,20 +534,20 @@ a {
 
 .massage_title {
     min-height: 130px;
-    padding: 20px 30px;
+    padding: 20px 60px;
     display: grid;
     grid-template-columns: 150px 1fr 40px;
     align-items: center;
-    gap: 25px;
+    gap: 100px;
     cursor: pointer;
-    background: #fff;
+    background: linear-gradient(-1deg, rgba(207, 162, 219, 1) 67%, rgba(225, 227, 232, 1) 100%);
     color: #333;
     font-size: 22px;
     font-weight: 600;
 }
 
 .massage_title img {
-    width: 130px;
+    width: 230px;
     height: 130px;
     border-radius: 16px;
     object-fit: cover;
@@ -639,8 +639,9 @@ a {
     }
 
     .massage_title img {
-        width: 120px;
+        width: 220px;
         height: 120px;
+        order: -1;
     }
 
     .caret {

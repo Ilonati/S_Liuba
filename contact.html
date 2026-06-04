@@ -19,7 +19,7 @@
 
 
         <title></title>
-        <link rel="stylesheet" href="/assets/css/cartes_cadeau.css">
+        <link rel="stylesheet" href="/assets/css/contact.css">
         <link
             href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap"
             rel="stylesheet">
@@ -69,42 +69,60 @@
 
         <div id="google_translate_element" style="display:none;"></div>
 
+        <!-- CONTACT FORM -->
+        <div class="page">
+            <section class="contact-page">
+                <div class="contact-container">
+                    <h1>Contactez-moi <a href="https://wa.me/номер телефона" title="Whatsapp" target="_blank">
+                            <img src="/images/free-icon-logo-15713434.png" alt="Whatsapp">
+                        </a></h1>
 
-        <main class="gift-page">
-            <a href="javascript:history.back()" class="back-link">
-                ❮ Retour
-            </a>
-            <section class="gift-hero">
-                <div class="gift-text">
-                    <span class="gift-subtitle">Offrir un moment de beauté</span>
-                    <h1>Certificat Cadeau</h1>
+                    <h2>Ou</h2>
+                    <p>Remplissez le formulaire ci-dessous et je vous répondre rapidement.</p>
 
-                    <p>
-                        Les certificats cadeau sont disponibles directement à l’institut.
-                        Ils sont personnalisés au nom de la personne à qui vous souhaitez l’offrir
-                        et choisies pour une prestation précise.
-                    </p>
+                    <form id="contactForm" class="contact-form">
 
-                    <p>
-                        Chaque certificat cadeau est valable pendant six mois à partir de la date d’achat.
-                        La personne bénéficiaire pourra réserver la date et l’heure de son rendez-vous
-                        directement sur le site, pour la prestation indiquée sur le certificat.
-                    </p>
 
-                    <p>
-                        Le règlement de la prestation se fait sur place avec le certificat cadeau offerte.
-                    </p>
+                        <label for="name">Nom :</label>
+                        <input type="text" id="name" name="name" placeholder="Votre nom" required>
+                        <label for="name">Prenom :</label>
+                        <input type="text" id="prenom" name="prenom" placeholder="Votre prenom" required>
 
-                    <a href="RDV.html" class="gift-btn">Réserver un rendez-vous</a>
+                        <label for="email">Email :</label>
+                        <input type="email" id="email" name="email" placeholder="Votre email" required>
+                        <label for="email">Telephone :</label>
+                        <input type="text" id="telephone" name="telephone" placeholder="Votre telephone" required>
+                        <label for="subject">Sujet :</label>
+
+                        <select id="subject" name="subject" required>
+                            <option value="" disabled selected hidden>Sujet du message</option>
+                            <option value="manicure">Massage</option>
+                            <option value="permanent">Maquillage permanent</option>
+                            <option value="courses">Soigne visage</option>
+                            <option value="courses">Cils</option>
+                            <option value="courses">Epilation</option>
+                            <option value="autre">Autre</option>
+                        </select>
+
+
+
+
+                        <label for="message">Message :</label>
+                        <textarea id="message" name="message" placeholder="Votre message" rows="6" required></textarea>
+
+                        <button type="submit" class="btn">Envoyer</button>
+                    </form>
                 </div>
 
-                <div class="gift-images">
-                    <img src="/images/cartes_cadeau/2.png" alt="Carte cadeau S.Liuba">
-                    <img src="/images/cartes_cadeau/1.png" alt="Enveloppe carte cadeau">
-                </div>
             </section>
-
-        </main>
+            <div id="successModal" class="modal">
+                <div class="modal-content">
+                    <span id="closeModal" class="close">&times;</span>
+                    <h2>Message envoyé ✔️</h2>
+                    <p>Merci ! Je vous répondrai dans les plus brefs délais.</p>
+                </div>
+            </div>
+        </div>
         <!-- FOOTER -->
         <footer class="footer">
             <div class="container">
@@ -149,7 +167,7 @@
         </footer>
         <button id="scrollTopBtn" title="Remonter en haut">↑</button>
 
-        <script src="/assets/js/cartes_cadeau.js"></script>
+        <script src="/assets/js/contact.js"></script>
         <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     </body>

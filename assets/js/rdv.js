@@ -159,7 +159,7 @@ function renderCalendar() {
         );
         //добавляем  день недели который отключаем
         const isPast = date < todayStart;
-        const isTuesday = date.getDay() === 2;
+        // const isTuesday = date.getDay() === 2;
         const isSunday = date.getDay() === 0;
 
         const isSelected =
@@ -168,7 +168,7 @@ function renderCalendar() {
             date.getMonth() === selectedDate.getMonth() &&
             date.getFullYear() === selectedDate.getFullYear();
         //меняем день недели 
-        if (isPast || isTuesday || isSunday) {
+        if (isPast || isSunday) {
             button.classList.add('disabled');
             button.disabled = true;
         }
