@@ -23,6 +23,8 @@ app.get("/", (req, res) => {
 
 
 app.use("/api/admin", require("./routes/adminRoutes"));
+app.use("/api/services", require("./routes/serviceRoutes"));
+app.use("/api/upload", require("./routes/uploadRoutes"));
 // app.use("/api/content", require("./routes/contentRoutes"));
 // app.use("/api/appointments", require("./routes/appointmentRoutes"));
 
