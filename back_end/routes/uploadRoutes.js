@@ -11,5 +11,11 @@ router.post(
     upload.single("file"),
     uploadController.uploadSingleFile
 );
+router.delete(
+    "/:filename",
+    authMiddleware,
+    uploadController.deleteFile
+);
+
 
 module.exports = router;
