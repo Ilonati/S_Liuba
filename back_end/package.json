@@ -1,14 +1,15 @@
 {
-  "name": "back_end",
+  "name": "s-liuba-backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Backend API for Institut S Liuba",
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
