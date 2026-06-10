@@ -6,7 +6,11 @@ require("dotenv").config();
 const app = express();
 
 app.use(cors({
-    origin: process.env.FRONTEND_URL,
+    origin: [
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+        "https://s-liuba.onrender.com"
+    ],
     credentials: true
 }));
 
@@ -35,6 +39,9 @@ app.use("/api/calendar", require("./routes/calendarRoutes"));
 app.use("/api/contact", require("./routes/contactRoutes"));
 app.use("/api/pages", require("./routes/pageRoutes"));
 app.use("/api/content-blocks", require("./routes/contentBlockRoutes"));
+app.use("/api/certificates", require("./routes/certificateRoutes"));
+app.use("/api/settings", require("./routes/settingsRoutes"));
+app.use("/api/dashboard", require("./routes/dashboardRoutes"));
 // app.use("/api/content", require("./routes/contentRoutes"));
 
 

@@ -180,6 +180,7 @@ function renderCalendar() {
         button.addEventListener('click', () => {
             selectedDate = date;
             renderCalendar();
+            loadAvailableSlots();
         });
 
         calendarGrid.appendChild(button);
@@ -219,31 +220,93 @@ if (nextMonth) {
 
 renderCalendar();
 
-// Time selection
-const timeButtons = document.querySelectorAll('.time-btn');
+// Time selection from backend
+const timeGrid = document.getElementById('timeGrid');
 let selectedTime = '';
 
-const defaultSelectedTime = document.querySelector('.time-btn.selected');
-
-if (defaultSelectedTime) {
-    selectedTime = defaultSelectedTime.textContent.trim();
+function formatSlotForDisplay(slot) {
+    return slot.slice(0, 5);
 }
 
-timeButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-        timeButtons.forEach((item) => item.classList.remove('selected'));
+async function loadAvailableSlots() {
+    if (!timeGrid || !selectedDate) return;
 
-        button.classList.add('selected');
-        selectedTime = button.textContent.trim();
-    });
-});
+    const dateForApi = formatDateForApi(selectedDate);
 
-// Form + WhatsApp
+    try {
+        const response = await fetch(
+            `http://localhost:5000/api/slots?date=${dateForApi}`
+        );
+
+        const result = await response.json();
+
+        timeGrid.innerHTML = "";
+        selectedTime = "";
+
+        if (result.closed) {
+            timeGrid.innerHTML = `
+                <p class="closed-message">
+                    ${result.message || "Institut fermé ce jour-là."}
+                </p>
+            `;
+            return;
+        }
+
+        if (!result.slots || result.slots.length === 0) {
+            timeGrid.innerHTML = `
+                <p class="closed-message">
+                    Aucun créneau disponible ce jour-là.
+                </p>
+            `;
+            return;
+        }
+
+        result.slots.forEach((slot) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "time-btn";
+            button.textContent = formatSlotForDisplay(slot);
+
+            button.addEventListener("click", () => {
+                document
+                    .querySelectorAll(".time-btn")
+                    .forEach((item) => item.classList.remove("selected"));
+
+                button.classList.add("selected");
+                selectedTime = button.textContent.trim();
+            });
+
+            timeGrid.appendChild(button);
+        });
+    } catch (error) {
+        console.error("Erreur slots:", error);
+        timeGrid.innerHTML = `
+            <p class="closed-message">
+                Impossible de charger les créneaux.
+            </p>
+        `;
+    }
+}
+
+// Form + Backend RDV
 const bookingForm = document.getElementById('bookingForm');
 const successMessage = document.getElementById('successMessage');
 
+function formatDateForApi(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+function formatTimeForApi(time) {
+    if (!time) return "";
+    return `${time}:00`;
+}
+
 if (bookingForm && successMessage) {
-    bookingForm.addEventListener('submit', (e) => {
+    bookingForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const name = document.getElementById('clientName').value.trim();
@@ -251,47 +314,60 @@ if (bookingForm && successMessage) {
         const email = document.getElementById('clientEmail').value.trim();
         const message = document.getElementById('clientMessage').value.trim();
 
-        if (!name || !phone) {
+        if (!name || !phone || !email) {
             successMessage.classList.add('show');
-            successMessage.innerHTML = 'Merci de remplir votre nom et votre téléphone.';
+            successMessage.innerHTML = 'Merci de remplir votre nom, téléphone et email.';
             return;
         }
 
-        if (!selectedTime) {
+        if (!selectedService || !selectedTime || !selectedDate) {
             successMessage.classList.add('show');
-            successMessage.innerHTML = 'Merci de choisir une heure de rendez-vous.';
+            successMessage.innerHTML = 'Merci de choisir une prestation, une date et une heure.';
             return;
         }
 
-        const formattedDate = selectedDate.toLocaleDateString('fr-FR', {
-            weekday: 'long',
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric'
-        });
+        const appointmentData = {
+            client_name: name,
+            client_email: email,
+            client_phone: phone,
+            service_id: null,
+            service_title: selectedService,
+            appointment_date: formatDateForApi(selectedDate),
+            appointment_time: formatTimeForApi(selectedTime),
+            duration_minutes: 60,
+            source: "client",
+            notes: message
+        };
 
-        const whatsappText = encodeURIComponent(
-            `Bonjour, je souhaite réserver un rendez-vous.\n\n` +
-            `Service : ${selectedService}\n` +
-            `Prix : ${selectedPrice}\n` +
-            `Date : ${formattedDate}\n` +
-            `Heure : ${selectedTime}\n\n` +
-            `Nom : ${name}\n` +
-            `Téléphone : ${phone}\n` +
-            `Email : ${email || 'Non renseigné'}\n` +
-            `Message : ${message || 'Aucun message'}`
-        );
+        try {
+            const response = await fetch("http://localhost:5000/api/appointments", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(appointmentData)
+            });
 
-        successMessage.classList.add('show');
-        successMessage.innerHTML = `
-            Merci ${name} ✨ Votre demande est prête.<br><br>
-            <a href="https://wa.me/33783714349?text=${whatsappText}" 
-               target="_blank" 
-               rel="noopener" 
-               style="color:#a8752d;font-weight:800;">
-                Envoyer la demande sur WhatsApp
-            </a>
-        `;
+            const result = await response.json();
+
+            successMessage.classList.add('show');
+
+            if (response.ok) {
+                successMessage.innerHTML = `
+                    Merci ${name} ✨ Votre rendez-vous a bien été réservé.<br>
+                    Un email de confirmation vous a été envoyé.
+                `;
+                bookingForm.reset();
+            } else {
+                successMessage.innerHTML =
+                    result.message || "Impossible de réserver ce rendez-vous.";
+            }
+
+        } catch (error) {
+            console.error("Erreur RDV:", error);
+            successMessage.classList.add('show');
+            successMessage.innerHTML = "Erreur serveur. Merci de réessayer plus tard.";
+        }
     });
 }
 // Service category accordion
@@ -330,3 +406,174 @@ function initServiceCategoryAccordion() {
 }
 
 initServiceCategoryAccordion();
+
+async function loadServicesForBookingFromBackend() {
+    const serviceList = document.querySelector(".service-list");
+
+    if (!serviceList) return;
+
+    try {
+        const response = await fetch("http://localhost:5000/api/services");
+
+        if (!response.ok) {
+            throw new Error("Erreur API services");
+        }
+
+        const services = await response.json();
+
+        if (!services.length) return;
+
+        const backendCategory = document.createElement("div");
+        backendCategory.classList.add("service-category");
+
+        backendCategory.innerHTML = `
+            <button type="button" class="service-category-header">
+                <span>Nouveautés / Services ajoutés</span>
+                <span class="category-arrow">▼</span>
+            </button>
+
+            <div class="service-category-content"></div>
+        `;
+
+        const content = backendCategory.querySelector(".service-category-content");
+
+        services.forEach((service) => {
+            const option = document.createElement("div");
+            option.classList.add("service-option");
+
+            option.dataset.service = service.title;
+            option.dataset.price = service.price ? `${service.price} €` : "Sur devis";
+            option.dataset.duration = service.duration_minutes || 60;
+            option.dataset.serviceId = service.id;
+
+            option.innerHTML = `
+                <img src="${service.image_url || "images/photos/massage (1).jpg"}" alt="${service.title}">
+                <div>
+                    <h3>${service.title}</h3>
+                    <p>${service.short_description || service.category || ""}</p>
+                    <strong>${service.duration_minutes || "-"} min · ${service.price || "Sur devis"} €</strong>
+                </div>
+                <div class="radio-dot"></div>
+            `;
+
+            option.addEventListener("click", () => {
+                document
+                    .querySelectorAll(".service-option")
+                    .forEach((item) => item.classList.remove("selected"));
+
+                option.classList.add("selected");
+
+                selectedService = option.dataset.service || "Service non précisé";
+                selectedPrice = option.dataset.price || "Prix non précisé";
+            });
+
+            content.appendChild(option);
+        });
+
+        serviceList.appendChild(backendCategory);
+
+        initServiceCategoryAccordion();
+
+    } catch (error) {
+        console.error("Erreur services RDV:", error);
+    }
+}
+
+// loadServicesForBookingFromBackend();
+
+function findCategoryContentByTitle(categoryTitle) {
+    const categories = document.querySelectorAll(".service-category");
+
+    for (const category of categories) {
+        const title = category
+            .querySelector(".service-category-header span")
+            ?.textContent
+            .trim()
+            .toLowerCase();
+
+        if (title === categoryTitle.toLowerCase()) {
+            return category.querySelector(".service-category-content");
+        }
+    }
+
+    return null;
+}
+
+function getFrontendCategoryName(backendCategory) {
+    const map = {
+        "Massage": "Massages",
+        "Maquillage Permanent": "Maquillage permanent - Sourcils",
+        "Épilation Femmes": "Épilation Femmes",
+        "Épilation Hommes": "Épilation Hommes",
+        "Cils": "Extensions de cils",
+        "Soin du visage": "Soins du visage, cils et teinture"
+    };
+
+    return map[backendCategory] || null;
+}
+
+function createBookingServiceOption(service) {
+    const option = document.createElement("div");
+    option.classList.add("service-option");
+
+    option.dataset.service = service.title;
+    option.dataset.price = service.price ? `${service.price} €` : "Sur devis";
+    option.dataset.duration = service.duration_minutes || 60;
+    option.dataset.serviceId = service.id;
+
+    option.innerHTML = `
+        <img src="${service.image_url || "images/photos/massage (1).jpg"}" alt="${service.title}">
+        <div>
+            <h3>${service.title}</h3>
+            <p>${service.short_description || service.category || ""}</p>
+            <strong>${service.duration_minutes || "-"} min · ${service.price || "Sur devis"} €</strong>
+        </div>
+        <div class="radio-dot"></div>
+    `;
+
+    option.addEventListener("click", () => {
+        document
+            .querySelectorAll(".service-option")
+            .forEach((item) => item.classList.remove("selected"));
+
+        option.classList.add("selected");
+
+        selectedService = option.dataset.service || "Service non précisé";
+        selectedPrice = option.dataset.price || "Prix non précisé";
+    });
+
+    return option;
+}
+
+async function loadServicesIntoExistingCategories() {
+    try {
+        const response = await fetch("http://localhost:5000/api/services");
+
+        if (!response.ok) {
+            throw new Error("Erreur API services");
+        }
+
+        const services = await response.json();
+
+        services.forEach((service) => {
+            const frontendCategory = getFrontendCategoryName(service.category);
+
+            if (!frontendCategory) return;
+
+            const categoryContent =
+                findCategoryContentByTitle(frontendCategory);
+
+            if (!categoryContent) return;
+
+            const option = createBookingServiceOption(service);
+            categoryContent.appendChild(option);
+        });
+
+        initServiceCategoryAccordion();
+
+    } catch (error) {
+        console.error("Erreur services RDV:", error);
+    }
+}
+
+loadServicesIntoExistingCategories();

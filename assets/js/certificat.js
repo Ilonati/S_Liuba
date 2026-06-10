@@ -115,3 +115,76 @@ if (slider && slides.length && prevBtn && nextBtn) {
 
     updateSlides();
 }
+
+async function loadCertificatesFromBackend() {
+    const slider = document.querySelector(".slider-container");
+
+    if (!slider) return;
+
+    try {
+        const response = await fetch("http://localhost:5000/api/certificates");
+
+        if (!response.ok) {
+            throw new Error("Erreur API certificats");
+        }
+
+        const certificates = await response.json();
+
+        certificates.forEach((cert) => {
+            const slide = document.createElement("div");
+            slide.classList.add("slide");
+
+            const img = document.createElement("img");
+
+            if (cert.file_url.startsWith("/uploads")) {
+                img.src = `http://localhost:5000${cert.file_url}`;
+            } else {
+                img.src = cert.file_url;
+            }
+
+            img.alt = cert.title || "Certificat";
+
+            slide.appendChild(img);
+            slider.appendChild(slide);
+        });
+
+        refreshCertificateSlider();
+    } catch (error) {
+        console.error("Erreur certificats backend:", error);
+    }
+}
+
+function refreshCertificateSlider() {
+    const slider = document.querySelector(".slider-container");
+    const slides = document.querySelectorAll(".certificat-slider .slide");
+    const prevBtn = document.querySelector(".certificat-slider .prev");
+    const nextBtn = document.querySelector(".certificat-slider .next");
+
+    let currentIndex = 0;
+
+    function updateSlides() {
+        slider.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+        slides.forEach((slide, index) => {
+            slide.classList.toggle("active", index === currentIndex);
+        });
+    }
+
+    if (slider && slides.length && prevBtn && nextBtn) {
+        nextBtn.onclick = (e) => {
+            e.stopPropagation();
+            currentIndex = (currentIndex + 1) % slides.length;
+            updateSlides();
+        };
+
+        prevBtn.onclick = (e) => {
+            e.stopPropagation();
+            currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+            updateSlides();
+        };
+
+        updateSlides();
+    }
+}
+
+loadCertificatesFromBackend();

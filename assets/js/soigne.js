@@ -123,10 +123,8 @@ function initMassage() {
 
     blocs.forEach(bloc => {
         const title = bloc.querySelector('.massage_title');
+        title.onclick = () => toggleMassage(bloc);
 
-        if (title) {
-            title.addEventListener('click', () => toggleMassage(bloc));
-        }
     });
 }
 
@@ -145,4 +143,55 @@ window.addEventListener('resize', () => {
     }
 });
 
+async function loadMassageServicesFromBackend() {
+    const container = document.querySelector(".container");
 
+    if (!container) return;
+
+    try {
+        const response = await fetch("http://localhost:5000/api/services");
+
+        if (!response.ok) {
+            throw new Error("Erreur API services");
+        }
+
+        const services = await response.json();
+
+        const massageServices = services.filter(service =>
+            service.category === "Massage"
+        );
+
+        massageServices.forEach(service => {
+            const item = document.createElement("div");
+            item.classList.add("massage");
+
+            item.innerHTML = `
+                <div class="massage_bloc">
+                    <div class="massage_title">
+                        <img src="${service.image_url || "images/massage/relax.png"}" alt="${service.title}">
+                        <span>${service.title}</span>
+                        <span class="caret">▼</span>
+                    </div>
+
+                    <div class="massage_answer-bloc">
+                        <div class="massage_answer">
+                            <p>${service.full_description || service.short_description || ""}</p>
+                            <p class="massage-time">Durée ${service.duration_minutes || "-"} min</p>
+                            <p class="massage-price">Tarif ${service.price || "Sur devis"} €</p>
+                            <a href="RDV.html#booking" class="massage-btn">Prendre rendez-vous</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(item);
+        });
+
+        initMassage();
+
+    } catch (error) {
+        console.error("Erreur services massage:", error);
+    }
+}
+
+loadMassageServicesFromBackend();

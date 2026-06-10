@@ -88,43 +88,55 @@ const contactForm = document.getElementById("contactForm");
 const successModal = document.getElementById("successModal");
 const closeModal = document.getElementById("closeModal");
 
-contactForm.addEventListener("submit", async function (e) {
-    e.preventDefault();
+if (contactForm) {
+    contactForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
 
-    const formData = {
-        name: document.getElementById("name").value,
-        prenom: document.getElementById("prenom").value,
-        email: document.getElementById("email").value,
-        telephone: document.getElementById("telephone").value,
-        subject: document.getElementById("subject").value,
-        message: document.getElementById("message").value
-    };
+        const name = document.getElementById("name").value.trim();
+        const prenom = document.getElementById("prenom").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const telephone = document.getElementById("telephone").value.trim();
+        const subject = document.getElementById("subject").value;
+        const message = document.getElementById("message").value.trim();
 
-    try {
-        const response = await fetch("cccc", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData)
-        });
+        const formData = {
+            name: `${name} ${prenom}`,
+            email: email,
+            phone: telephone,
+            subject: subject,
+            message: message
+        };
 
-        const result = await response.json();
+        try {
+            const response = await fetch("http://localhost:5000/api/contact", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formData)
+            });
 
-        if (result.success) {
-            successModal.classList.add("show");
-            contactForm.reset();
-        } else {
-            alert("Erreur. Impossible d'envoyer votre message.");
+            const result = await response.json();
+
+            if (response.ok) {
+                successModal.classList.add("show");
+                contactForm.reset();
+            } else {
+                alert(result.message || "Erreur. Impossible d'envoyer votre message.");
+            }
+
+        } catch (error) {
+            console.error("Erreur:", error);
+            alert("Erreur serveur.");
         }
+    });
+}
 
-    } catch (error) {
-        console.error("Erreur:", error);
-        alert("Erreur serveur.");
-    }
-});
-
-closeModal.addEventListener("click", function () {
-    successModal.classList.remove("show");
-});
+if (closeModal) {
+    closeModal.addEventListener("click", function () {
+        successModal.classList.remove("show");
+    });
+}
 
 window.addEventListener("click", function (event) {
     if (event.target === successModal) {

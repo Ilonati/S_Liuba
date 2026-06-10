@@ -7,7 +7,7 @@ const WORK_END = 19;
 function generateDaySlots() {
     const slots = [];
 
-    for (let hour = WORK_START; hour < WORK_END; hour++) {
+    for (let hour = WORK_START; hour <= WORK_END; hour++) {
         slots.push(`${String(hour).padStart(2, "0")}:00:00`);
     }
 
@@ -67,11 +67,13 @@ async function getAvailableSlots(req, res) {
             .filter((block) => block.block_time !== null)
             .map((block) => block.block_time.toString());
 
-        const availableSlots = allSlots.filter(
+        let availableSlots = allSlots.filter(
             (slot) =>
                 !bookedTimes.includes(slot) &&
                 !blockedTimes.includes(slot)
         );
+
+        availableSlots = removePastSlotsForToday(date, availableSlots);
 
         res.json({
             date,
@@ -89,6 +91,35 @@ async function getAvailableSlots(req, res) {
     }
 }
 
+function removePastSlotsForToday(dateString, slots) {
+    const today = new Date();
+    const selectedDate = new Date(dateString);
+
+    const isToday =
+        today.getFullYear() === selectedDate.getFullYear() &&
+        today.getMonth() === selectedDate.getMonth() &&
+        today.getDate() === selectedDate.getDate();
+
+    if (!isToday) {
+        return slots;
+    }
+
+    const currentHour = today.getHours();
+    const currentMinutes = today.getMinutes();
+
+    return slots.filter((slot) => {
+        const [slotHour, slotMinutes] = slot.split(":").map(Number);
+
+        if (slotHour > currentHour) return true;
+
+        if (slotHour === currentHour && slotMinutes > currentMinutes) {
+            return true;
+        }
+
+        return false;
+    });
+}
 module.exports = {
     getAvailableSlots
 };
+

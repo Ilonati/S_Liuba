@@ -1,6 +1,7 @@
 const appointmentRepository = require("../repository/appointmentRepository");
 const mailService = require("../services/mailService");
 const blockedClientRepository = require("../repository/blockedClientRepository");
+const blockRepository = require("../repository/blockRepository");
 
 async function getAdminAppointments(req, res) {
     try {
@@ -20,6 +21,17 @@ async function getAdminAppointments(req, res) {
     }
 }
 
+function isSunday(dateString) {
+    const date = new Date(dateString);
+    return date.getDay() === 0;
+}
+
+function isPastDateTime(dateString, timeString) {
+    const appointmentDateTime = new Date(`${dateString}T${timeString}`);
+    const now = new Date();
+
+    return appointmentDateTime < now;
+}
 async function createAppointment(req, res) {
     try {
 
@@ -34,6 +46,49 @@ async function createAppointment(req, res) {
         ) {
             return res.status(400).json({
                 message: "Champs obligatoires manquants"
+            });
+        }
+        if (isSunday(data.appointment_date)) {
+            return res.status(400).json({
+                message: "Institut fermé le dimanche"
+            });
+        }
+
+        if (isPastDateTime(data.appointment_date, data.appointment_time)) {
+            return res.status(400).json({
+                message: "Impossible de réserver un créneau passé"
+            });
+        }
+
+        const blockedSlots = await blockRepository.getBlocksByDate(
+            data.appointment_date
+        );
+
+        const fullDayBlock = blockedSlots.find(
+            (block) => block.block_time === null
+        );
+
+        if (fullDayBlock) {
+            return res.status(400).json({
+                message:
+                    fullDayBlock.message ||
+                    fullDayBlock.reason ||
+                    "Institut fermé ce jour-là"
+            });
+        }
+
+        const blockedHour = blockedSlots.find(
+            (block) =>
+                block.block_time !== null &&
+                block.block_time.toString() === data.appointment_time
+        );
+
+        if (blockedHour) {
+            return res.status(400).json({
+                message:
+                    blockedHour.message ||
+                    blockedHour.reason ||
+                    "Créneau indisponible"
             });
         }
         if (data.source !== "admin") {
