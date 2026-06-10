@@ -99,6 +99,15 @@ async function toggleServiceStatus(id, isActive) {
         [isActive, id]
     );
 }
+
+async function getServiceBySlug(slug) {
+    const [rows] = await db.query(
+        "SELECT * FROM services WHERE slug = ? AND is_active = true LIMIT 1",
+        [slug]
+    );
+
+    return rows[0];
+}
 module.exports = {
     getAllServices,
     getActiveServices,
@@ -106,5 +115,6 @@ module.exports = {
     createService,
     updateService,
     deleteService,
-    toggleServiceStatus
+    toggleServiceStatus,
+    getServiceBySlug
 };

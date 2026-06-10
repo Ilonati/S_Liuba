@@ -121,11 +121,30 @@ async function toggleServiceStatus(req, res) {
         res.status(500).json({ message: "Erreur serveur" });
     }
 }
+
+async function getPublicServiceBySlug(req, res) {
+    try {
+        const service = await serviceRepository.getServiceBySlug(req.params.slug);
+
+        if (!service) {
+            return res.status(404).json({
+                message: "Service introuvable"
+            });
+        }
+
+        res.json(service);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Erreur serveur" });
+    }
+}
+
 module.exports = {
     getPublicServices,
     getAdminServices,
     createService,
     updateService,
     deleteService,
-    toggleServiceStatus
+    toggleServiceStatus,
+    getPublicServiceBySlug
 };
