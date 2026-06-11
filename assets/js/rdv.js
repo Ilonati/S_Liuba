@@ -287,7 +287,7 @@ async function loadAvailableSlots() {
         `;
     }
 }
-
+loadAvailableSlots();
 // Form + Backend RDV
 const bookingForm = document.getElementById('bookingForm');
 const successMessage = document.getElementById('successMessage');
@@ -354,8 +354,14 @@ if (bookingForm && successMessage) {
 
             if (response.ok) {
                 successMessage.innerHTML = `
-                    Merci ${name} ✨ Votre rendez-vous a bien été réservé.<br>
-                    Un email de confirmation vous a été envoyé.
+                    Merci ${name} ✨<br> Votre rendez-vous a bien été réservé.<br>
+                     Un email de confirmation vous a été envoyé.<br>
+
+    ✨Si vous souhaitez modifier ou annuler votre rendez-vous,
+    merci de nous contacter via la page Contact du site
+    en sélectionnant le sujet :<br>
+    <strong>« Annulation RDV »</strong>.<br>
+    Je vous répondrons dans les meilleurs délais.
                 `;
                 bookingForm.reset();
             } else {
@@ -382,9 +388,11 @@ function initServiceCategoryAccordion() {
 
         if (category.classList.contains('active')) {
             content.style.height = content.scrollHeight + 'px';
+        } else {
+            content.style.height = '0';
         }
 
-        header.addEventListener('click', () => {
+        header.onclick = () => {
             const isOpen = category.classList.contains('active');
 
             categories.forEach((item) => {
@@ -401,9 +409,10 @@ function initServiceCategoryAccordion() {
                 category.classList.add('active');
                 content.style.height = content.scrollHeight + 'px';
             }
-        });
+        };
     });
 }
+
 
 initServiceCategoryAccordion();
 
@@ -450,6 +459,7 @@ async function loadServicesForBookingFromBackend() {
                 <img src="${service.image_url || "images/photos/massage (1).jpg"}" alt="${service.title}">
                 <div>
                     <h3>${service.title}</h3>
+                   ${rdv.notes ? `<strong>Note:</strong> ${rdv.notes}<br>` : ""}
                     <p>${service.short_description || service.category || ""}</p>
                     <strong>${service.duration_minutes || "-"} min · ${service.price || "Sur devis"} €</strong>
                 </div>
@@ -525,6 +535,7 @@ function createBookingServiceOption(service) {
         <img src="${service.image_url || "images/photos/massage (1).jpg"}" alt="${service.title}">
         <div>
             <h3>${service.title}</h3>
+            ${rdv.notes ? `<strong>Note:</strong> ${rdv.notes}<br>` : ""}
             <p>${service.short_description || service.category || ""}</p>
             <strong>${service.duration_minutes || "-"} min · ${service.price || "Sur devis"} €</strong>
         </div>

@@ -117,16 +117,18 @@ async function updateAppointment(id, data) {
         ]
     );
 }
-
 async function updateAppointmentStatus(id, status, cancellationReason = null) {
-    await db.query(
+    const [result] = await db.query(
         `UPDATE appointments
-     SET status = ?,
-         cancellation_reason = ?
-     WHERE id = ?`,
+         SET status = ?,
+             cancellation_reason = ?
+         WHERE id = ?`,
         [status, cancellationReason, id]
     );
+
+    return result.affectedRows;
 }
+
 
 async function createHistory(appointmentId, actionType, oldValue, newValue) {
     await db.query(

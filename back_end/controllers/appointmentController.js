@@ -206,12 +206,25 @@ async function updateAppointment(req, res) {
     }
 }
 
+
 async function updateStatus(req, res) {
     try {
-
         const id = req.params.id;
-
         const { status, reason } = req.body;
+
+        const allowedStatuses = [
+            "pending",
+            "confirmed",
+            "cancelled",
+            "completed",
+            "no_show"
+        ];
+
+        if (!allowedStatuses.includes(status)) {
+            return res.status(400).json({
+                message: "Statut invalide"
+            });
+        }
 
         const appointment =
             await appointmentRepository.getAppointmentById(id);
@@ -222,11 +235,18 @@ async function updateStatus(req, res) {
             });
         }
 
-        await appointmentRepository.updateAppointmentStatus(
-            id,
-            status,
-            reason || null
-        );
+        const updatedRows =
+            await appointmentRepository.updateAppointmentStatus(
+                id,
+                status,
+                reason || null
+            );
+
+        if (updatedRows === 0) {
+            return res.status(404).json({
+                message: "Rendez-vous introuvable"
+            });
+        }
 
         await appointmentRepository.createHistory(
             id,
@@ -234,6 +254,7 @@ async function updateStatus(req, res) {
             { status: appointment.status },
             { status }
         );
+
         const updatedAppointment =
             await appointmentRepository.getAppointmentById(id);
 
@@ -243,21 +264,22 @@ async function updateStatus(req, res) {
                 reason
             );
         }
-
+        if (status === "completed") {
+            await mailService.sendReviewRequestEmail(updatedAppointment);
+        }
         res.json({
             message: "Statut modifié"
         });
 
     } catch (error) {
-
         console.error(error);
 
         res.status(500).json({
             message: "Erreur serveur"
         });
-
     }
 }
+
 
 module.exports = {
     getAdminAppointments,

@@ -2,10 +2,11 @@ const db = require("../db");
 
 async function getDashboardStats() {
     const [[todayAppointments]] = await db.query(`
-        SELECT COUNT(*) AS total
-        FROM appointments
-        WHERE appointment_date = CURDATE()
-    `);
+    SELECT COUNT(*) AS total
+    FROM appointments
+    WHERE appointment_date = CURDATE()
+      AND status IN ('pending', 'confirmed')
+`);
 
     const [[weekAppointments]] = await db.query(`
         SELECT COUNT(*) AS total

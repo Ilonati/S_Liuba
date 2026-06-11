@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Dashboard Admin</title>
+    </head>
+
+    <body>
+
+        <h1>Dashboard Admin</h1>
+
+        <button id="logoutBtn">Déconnexion</button>
+
+        <div id="dashboardStats">
+            Chargement...
+        </div>
+
+        <h2>Rendez-vous</h2>
+        <div id="appointmentsList">Chargement des RDV...</div>
+
+
+
+        <h2>Messages de contact</h2>
+        <div id="contactMessagesList">Chargement des messages...</div>
+
+        <h2>Services</h2>
+
+        <form id="serviceForm">
+            <input type="text" id="serviceTitle" placeholder="Nom du service" required>
+            <input type="text" id="serviceCategory" placeholder="Catégorie" required>
+            <input type="number" id="serviceDuration" placeholder="Durée en minutes" required>
+            <input type="number" id="servicePrice" placeholder="Prix" required>
+            <textarea id="serviceDescription" placeholder="Description"></textarea>
+            <button type="submit">Ajouter service</button>
+        </form>
+
+        <div id="servicesList">Chargement des services...</div>
+
+        <h2 id="blockedClientsToggle" style="cursor:pointer;">
+            Clients bloqués ▼
+        </h2>
+
+        <div id="blockedClientsContent" style="display:none;">
+            <form id="blockedClientForm">
+                <input type="email" id="blockedClientEmail" placeholder="Email du client">
+                <input type="text" id="blockedClientPhone" placeholder="Téléphone du client">
+                <input type="text" id="blockedClientReason" placeholder="Raison">
+                <button type="submit">Bloquer client</button>
+            </form>
+
+            <div id="blockedClientsList">Chargement des clients bloqués...</div>
+        </div>
+        <h2 id="historyToggle" style="cursor:pointer;">
+            Historique des rendez-vous ▼
+        </h2>
+
+        <div id="historyAppointments">
+            Chargement de l'historique...
+        </div>
+        <script src="./js/admin.js"></script>
+    </body>
+
+</html>

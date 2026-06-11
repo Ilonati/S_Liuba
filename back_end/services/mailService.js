@@ -60,53 +60,63 @@ function appointmentHtmlTemplate({ title, intro, appointment, reason = null }) {
     const formattedTime = formatFrenchTime(appointment.appointment_time);
 
     return `
-  <div style="font-family: Arial, sans-serif; background:#f7f3ef; padding:30px;">
-    <div style="max-width:600px; margin:auto; background:#ffffff; border-radius:14px; overflow:hidden; box-shadow:0 4px 14px rgba(0,0,0,0.08);">
-      
-      <div style="background:#b68c5a; color:#ffffff; padding:24px; text-align:center;">
-        <h1 style="margin:0; font-size:26px;">Institut S Liuba</h1>
-        <p style="margin:8px 0 0;">Beauté & bien-être</p>
-      </div>
+        <div style="font-family:Arial,sans-serif;background:#f7f3ef;padding:30px;">
+            <div style="max-width:600px;margin:auto;background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,0.08);">
 
-      <div style="padding:28px;">
-        <h2 style="color:#2c2c2c; margin-top:0;">${title}</h2>
+                <div style="background:#b68c5a;color:#ffffff;padding:24px;text-align:center;">
+                    <img
+                        src="https://s-liuba.onrender.com/images/Logo_S_Luba.png"
+                        alt="S.Liuba Institut Beauté"
+                        style="display:block;margin:0 auto 15px auto;max-width:120px;height:auto;"
+                    >
 
-        <p style="font-size:16px; color:#444;">
-          Bonjour ${appointment.client_name},
-        </p>
+                    <h1 style="margin:0;color:#ffffff;font-size:26px;">
+                        Institut S Liuba
+                    </h1>
+                </div>
 
-        <p style="font-size:16px; color:#444;">
-          ${intro}
-        </p>
+                <div style="padding:28px;color:#333333;">
+                    <h2 style="color:#2c2c2c;margin-top:0;">
+                        ${title}
+                    </h2>
 
-        ${reason
-            ? `<p style="background:#fff3cd; padding:12px; border-radius:8px; color:#856404;">
-                Raison: ${reason}
-              </p>`
+                    <p style="font-size:16px;color:#444444;">
+                        Bonjour ${appointment.client_name},
+                    </p>
+
+                    <p style="font-size:16px;color:#444444;">
+                        ${intro}
+                    </p>
+
+                    ${reason
+            ? `<p style="background:#fff3cd;padding:12px;border-radius:8px;color:#856404;">
+                                <strong>Raison:</strong> ${reason}
+                               </p>`
             : ""
         }
 
-        <div style="background:#f7f3ef; padding:18px; border-radius:12px; margin:22px 0;">
-          <p><strong>Prestation:</strong> ${appointment.service_title}</p>
-          <p><strong>Date:</strong> ${formattedDate}</p>
-          <p><strong>Heure:</strong> ${formattedTime}</p>
-          <p><strong>Durée:</strong> ${appointment.duration_minutes || 60} minutes</p>
-          <p><strong>Téléphone:</strong> ${appointment.client_phone || "-"}</p>
-          <p><strong>Notes:</strong> ${appointment.notes || "-"}</p>
+                    <div style="background:#f7f3ef;padding:18px;border-radius:12px;margin:22px 0;color:#333333;">
+                        <p style="margin:8px 0;color:#333333;"><strong>Prestation:</strong> ${appointment.service_title}</p>
+                        <p style="margin:8px 0;color:#333333;"><strong>Date:</strong> ${formattedDate}</p>
+                        <p style="margin:8px 0;color:#333333;"><strong>Heure:</strong> ${formattedTime}</p>
+                        <p style="margin:8px 0;color:#333333;"><strong>Durée:</strong> ${appointment.duration_minutes || 60} minutes</p>
+                        <p style="margin:8px 0;color:#333333;"><strong>Téléphone:</strong> ${appointment.client_phone || "-"}</p>
+                        <p style="margin:8px 0;color:#333333;"><strong>Notes:</strong> ${appointment.notes || "-"}</p>
+                    </div>
+
+                    <p style="font-size:15px;color:#555555;">
+                        Merci,<br>
+                        <strong>Institut S Liuba</strong>
+                    </p>
+                </div>
+
+                <div style="background:#eeeeee;padding:16px;text-align:center;color:#777777;font-size:13px;">
+                    Cet email a été envoyé automatiquement.
+                </div>
+
+            </div>
         </div>
-
-        <p style="font-size:15px; color:#555;">
-          Merci,<br>
-          <strong>Institut S Liuba</strong>
-        </p>
-      </div>
-
-      <div style="background:#eeeeee; padding:16px; text-align:center; color:#777; font-size:13px;">
-        Cet email a été envoyé automatiquement.
-      </div>
-    </div>
-  </div>
-  `;
+    `;
 }
 
 async function sendMail({ to, subject, text, html }) {
@@ -285,9 +295,99 @@ ${data.message}
         html
     });
 }
+async function sendReviewRequestEmail(appointment) {
+    const reviewUrl = process.env.GOOGLE_REVIEW_URL;
+
+    if (!reviewUrl) {
+        console.log("GOOGLE_REVIEW_URL manquant");
+        return;
+    }
+
+    await sendMail({
+        to: appointment.client_email,
+        subject: "Merci pour votre visite - Institut S Liuba",
+        text: `Bonjour ${appointment.client_name},
+
+Merci pour votre visite à l'Institut S Liuba.
+
+Si vous avez apprécié votre expérience, vous pouvez laisser un avis Google ici :
+${reviewUrl}
+
+Votre avis compte beaucoup pour nous.
+
+Merci,
+Institut S Liuba`,
+        html: `
+            <div style="font-family:Arial,sans-serif;background:#f7f3ef;padding:30px;">
+                <div style="max-width:600px;margin:auto;background:#ffffff;border-radius:14px;overflow:hidden;">
+
+                    <div style="background:#b68c5a;color:#ffffff;padding:24px;text-align:center;">
+                        <img
+                            src="https://s-liuba.onrender.com/images/Logo_S_Luba.png"
+                            alt="S.Liuba Institut Beauté"
+                            style="display:block;margin:0 auto 15px auto;max-width:120px;height:auto;"
+                        >
+
+                        <h1 style="margin:0;font-size:28px;font-weight:700;color:#ffffff;">
+                            Merci pour votre visite
+                        </h1>
+                    </div>
+
+                    <div style="padding:28px;color:#333;">
+                        <p>Bonjour ${appointment.client_name},</p>
+
+                        <p>Merci pour votre visite à l'Institut S.Liuba.</p>
+
+                        <p>
+                            Si vous avez apprécié votre expérience,
+                            votre avis Google nous aiderait énormément.
+                        </p>
+
+                        <div style="text-align:center;margin:30px 0;">
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0"
+                                   style="margin:0 auto;width:100%;max-width:280px;">
+                                <tr>
+                                    <td align="center" style="background:#b68c5a;border-radius:999px;">
+                                        <a href="${reviewUrl}"
+                                           target="_blank"
+                                           style="
+                                                display:block;
+                                                width:100%;
+                                                box-sizing:border-box;
+                                                padding:16px 20px;
+                                                color:#ffffff;
+                                                text-decoration:none;
+                                                font-weight:700;
+                                                font-size:16px;
+                                                line-height:20px;
+                                                text-align:center;
+                                                border-radius:999px;
+                                                font-family:Arial,sans-serif;
+                                           ">
+                                            ⭐ Laisser un avis Google
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <p>Merci beaucoup pour votre confiance.</p>
+
+                        <p>
+                            À bientôt,<br>
+                            <strong>S.Liuba Institut Beauté</strong>
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        `
+    });
+}
 module.exports = {
     sendAppointmentCreatedEmails,
     sendAppointmentUpdatedEmails,
     sendAppointmentCancelledEmails,
-    sendContactMessageToAdmin
+    sendContactMessageToAdmin,
+    sendReviewRequestEmail
 };
