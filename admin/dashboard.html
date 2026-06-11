@@ -15,7 +15,10 @@
         <div id="dashboardStats">
             Chargement...
         </div>
+        <h2>Recherche client / RDV</h2>
 
+        <input type="text" id="appointmentSearch" placeholder="Rechercher par nom, téléphone, email ou prestation"
+            style="width:100%;padding:10px;margin:10px 0;">
         <h2>Rendez-vous</h2>
         <div id="appointmentsList">Chargement des RDV...</div>
 
@@ -36,6 +39,42 @@
         </form>
 
         <div id="servicesList">Chargement des services...</div>
+
+        <h2 id="blockedSlotsToggle" style="cursor:pointer;">
+            Jours et horaires bloqués ▼
+        </h2>
+
+        <div id="blockedSlotsContent" style="display:none;">
+
+            <form id="blockedSlotForm">
+                <label>Date début :</label>
+                <input type="date" id="blockedStartDate" required>
+
+                <label>Date fin :</label>
+                <input type="date" id="blockedEndDate">
+
+                <label>Heure début :</label>
+                <input type="time" id="blockedStartTime">
+
+                <label>Heure fin :</label>
+                <input type="time" id="blockedEndTime">
+
+                <input type="text" id="blockedReason" placeholder="Raison">
+                <input type="text" id="blockedMessage" placeholder="Message affiché au client">
+
+                <button type="submit">Bloquer</button>
+            </form>
+
+            <p>
+                Laisse les heures vides pour bloquer toute la journée.
+                Si tu mets une heure début et une heure fin, tous les créneaux entre les deux seront bloqués.
+            </p>
+
+            <div id="blockedSlotsList">
+                Chargement des blocages...
+            </div>
+
+        </div>
 
         <h2 id="blockedClientsToggle" style="cursor:pointer;">
             Clients bloqués ▼
@@ -58,6 +97,8 @@
         <div id="historyAppointments">
             Chargement de l'historique...
         </div>
+
+
         <script src="./js/admin.js"></script>
     </body>
 

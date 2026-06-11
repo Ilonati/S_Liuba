@@ -92,6 +92,9 @@ if (logoutBtn) {
 }
 
 const appointmentsList = document.getElementById("appointmentsList");
+const appointmentSearch = document.getElementById("appointmentSearch");
+
+let allAppointments = [];
 const historyAppointments = document.getElementById("historyAppointments");
 const historyToggle = document.getElementById("historyToggle");
 
@@ -131,90 +134,78 @@ async function loadAppointments() {
         });
 
         const appointments = await response.json();
-        const activeAppointments = appointments.filter(
-            (rdv) =>
-                rdv.status !== "completed" &&
-                rdv.status !== "cancelled" &&
-                rdv.status !== "no_show"
-        );
-
-        const historyRdvs = appointments.filter(
-            (rdv) =>
-                rdv.status === "completed" ||
-                rdv.status === "cancelled" ||
-                rdv.status === "no_show"
-        );
 
         if (!response.ok) {
             appointmentsList.textContent = "Impossible de charger les RDV";
             return;
         }
 
-        if (!activeAppointments.length) {
-            appointmentsList.textContent =
-                "Aucun rendez-vous actif pour le moment.";
-        } else {
+        allAppointments = appointments;
 
-            appointmentsList.innerHTML =
-                activeAppointments.map((rdv) => `
-        <div style="border:1px solid #ddd; padding:12px; margin:10px 0;">
-            <strong>${rdv.client_name}</strong><br>
-
-            ${rdv.service_title}<br>
-${rdv.notes ? `Note: ${rdv.notes}<br>` : ""}
-           ${formatAdminDate(rdv.appointment_date)} à ${formatAdminTime(rdv.appointment_time)}<br>
-
-            Statut:
-            <strong>${getStatusLabel(rdv.status)}</strong>
-            <br><br>
-            <button onclick="editAppointment(${rdv.id})"> Modifier </button>
-
-            <button onclick="updateAppointmentStatus(${rdv.id}, 'confirmed')">
-                Confirmer
-            </button>
-
-            <button onclick="updateAppointmentStatus(${rdv.id}, 'cancelled')">
-                Annuler
-            </button>
-
-            <button onclick="updateAppointmentStatus(${rdv.id}, 'completed')">
-                Terminé
-            </button>
-
-            <button onclick="updateAppointmentStatus(${rdv.id}, 'no_show')">
-                Absent
-            </button>
-        </div>
-    `).join("");
-
-        }
-
-        if (historyAppointments) {
-
-            historyAppointments.innerHTML =
-                historyRdvs.map((rdv) => `
-        <div style="border:1px solid #ccc;
-                    padding:12px;
-                    margin:10px 0;
-                    background:#f8f8f8;">
-
-            <strong>${rdv.client_name}</strong><br>
-
-            ${rdv.service_title}<br>
-${rdv.notes ? `Note: ${rdv.notes}<br>` : ""}
-           ${formatAdminDate(rdv.appointment_date)} à ${formatAdminTime(rdv.appointment_time)}<br>
-
-            Statut:
-            <strong>${getStatusLabel(rdv.status)}</strong>
-
-        </div>
-    `).join("");
-
-        }
+        renderAppointments(appointments);
 
     } catch (error) {
         console.error(error);
         appointmentsList.textContent = "Erreur serveur";
+    }
+}
+
+function renderAppointments(appointments) {
+    const activeAppointments = appointments.filter(
+        (rdv) =>
+            rdv.status !== "completed" &&
+            rdv.status !== "cancelled" &&
+            rdv.status !== "no_show"
+    );
+
+    const historyRdvs = appointments.filter(
+        (rdv) =>
+            rdv.status === "completed" ||
+            rdv.status === "cancelled" ||
+            rdv.status === "no_show"
+    );
+
+    if (!activeAppointments.length) {
+        appointmentsList.textContent =
+            "Aucun rendez-vous actif pour le moment.";
+    } else {
+        appointmentsList.innerHTML =
+            activeAppointments.map((rdv) => `
+                <div style="border:1px solid #ddd; padding:12px; margin:10px 0;">
+                    <strong>${rdv.client_name}</strong><br>
+                    ${rdv.service_title}<br>
+                    ${rdv.notes ? `<strong>Note:</strong> ${rdv.notes}<br>` : ""}
+                    ${formatAdminDate(rdv.appointment_date)} à ${formatAdminTime(rdv.appointment_time)}<br>
+                    Statut: <strong>${getStatusLabel(rdv.status)}</strong><br><br>
+
+                    <button onclick="editAppointment(${rdv.id})">Modifier</button>
+                    <button onclick="updateAppointmentStatus(${rdv.id}, 'confirmed')">Confirmer</button>
+                    <button onclick="updateAppointmentStatus(${rdv.id}, 'cancelled')">Annuler</button>
+                    <button onclick="updateAppointmentStatus(${rdv.id}, 'completed')">Terminé</button>
+                    <button onclick="updateAppointmentStatus(${rdv.id}, 'no_show')">Absent</button>
+                    <button onclick="showClientFile('${rdv.client_email}')">Fiche client</button>
+                </div>
+            `).join("");
+    }
+
+    if (historyAppointments) {
+        if (!historyRdvs.length) {
+            historyAppointments.textContent =
+                "Aucun rendez-vous dans l'historique.";
+        } else {
+            historyAppointments.innerHTML =
+                historyRdvs.map((rdv) => `
+                    <div style="border:1px solid #ccc; padding:12px; margin:10px 0; background:#f8f8f8;">
+                        <strong>${rdv.client_name}</strong><br>
+                        ${rdv.service_title}<br>
+                        ${rdv.notes ? `<strong>Note:</strong> ${rdv.notes}<br>` : ""}
+                        ${formatAdminDate(rdv.appointment_date)} à ${formatAdminTime(rdv.appointment_time)}<br>
+                        Statut: <strong>${getStatusLabel(rdv.status)}</strong><br><br>
+
+                        <button onclick="showClientFile('${rdv.client_email}')">Fiche client</button>
+                    </div>
+                `).join("");
+        }
     }
 }
 
@@ -247,7 +238,7 @@ async function updateAppointmentStatus(id, status) {
             return;
         }
 
-        loadAppointments();
+        await loadAppointments();
         loadDashboard();
 
     } catch (error) {
@@ -255,7 +246,6 @@ async function updateAppointmentStatus(id, status) {
         alert("Erreur serveur");
     }
 }
-
 function getStatusLabel(status) {
     const labels = {
         pending: "En attente",
@@ -611,6 +601,8 @@ async function editAppointment(id) {
     }
 }
 
+
+
 // blockedClient
 const blockedClientForm = document.getElementById("blockedClientForm");
 const blockedClientsList = document.getElementById("blockedClientsList");
@@ -765,3 +757,240 @@ async function unblockClient(id) {
 }
 
 loadBlockedClients();
+
+// blockedSlot
+
+const blockedSlotForm = document.getElementById("blockedSlotForm");
+const blockedSlotsList = document.getElementById("blockedSlotsList");
+const blockedSlotsToggle = document.getElementById("blockedSlotsToggle");
+const blockedSlotsContent = document.getElementById("blockedSlotsContent");
+
+if (blockedSlotsToggle && blockedSlotsContent) {
+    blockedSlotsContent.style.display = "none";
+
+    blockedSlotsToggle.onclick = () => {
+        const isClosed = blockedSlotsContent.style.display === "none";
+
+        blockedSlotsContent.style.display = isClosed ? "block" : "none";
+        blockedSlotsToggle.textContent = isClosed
+            ? "Jours et horaires bloqués ▲"
+            : "Jours et horaires bloqués ▼";
+    };
+}
+
+function formatDateToApi(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+function getHoursRange(startTime, endTime) {
+    if (!startTime && !endTime) return [null];
+
+    if (startTime && !endTime) {
+        return [`${startTime}:00`];
+    }
+
+    if (!startTime && endTime) {
+        alert("Merci d'indiquer aussi l'heure début.");
+        return null;
+    }
+
+    const startHour = Number(startTime.split(":")[0]);
+    const endHour = Number(endTime.split(":")[0]);
+
+    if (endHour < startHour) {
+        alert("L'heure fin ne peut pas être avant l'heure début.");
+        return null;
+    }
+
+    const hours = [];
+
+    for (let hour = startHour; hour <= endHour; hour++) {
+        hours.push(`${String(hour).padStart(2, "0")}:00:00`);
+    }
+
+    return hours;
+}
+
+if (blockedSlotForm) {
+    blockedSlotForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const token = localStorage.getItem("adminToken");
+
+        const startDateValue = document.getElementById("blockedStartDate").value;
+        const endDateValue = document.getElementById("blockedEndDate").value;
+        const startTime = document.getElementById("blockedStartTime").value;
+        const endTime = document.getElementById("blockedEndTime").value;
+        const reason = document.getElementById("blockedReason").value.trim();
+        const message = document.getElementById("blockedMessage").value.trim();
+
+        if (!startDateValue) {
+            alert("Merci de choisir une date début.");
+            return;
+        }
+
+        const startDate = new Date(startDateValue);
+        const endDate = endDateValue ? new Date(endDateValue) : new Date(startDateValue);
+
+        if (endDate < startDate) {
+            alert("La date fin ne peut pas être avant la date début.");
+            return;
+        }
+
+        const hoursToBlock = getHoursRange(startTime, endTime);
+
+        if (!hoursToBlock) return;
+
+        try {
+            let currentDate = new Date(startDate);
+
+            while (currentDate <= endDate) {
+                const dateToBlock = formatDateToApi(currentDate);
+
+                for (const blockTime of hoursToBlock) {
+                    const response = await fetch(`${API_URL}/api/blocked-slots`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            block_date: dateToBlock,
+                            block_time: blockTime,
+                            reason: reason || null,
+                            message: message || null,
+                            is_active: true
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        alert(result.message || `Erreur blocage pour le ${dateToBlock}`);
+                        return;
+                    }
+                }
+
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            blockedSlotForm.reset();
+
+            await loadBlockedSlots();
+
+            blockedSlotsContent.style.display = "block";
+            blockedSlotsToggle.textContent = "Jours et horaires bloqués ▲";
+
+            alert("Blocage ajouté avec succès.");
+
+        } catch (error) {
+            console.error(error);
+            alert("Erreur serveur");
+        }
+    });
+}
+
+async function loadBlockedSlots() {
+    if (!blockedSlotsList) return;
+
+    const token = localStorage.getItem("adminToken");
+
+    try {
+        const response = await fetch(`${API_URL}/api/blocked-slots/admin`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        const blocks = await response.json();
+
+        if (!response.ok) {
+            blockedSlotsList.textContent = "Impossible de charger les blocages.";
+            return;
+        }
+
+        if (!blocks.length) {
+            blockedSlotsList.textContent = "Aucun jour ou horaire bloqué.";
+            return;
+        }
+
+        blockedSlotsList.innerHTML = blocks.map((block) => `
+            <div style="
+                border:1px solid #ddd;
+                padding:12px;
+                margin:10px 0;
+                border-radius:8px;
+                background:#fafafa;
+            ">
+                <strong>${formatAdminDate(block.block_date)}</strong><br>
+                Heure: ${block.block_time ? formatAdminTime(block.block_time) : "Toute la journée"}<br>
+                Raison: ${block.reason || "-"}<br>
+                Message client: ${block.message || "-"}<br><br>
+
+                <button onclick="deleteBlockedSlot(${block.id})">
+                    Supprimer
+                </button>
+            </div>
+        `).join("");
+
+    } catch (error) {
+        console.error(error);
+        blockedSlotsList.textContent = "Erreur serveur";
+    }
+}
+
+async function deleteBlockedSlot(id) {
+    const token = localStorage.getItem("adminToken");
+
+    if (!confirm("Supprimer ce blocage ?")) return;
+
+    try {
+        const response = await fetch(`${API_URL}/api/blocked-slots/${id}`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            alert(result.message || "Erreur suppression blocage");
+            return;
+        }
+
+        await loadBlockedSlots();
+
+    } catch (error) {
+        console.error(error);
+        alert("Erreur serveur");
+    }
+}
+
+loadBlockedSlots();
+
+if (appointmentSearch) {
+    appointmentSearch.addEventListener("input", () => {
+        const query = appointmentSearch.value.toLowerCase().trim();
+
+        if (!query) {
+            renderAppointments(allAppointments);
+            return;
+        }
+
+        const filtered = allAppointments.filter((rdv) => {
+            return (
+                (rdv.client_name || "").toLowerCase().includes(query) ||
+                (rdv.client_email || "").toLowerCase().includes(query) ||
+                (rdv.client_phone || "").toLowerCase().includes(query) ||
+                (rdv.service_title || "").toLowerCase().includes(query)
+            );
+        });
+
+        renderAppointments(filtered);
+    });
+}
