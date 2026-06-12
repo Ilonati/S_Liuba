@@ -93,7 +93,9 @@ if (logoutBtn) {
 
 const appointmentsList = document.getElementById("appointmentsList");
 const appointmentSearch = document.getElementById("appointmentSearch");
-
+const clientFileBox = document.getElementById("clientFileBox");
+const planningDate = document.getElementById("planningDate");
+const dailyPlanning = document.getElementById("dailyPlanning");
 let allAppointments = [];
 const historyAppointments = document.getElementById("historyAppointments");
 const historyToggle = document.getElementById("historyToggle");
@@ -143,7 +145,7 @@ async function loadAppointments() {
         allAppointments = appointments;
 
         renderAppointments(appointments);
-
+        renderDailyPlanning(planningDate ? planningDate.value : null);
     } catch (error) {
         console.error(error);
         appointmentsList.textContent = "Erreur serveur";
@@ -992,5 +994,292 @@ if (appointmentSearch) {
         });
 
         renderAppointments(filtered);
+    });
+}
+// ClientFile
+function showClientFile(clientEmail) {
+    if (!clientFileBox) return;
+
+    const clientAppointments = allAppointments.filter((rdv) =>
+        rdv.client_email === clientEmail
+    );
+
+    if (!clientAppointments.length) {
+        alert("Aucun historique trouvé pour ce client.");
+        return;
+    }
+
+    const client = clientAppointments[0];
+
+    clientFileBox.style.display = "block";
+
+    clientFileBox.innerHTML = `
+        <div style="
+            border:2px solid #b68c5a;
+            padding:16px;
+            margin:15px 0;
+            border-radius:10px;
+            background:#fffaf4;
+        ">
+            <button onclick="closeClientFile()" style="float:right;">
+                Fermer
+            </button>
+
+            <h3>Fiche client</h3>
+
+            <p><strong>Nom:</strong> ${client.client_name}</p>
+            <p><strong>Email:</strong> ${client.client_email || "-"}</p>
+            <p><strong>Téléphone:</strong> ${client.client_phone || "-"}</p>
+
+            <h4>Historique des rendez-vous</h4>
+
+            ${clientAppointments.map((rdv) => `
+                <div style="
+                    border:1px solid #ddd;
+                    padding:10px;
+                    margin:8px 0;
+                    background:#ffffff;
+                    border-radius:8px;
+                ">
+                    <strong>
+                        ${formatAdminDate(rdv.appointment_date)}
+                        à
+                        ${formatAdminTime(rdv.appointment_time)}
+                    </strong><br>
+
+                    ${rdv.service_title}<br>
+
+                    ${rdv.notes ? `<strong>Note:</strong> ${rdv.notes}<br>` : ""}
+
+                    Statut: ${getStatusLabel(rdv.status)}
+                </div>
+            `).join("")}
+        </div>
+    `;
+
+    clientFileBox.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+}
+
+function closeClientFile() {
+    if (!clientFileBox) return;
+
+    clientFileBox.style.display = "none";
+    clientFileBox.innerHTML = "";
+}
+
+// Planning
+
+function renderDailyPlanning(dateValue) {
+    if (!dailyPlanning) return;
+
+    const selectedDate = dateValue || formatDateToApi(new Date());
+
+    const dayAppointments = allAppointments
+        .filter((rdv) => {
+            const rdvDate = formatDateForInput(rdv.appointment_date);
+            return rdvDate === selectedDate;
+        })
+        .sort((a, b) => {
+            return a.appointment_time.localeCompare(b.appointment_time);
+        });
+
+    if (!dayAppointments.length) {
+        dailyPlanning.innerHTML =
+            "Aucun rendez-vous pour cette journée.";
+        return;
+    }
+
+    dailyPlanning.innerHTML = dayAppointments.map((rdv) => `
+        <div style="
+            border:1px solid #ddd;
+            padding:12px;
+            margin:10px 0;
+            border-radius:8px;
+            background:#ffffff;
+        ">
+            <strong>${formatAdminTime(rdv.appointment_time)}</strong><br>
+            ${rdv.client_name}<br>
+            ${rdv.service_title}<br>
+            ${rdv.notes ? `<strong>Note:</strong> ${rdv.notes}<br>` : ""}
+            Statut: ${getStatusLabel(rdv.status)}
+        </div>
+    `).join("");
+}
+
+if (planningDate) {
+    planningDate.value = formatDateToApi(new Date());
+
+    planningDate.addEventListener("change", () => {
+        renderDailyPlanning(planningDate.value);
+    });
+}
+
+// Créer un RDV admin
+const adminAppointmentForm = document.getElementById("adminAppointmentForm");
+
+if (adminAppointmentForm) {
+    adminAppointmentForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const token = localStorage.getItem("adminToken");
+
+        const data = {
+            client_name: document.getElementById("adminClientName").value.trim(),
+            client_email: document.getElementById("adminClientEmail").value.trim(),
+            client_phone: document.getElementById("adminClientPhone").value.trim(),
+            service_title: document.getElementById("adminServiceTitle").value.trim(),
+            appointment_date: document.getElementById("adminAppointmentDate").value,
+            appointment_time: document.getElementById("adminAppointmentTime").value + ":00",
+            duration_minutes: Number(document.getElementById("adminDuration").value) || 60,
+            status: "confirmed",
+            source: "admin",
+            notes: document.getElementById("adminNotes").value.trim()
+        };
+
+        try {
+            const response = await fetch(`${API_URL}/api/appointments`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                alert(result.message || "Erreur création RDV");
+                return;
+            }
+
+            alert("RDV créé avec succès");
+
+            adminAppointmentForm.reset();
+
+            await loadAppointments();
+            loadDashboard();
+
+        } catch (error) {
+            console.error(error);
+            alert("Erreur serveur");
+        }
+    });
+}
+
+// forgotPassword
+const forgotPasswordForm =
+    document.getElementById("forgotPasswordForm");
+
+const forgotPasswordMessage =
+    document.getElementById("forgotPasswordMessage");
+
+if (forgotPasswordForm) {
+    forgotPasswordForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const email =
+            document.getElementById("forgotEmail").value.trim();
+
+        try {
+            const response = await fetch(
+                `${API_URL}/api/admin/forgot-password`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ email })
+                }
+            );
+
+            const result = await response.json();
+
+            forgotPasswordMessage.textContent =
+                result.message || "Demande envoyée.";
+
+        } catch (error) {
+            console.error(error);
+
+            forgotPasswordMessage.textContent =
+                "Erreur serveur.";
+        }
+    });
+}
+
+// resetPassword
+
+const resetPasswordForm =
+    document.getElementById("resetPasswordForm");
+
+const resetPasswordMessage =
+    document.getElementById("resetPasswordMessage");
+
+if (resetPasswordForm) {
+    resetPasswordForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get("token");
+
+        const newPassword =
+            document.getElementById("newPassword").value.trim();
+
+        const confirmPassword =
+            document.getElementById("confirmPassword").value.trim();
+
+        if (!token) {
+            resetPasswordMessage.textContent =
+                "Lien invalide ou expiré.";
+            return;
+        }
+
+        if (newPassword.length < 8) {
+            resetPasswordMessage.textContent =
+                "Le mot de passe doit contenir au moins 8 caractères.";
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            resetPasswordMessage.textContent =
+                "Les mots de passe ne correspondent pas.";
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `${API_URL}/api/admin/reset-password`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        token,
+                        newPassword
+                    })
+                }
+            );
+
+            const result = await response.json();
+
+            resetPasswordMessage.textContent =
+                result.message || "Mot de passe modifié.";
+
+            if (response.ok) {
+                setTimeout(() => {
+                    window.location.href = "login.html";
+                }, 2000);
+            }
+
+        } catch (error) {
+            console.error(error);
+
+            resetPasswordMessage.textContent =
+                "Erreur serveur.";
+        }
     });
 }

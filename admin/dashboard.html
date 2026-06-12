@@ -15,12 +15,41 @@
         <div id="dashboardStats">
             Chargement...
         </div>
+        <h2>Planning du jour</h2>
+
+        <input type="date" id="planningDate">
+
+        <div id="dailyPlanning">
+            Chargement du planning...
+        </div>
+
+        <h2>Créer un RDV admin</h2>
+
+        <form id="adminAppointmentForm">
+            <input type="text" id="adminClientName" placeholder="Nom complet" required>
+            <input type="email" id="adminClientEmail" placeholder="Email" required>
+            <input type="text" id="adminClientPhone" placeholder="Téléphone">
+
+            <input type="text" id="adminServiceTitle" placeholder="Prestation" required>
+
+            <input type="date" id="adminAppointmentDate" required>
+            <input type="time" id="adminAppointmentTime" required>
+
+            <input type="number" id="adminDuration" placeholder="Durée en minutes" value="60">
+
+            <textarea id="adminNotes" placeholder="Notes"></textarea>
+
+            <button type="submit">Créer RDV</button>
+        </form>
+
+        <h2>Rendez-vous</h2>
+        <div id="appointmentsList">Chargement des RDV...</div>
         <h2>Recherche client / RDV</h2>
 
         <input type="text" id="appointmentSearch" placeholder="Rechercher par nom, téléphone, email ou prestation"
             style="width:100%;padding:10px;margin:10px 0;">
-        <h2>Rendez-vous</h2>
-        <div id="appointmentsList">Chargement des RDV...</div>
+        <div id="clientFileBox" style="display:none;"></div>
+
 
 
 

@@ -384,10 +384,84 @@ Institut S Liuba`,
         `
     });
 }
+
+async function sendAdminPasswordResetEmail(email, resetLink) {
+    await sendMail({
+        to: email,
+        subject: "Réinitialisation du mot de passe - Institut S Liuba",
+        text: `Bonjour,
+
+Vous avez demandé la réinitialisation de votre mot de passe administrateur.
+
+Cliquez sur ce lien pour créer un nouveau mot de passe :
+${resetLink}
+
+Ce lien est valable pendant 30 minutes.
+
+Si vous n'avez pas demandé cette action, ignorez cet email.
+
+Institut S Liuba`,
+        html: `
+            <div style="font-family:Arial,sans-serif;background:#f7f3ef;padding:30px;">
+                <div style="max-width:600px;margin:auto;background:#ffffff;border-radius:14px;overflow:hidden;">
+                    <div style="background:#b68c5a;color:#ffffff;padding:24px;text-align:center;">
+                        <img
+                            src="https://s-liuba.onrender.com/images/Logo_S_Luba.png"
+                            alt="S.Liuba Institut Beauté"
+                            style="display:block;margin:0 auto 15px auto;max-width:120px;height:auto;"
+                        >
+                        <h1 style="margin:0;color:#ffffff;">
+                            Réinitialisation du mot de passe
+                        </h1>
+                    </div>
+
+                    <div style="padding:28px;color:#333333;">
+                        <p>Bonjour,</p>
+
+                        <p>
+                            Vous avez demandé la réinitialisation de votre mot de passe administrateur.
+                        </p>
+
+                        <div style="text-align:center;margin:30px 0;">
+                            <a href="${resetLink}"
+                               target="_blank"
+                               style="
+                                    display:inline-block;
+                                    padding:14px 22px;
+                                    background:#b68c5a;
+                                    color:#ffffff;
+                                    text-decoration:none;
+                                    border-radius:999px;
+                                    font-weight:bold;
+                               ">
+                                Créer un nouveau mot de passe
+                            </a>
+                        </div>
+
+                        <p>
+                            Ce lien est valable pendant 30 minutes.
+                        </p>
+
+                        <p>
+                            Si vous n'avez pas demandé cette action,
+                            vous pouvez ignorer cet email.
+                        </p>
+
+                        <p>
+                            Merci,<br>
+                            <strong>Institut S Liuba</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        `
+    });
+}
 module.exports = {
     sendAppointmentCreatedEmails,
     sendAppointmentUpdatedEmails,
     sendAppointmentCancelledEmails,
     sendContactMessageToAdmin,
-    sendReviewRequestEmail
+    sendReviewRequestEmail,
+    sendAdminPasswordResetEmail
 };
