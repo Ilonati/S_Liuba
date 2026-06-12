@@ -457,11 +457,37 @@ Institut S Liuba`,
         `
     });
 }
+
+async function sendAppointmentReminderEmail(appointment) {
+    const formattedDate = formatFrenchDate(appointment.appointment_date);
+    const formattedTime = formatFrenchTime(appointment.appointment_time);
+
+    await sendMail({
+        to: appointment.client_email,
+        subject: "Rappel de votre rendez-vous - Institut S Liuba",
+        text: `Bonjour ${appointment.client_name},
+
+Nous vous rappelons votre rendez-vous prévu demain.
+
+Prestation: ${appointment.service_title}
+Date: ${formattedDate}
+Heure: ${formattedTime}
+
+À bientôt,
+Institut S Liuba`,
+        html: appointmentHtmlTemplate({
+            title: "Rappel de votre rendez-vous",
+            intro: "Nous vous rappelons votre rendez-vous prévu demain.",
+            appointment
+        })
+    });
+}
 module.exports = {
     sendAppointmentCreatedEmails,
     sendAppointmentUpdatedEmails,
     sendAppointmentCancelledEmails,
     sendContactMessageToAdmin,
     sendReviewRequestEmail,
-    sendAdminPasswordResetEmail
+    sendAdminPasswordResetEmail,
+    sendAppointmentReminderEmail
 };

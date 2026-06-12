@@ -42,7 +42,11 @@ app.use("/api/content-blocks", require("./routes/contentBlockRoutes"));
 app.use("/api/certificates", require("./routes/certificateRoutes"));
 app.use("/api/settings", require("./routes/settingsRoutes"));
 app.use("/api/dashboard", require("./routes/dashboardRoutes"));
-// app.use("/api/content", require("./routes/contentRoutes"));
+
+const reminderService = require("./services/reminderService");
+
+reminderService.startAppointmentReminderCron();
+
 
 
 const PORT = process.env.PORT || 5000;

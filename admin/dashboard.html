@@ -4,130 +4,168 @@
     <head>
         <meta charset="UTF-8">
         <title>Dashboard Admin</title>
+        <link rel="stylesheet" href="./css/dashboard.css">
     </head>
 
     <body>
 
-        <h1>Dashboard Admin</h1>
+        <main class="admin-dashboard">
 
-        <button id="logoutBtn">Déconnexion</button>
+            <div class="dashboard-header">
+                <div>
+                    <h1>Dashboard Admin</h1>
+                    <p>Gestion des rendez-vous, clients et services</p>
+                </div>
 
-        <div id="dashboardStats">
-            Chargement...
-        </div>
-        <h2>Planning du jour</h2>
-
-        <input type="date" id="planningDate">
-
-        <div id="dailyPlanning">
-            Chargement du planning...
-        </div>
-
-        <h2>Créer un RDV admin</h2>
-
-        <form id="adminAppointmentForm">
-            <input type="text" id="adminClientName" placeholder="Nom complet" required>
-            <input type="email" id="adminClientEmail" placeholder="Email" required>
-            <input type="text" id="adminClientPhone" placeholder="Téléphone">
-
-            <input type="text" id="adminServiceTitle" placeholder="Prestation" required>
-
-            <input type="date" id="adminAppointmentDate" required>
-            <input type="time" id="adminAppointmentTime" required>
-
-            <input type="number" id="adminDuration" placeholder="Durée en minutes" value="60">
-
-            <textarea id="adminNotes" placeholder="Notes"></textarea>
-
-            <button type="submit">Créer RDV</button>
-        </form>
-
-        <h2>Rendez-vous</h2>
-        <div id="appointmentsList">Chargement des RDV...</div>
-        <h2>Recherche client / RDV</h2>
-
-        <input type="text" id="appointmentSearch" placeholder="Rechercher par nom, téléphone, email ou prestation"
-            style="width:100%;padding:10px;margin:10px 0;">
-        <div id="clientFileBox" style="display:none;"></div>
-
-
-
-
-        <h2>Messages de contact</h2>
-        <div id="contactMessagesList">Chargement des messages...</div>
-
-        <h2>Services</h2>
-
-        <form id="serviceForm">
-            <input type="text" id="serviceTitle" placeholder="Nom du service" required>
-            <input type="text" id="serviceCategory" placeholder="Catégorie" required>
-            <input type="number" id="serviceDuration" placeholder="Durée en minutes" required>
-            <input type="number" id="servicePrice" placeholder="Prix" required>
-            <textarea id="serviceDescription" placeholder="Description"></textarea>
-            <button type="submit">Ajouter service</button>
-        </form>
-
-        <div id="servicesList">Chargement des services...</div>
-
-        <h2 id="blockedSlotsToggle" style="cursor:pointer;">
-            Jours et horaires bloqués ▼
-        </h2>
-
-        <div id="blockedSlotsContent" style="display:none;">
-
-            <form id="blockedSlotForm">
-                <label>Date début :</label>
-                <input type="date" id="blockedStartDate" required>
-
-                <label>Date fin :</label>
-                <input type="date" id="blockedEndDate">
-
-                <label>Heure début :</label>
-                <input type="time" id="blockedStartTime">
-
-                <label>Heure fin :</label>
-                <input type="time" id="blockedEndTime">
-
-                <input type="text" id="blockedReason" placeholder="Raison">
-                <input type="text" id="blockedMessage" placeholder="Message affiché au client">
-
-                <button type="submit">Bloquer</button>
-            </form>
-
-            <p>
-                Laisse les heures vides pour bloquer toute la journée.
-                Si tu mets une heure début et une heure fin, tous les créneaux entre les deux seront bloqués.
-            </p>
-
-            <div id="blockedSlotsList">
-                Chargement des blocages...
+                <button id="logoutBtn" class="logout-btn">
+                    Déconnexion
+                </button>
+            </div>
+            <div id="dashboardStats">
+                Chargement...
             </div>
 
-        </div>
+            <h2>Planning du jour</h2>
 
-        <h2 id="blockedClientsToggle" style="cursor:pointer;">
-            Clients bloqués ▼
-        </h2>
+            <input type="date" id="planningDate">
 
-        <div id="blockedClientsContent" style="display:none;">
-            <form id="blockedClientForm">
-                <input type="email" id="blockedClientEmail" placeholder="Email du client">
-                <input type="text" id="blockedClientPhone" placeholder="Téléphone du client">
-                <input type="text" id="blockedClientReason" placeholder="Raison">
-                <button type="submit">Bloquer client</button>
+            <div id="dailyPlanning">
+                Chargement du planning...
+            </div>
+            <h2 id="weekCalendarToggle" style="cursor:pointer;">
+                Calendrier semaine ▼
+            </h2>
+
+            <div id="weekCalendarContent">
+
+                <div style="display:flex; gap:10px; align-items:center; margin:10px 0;">
+                    <button type="button" id="prevWeekBtn">
+                        ← Semaine précédente
+                    </button>
+
+                    <input type="date" id="weekCalendarDate">
+
+                    <button type="button" id="nextWeekBtn">
+                        Semaine suivante →
+                    </button>
+                </div>
+
+                <div id="weekCalendar"></div>
+
+            </div>
+            <h2>Créer un RDV admin</h2>
+
+            <form id="adminAppointmentForm">
+                <input type="text" id="adminClientName" placeholder="Nom complet" required>
+                <input type="email" id="adminClientEmail" placeholder="Email" required>
+                <input type="text" id="adminClientPhone" placeholder="Téléphone">
+
+                <input type="text" id="adminServiceTitle" placeholder="Prestation" required>
+
+                <input type="date" id="adminAppointmentDate" required>
+                <input type="time" id="adminAppointmentTime" required>
+
+                <input type="number" id="adminDuration" placeholder="Durée en minutes" value="60">
+
+                <textarea id="adminNotes" placeholder="Notes"></textarea>
+
+                <button type="submit">Créer RDV</button>
             </form>
 
-            <div id="blockedClientsList">Chargement des clients bloqués...</div>
-        </div>
-        <h2 id="historyToggle" style="cursor:pointer;">
-            Historique des rendez-vous ▼
-        </h2>
+            <h2>Recherche client / RDV</h2>
 
-        <div id="historyAppointments">
-            Chargement de l'historique...
-        </div>
+            <input type="text" id="appointmentSearch" placeholder="Rechercher par nom, téléphone, email ou prestation"
+                style="width:100%;padding:10px;margin:10px 0;">
+            <div id="clientFileBox" style="display:none;"></div>
+
+            <h2>Rendez-vous</h2>
+            <div id="appointmentsList">Chargement des RDV...</div>
 
 
+
+
+
+            <h2>Messages de contact</h2>
+            <div id="contactMessagesList">Chargement des messages...</div>
+
+            <h2>Services</h2>
+
+            <form id="serviceForm">
+                <input type="text" id="serviceTitle" placeholder="Nom du service" required>
+                <input type="text" id="serviceCategory" placeholder="Catégorie" required>
+                <input type="number" id="serviceDuration" placeholder="Durée en minutes" required>
+                <input type="number" id="servicePrice" placeholder="Prix" required>
+                <textarea id="serviceDescription" placeholder="Description"></textarea>
+                <button type="submit">Ajouter service</button>
+            </form>
+
+            <div id="servicesList">Chargement des services...</div>
+
+            <h2 id="blockedSlotsToggle" style="cursor:pointer;">
+                Jours et horaires bloqués ▼
+            </h2>
+
+            <div id="blockedSlotsContent" style="display:none;">
+
+                <form id="blockedSlotForm">
+                    <label>Date début :</label>
+                    <input type="date" id="blockedStartDate" required>
+
+                    <label>Date fin :</label>
+                    <input type="date" id="blockedEndDate">
+
+                    <label>Heure début :</label>
+                    <input type="time" id="blockedStartTime">
+
+                    <label>Heure fin :</label>
+                    <input type="time" id="blockedEndTime">
+
+                    <input type="text" id="blockedReason" placeholder="Raison">
+                    <input type="text" id="blockedMessage" placeholder="Message affiché au client">
+
+                    <button type="submit">Bloquer</button>
+                </form>
+
+                <p>
+                    Laisse les heures vides pour bloquer toute la journée.
+                    Si tu mets une heure début et une heure fin, tous les créneaux entre les deux seront bloqués.
+                </p>
+
+                <div id="blockedSlotsList">
+                    Chargement des blocages...
+                </div>
+
+            </div>
+
+            <h2 id="blockedClientsToggle" style="cursor:pointer;">
+                Clients bloqués ▼
+            </h2>
+
+            <div id="blockedClientsContent" style="display:none;">
+                <form id="blockedClientForm">
+                    <input type="email" id="blockedClientEmail" placeholder="Email du client">
+                    <input type="text" id="blockedClientPhone" placeholder="Téléphone du client">
+                    <input type="text" id="blockedClientReason" placeholder="Raison">
+                    <button type="submit">Bloquer client</button>
+                </form>
+
+                <div id="blockedClientsList">Chargement des clients bloqués...</div>
+            </div>
+            <h2 id="historyToggle" style="cursor:pointer;">
+                Historique des rendez-vous ▼
+            </h2>
+
+            <div id="historyAppointments">
+                Chargement de l'historique...
+            </div>
+
+            <h2>Statistiques</h2>
+
+            <div id="businessStats">
+                Chargement des statistiques...
+            </div>
+
+        </main>
         <script src="./js/admin.js"></script>
     </body>
 

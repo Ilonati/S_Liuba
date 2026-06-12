@@ -37,6 +37,7 @@ if (loginForm) {
 }
 
 const dashboardStats = document.getElementById("dashboardStats");
+const businessStats = document.getElementById("businessStats");
 
 async function loadDashboard() {
     if (!dashboardStats) return;
@@ -74,6 +75,18 @@ async function loadDashboard() {
         <li>Clients bloqués: ${stats.blockedClients}</li>
       </ul>
     `;
+        if (businessStats) {
+            businessStats.innerHTML = `
+        <div style="border:1px solid #ddd; padding:15px; margin:10px 0;">
+            <p><strong>RDV ce mois:</strong> ${stats.monthAppointments}</p>
+            <p><strong>RDV terminés:</strong> ${stats.completedAppointments}</p>
+            <p><strong>RDV annulés:</strong> ${stats.cancelledAppointments}</p>
+            <p><strong>Clients uniques:</strong> ${stats.uniqueClients}</p>
+            <p><strong>Service le plus demandé:</strong> ${stats.topService} (${stats.topServiceCount})</p>
+            <p><strong>Taux d’annulation:</strong> ${stats.cancellationRate}%</p>
+        </div>
+    `;
+        }
     } catch (error) {
         console.error(error);
         dashboardStats.textContent = "Erreur serveur";
@@ -96,6 +109,12 @@ const appointmentSearch = document.getElementById("appointmentSearch");
 const clientFileBox = document.getElementById("clientFileBox");
 const planningDate = document.getElementById("planningDate");
 const dailyPlanning = document.getElementById("dailyPlanning");
+const weekCalendarDate = document.getElementById("weekCalendarDate");
+const weekCalendarToggle = document.getElementById("weekCalendarToggle");
+const weekCalendarContent = document.getElementById("weekCalendarContent");
+const weekCalendar = document.getElementById("weekCalendar");
+const prevWeekBtn = document.getElementById("prevWeekBtn");
+const nextWeekBtn = document.getElementById("nextWeekBtn");
 let allAppointments = [];
 const historyAppointments = document.getElementById("historyAppointments");
 const historyToggle = document.getElementById("historyToggle");
@@ -122,7 +141,28 @@ if (historyToggle && historyAppointments) {
 
     });
 }
+if (weekCalendarToggle && weekCalendarContent) {
 
+    weekCalendarContent.style.display = "none";
+
+    weekCalendarToggle.addEventListener("click", () => {
+
+        if (weekCalendarContent.style.display === "none") {
+
+            weekCalendarContent.style.display = "block";
+
+            weekCalendarToggle.textContent =
+                "Calendrier semaine ▲";
+
+        } else {
+
+            weekCalendarContent.style.display = "none";
+
+            weekCalendarToggle.textContent =
+                "Calendrier semaine ▼";
+        }
+    });
+}
 async function loadAppointments() {
     if (!appointmentsList) return;
 
@@ -146,6 +186,7 @@ async function loadAppointments() {
 
         renderAppointments(appointments);
         renderDailyPlanning(planningDate ? planningDate.value : null);
+        renderWeekCalendar(weekCalendarDate ? weekCalendarDate.value : null);
     } catch (error) {
         console.error(error);
         appointmentsList.textContent = "Erreur serveur";
@@ -1116,7 +1157,180 @@ if (planningDate) {
         renderDailyPlanning(planningDate.value);
     });
 }
+const WEEK_DAYS = [
+    "Lundi",
+    "Mardi",
+    "Mercredi",
+    "Jeudi",
+    "Vendredi",
+    "Samedi"
+];
 
+const CALENDAR_HOURS = [
+    "09:00:00",
+    "10:00:00",
+    "11:00:00",
+    "12:00:00",
+    "13:00:00",
+    "14:00:00",
+    "15:00:00",
+    "16:00:00",
+    "17:00:00",
+    "18:00:00",
+    "19:00:00"
+];
+
+function getMonday(date) {
+    const current = new Date(date);
+    const day = current.getDay();
+
+    const diff = current.getDate() - day + (day === 0 ? -6 : 1);
+
+    return new Date(current.setDate(diff));
+}
+
+function addDays(date, days) {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+}
+
+function renderWeekCalendar(dateValue) {
+    if (!weekCalendar) return;
+
+    const baseDate = dateValue ? new Date(dateValue) : new Date();
+    const monday = getMonday(baseDate);
+
+    const weekDates = WEEK_DAYS.map((_, index) =>
+        addDays(monday, index)
+    );
+
+    weekCalendar.innerHTML = `
+        <div style="
+            overflow-x:auto;
+            border:1px solid #ddd;
+            border-radius:10px;
+            background:#fff;
+        ">
+            <table style="
+                width:100%;
+                min-width:900px;
+                border-collapse:collapse;
+                font-family:Arial,sans-serif;
+            ">
+                <thead>
+                    <tr>
+                        <th style="border:1px solid #ddd;padding:10px;background:#f7f3ef;">
+                            Heure
+                        </th>
+
+                        ${weekDates.map((date, index) => `
+                            <th style="border:1px solid #ddd;padding:10px;background:#f7f3ef;">
+                                ${WEEK_DAYS[index]}<br>
+                                <small>${formatAdminDate(date)}</small>
+                            </th>
+                        `).join("")}
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${CALENDAR_HOURS.map((hour) => `
+                        <tr>
+                            <td style="
+                                border:1px solid #ddd;
+                                padding:10px;
+                                font-weight:bold;
+                                background:#fafafa;
+                                width:90px;
+                                text-align:center;
+                            ">
+                                ${formatAdminTime(hour)}
+                            </td>
+
+                            ${weekDates.map((date) => {
+        const dateApi = formatDateToApi(date);
+
+        const rdv = allAppointments.find((item) => {
+            const itemDate =
+                formatDateForInput(item.appointment_date);
+
+            return (
+                itemDate === dateApi &&
+                item.appointment_time === hour &&
+                item.status !== "cancelled" &&
+                item.status !== "no_show"
+            );
+        });
+
+        if (!rdv) {
+            return `
+                                        <td style="
+                                            border:1px solid #ddd;
+                                            padding:8px;
+                                            height:80px;
+                                            vertical-align:top;
+                                            color:#aaa;
+                                            text-align:center;
+                                        ">
+                                            —
+                                        </td>
+                                    `;
+        }
+
+        return `
+                                    <td style="
+                                        border:1px solid #ddd;
+                                        padding:8px;
+                                        height:80px;
+                                        vertical-align:top;
+                                        background:#fffaf4;
+                                    ">
+                                        <strong>${rdv.client_name}</strong><br>
+                                        <small>${rdv.service_title}</small><br>
+                                        ${rdv.notes ? `<small><strong>Note:</strong> ${rdv.notes}</small><br>` : ""}
+                                        <small>Statut: ${getStatusLabel(rdv.status)}</small><br>
+
+                                        <button onclick="showClientFile('${rdv.client_email}')">
+                                            Fiche
+                                        </button>
+                                    </td>
+                                `;
+    }).join("")}
+                        </tr>
+                    `).join("")}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+if (weekCalendarDate) {
+    weekCalendarDate.value = formatDateToApi(new Date());
+
+    weekCalendarDate.addEventListener("change", () => {
+        renderWeekCalendar(weekCalendarDate.value);
+    });
+}
+
+if (prevWeekBtn && weekCalendarDate) {
+    prevWeekBtn.addEventListener("click", () => {
+        const current = new Date(weekCalendarDate.value);
+        current.setDate(current.getDate() - 7);
+
+        weekCalendarDate.value = formatDateToApi(current);
+        renderWeekCalendar(weekCalendarDate.value);
+    });
+}
+
+if (nextWeekBtn && weekCalendarDate) {
+    nextWeekBtn.addEventListener("click", () => {
+        const current = new Date(weekCalendarDate.value);
+        current.setDate(current.getDate() + 7);
+
+        weekCalendarDate.value = formatDateToApi(current);
+        renderWeekCalendar(weekCalendarDate.value);
+    });
+}
 // Créer un RDV admin
 const adminAppointmentForm = document.getElementById("adminAppointmentForm");
 

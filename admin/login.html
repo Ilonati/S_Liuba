@@ -4,37 +4,30 @@
     <head>
         <meta charset="UTF-8">
         <title>Admin Login</title>
+        <link rel="stylesheet" href="./css/auth.css">
     </head>
 
     <body>
+        <div class="auth-card">
+            <h1>Connexion Admin</h1>
+            <form id="loginForm">
+                <input type="email" id="email" placeholder="Email" required>
 
-        <h1>Connexion Admin</h1>
+                <input type="password" id="password" placeholder="Mot de passe" required>
 
-        <!-- <form id="loginForm">
-            <input type="email" id="email" placeholder="Email" required>
-            <input type="password" id="password" placeholder="Mot de passe" required>
-            <button type="submit">Se connecter</button>
-        </form>
+                <button type="submit">
+                    Se connecter
+                </button>
+            </form>
 
-        <p id="loginMessage"></p> -->
-        <form id="loginForm">
-            <input type="email" id="email" placeholder="Email" required>
+            <p style="margin-top:15px;">
+                <a href="forgot-password.html">
+                    Mot de passe oublié ?
+                </a>
+            </p>
 
-            <input type="password" id="password" placeholder="Mot de passe" required>
-
-            <button type="submit">
-                Se connecter
-            </button>
-        </form>
-
-        <p style="margin-top:15px;">
-            <a href="forgot-password.html">
-                Mot de passe oublié ?
-            </a>
-        </p>
-
-        <p id="loginMessage"></p>
-
+            <p id="loginMessage"></p>
+        </div>
         <script src="./js/admin.js"></script>
     </body>
 

@@ -44,7 +44,45 @@ async function getDashboardStats() {
         FROM blocked_clients
         WHERE is_active = true
     `);
+    const [[monthAppointments]] = await db.query(`
+    SELECT COUNT(*) AS total
+    FROM appointments
+    WHERE MONTH(appointment_date) = MONTH(CURDATE())
+      AND YEAR(appointment_date) = YEAR(CURDATE())
+`);
 
+    const [[completedAppointments]] = await db.query(`
+    SELECT COUNT(*) AS total
+    FROM appointments
+    WHERE MONTH(appointment_date) = MONTH(CURDATE())
+      AND YEAR(appointment_date) = YEAR(CURDATE())
+      AND status = 'completed'
+`);
+
+    const [[cancelledAppointments]] = await db.query(`
+    SELECT COUNT(*) AS total
+    FROM appointments
+    WHERE MONTH(appointment_date) = MONTH(CURDATE())
+      AND YEAR(appointment_date) = YEAR(CURDATE())
+      AND status = 'cancelled'
+`);
+
+    const [[uniqueClients]] = await db.query(`
+    SELECT COUNT(DISTINCT client_email) AS total
+    FROM appointments
+    WHERE MONTH(appointment_date) = MONTH(CURDATE())
+      AND YEAR(appointment_date) = YEAR(CURDATE())
+`);
+
+    const [[topService]] = await db.query(`
+    SELECT service_title, COUNT(*) AS total
+    FROM appointments
+    WHERE MONTH(appointment_date) = MONTH(CURDATE())
+      AND YEAR(appointment_date) = YEAR(CURDATE())
+    GROUP BY service_title
+    ORDER BY total DESC
+    LIMIT 1
+`);
     return {
         todayAppointments: todayAppointments.total,
         weekAppointments: weekAppointments.total,
@@ -52,8 +90,18 @@ async function getDashboardStats() {
         activeServices: activeServices.total,
         activeFaqs: activeFaqs.total,
         activeCertificates: activeCertificates.total,
-        blockedClients: blockedClients.total
+        blockedClients: blockedClients.total,
+        monthAppointments: monthAppointments.total,
+        completedAppointments: completedAppointments.total,
+        cancelledAppointments: cancelledAppointments.total,
+        uniqueClients: uniqueClients.total,
+        topService: topService?.service_title || "-",
+        topServiceCount: topService?.total || 0,
+        cancellationRate: monthAppointments.total
+            ? Math.round((cancelledAppointments.total / monthAppointments.total) * 100)
+            : 0
     };
+
 }
 
 module.exports = {

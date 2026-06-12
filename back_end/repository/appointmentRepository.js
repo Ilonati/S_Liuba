@@ -144,6 +144,17 @@ async function createHistory(appointmentId, actionType, oldValue, newValue) {
     );
 }
 
+async function getTomorrowAppointments() {
+    const [rows] = await db.query(
+        `SELECT *
+         FROM appointments
+         WHERE appointment_date = DATE_ADD(CURDATE(), INTERVAL 1 DAY)
+           AND status IN ('pending', 'confirmed')`
+    );
+
+    return rows;
+}
+
 module.exports = {
     getAllAppointments,
     getAppointmentById,
@@ -151,5 +162,6 @@ module.exports = {
     createAppointment,
     updateAppointment,
     updateAppointmentStatus,
-    createHistory
+    createHistory,
+    getTomorrowAppointments
 };

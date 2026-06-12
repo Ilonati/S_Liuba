@@ -1,0 +1,233 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f7f3ef;
+    color: #2c2c2c;
+}
+
+.admin-dashboard {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 18px 60px;
+}
+
+.dashboard-header {
+    background: linear-gradient(135deg, #b68c5a, #d8b783);
+    color: white;
+    padding: 28px;
+    border-radius: 18px;
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.dashboard-header h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+.dashboard-header p {
+    margin: 8px 0 0;
+    opacity: 0.95;
+}
+
+.logout-btn,
+button {
+    border: none;
+    background: #b68c5a;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: 0.2s ease;
+}
+
+.logout-btn {
+    background: white;
+    color: #8a663d;
+}
+
+button:hover {
+    transform: translateY(-1px);
+    opacity: 0.9;
+}
+
+h2 {
+    margin-top: 28px;
+    padding: 14px 18px;
+    background: white;
+    border-left: 5px solid #b68c5a;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    font-size: 22px;
+}
+
+#dashboardStats,
+#businessStats,
+#dailyPlanning,
+#appointmentsList,
+#contactMessagesList,
+#servicesList,
+#blockedSlotsContent,
+#blockedClientsContent,
+#historyAppointments,
+#clientFileBox,
+#weekCalendarContent {
+    background: white;
+    padding: 18px;
+    border-radius: 16px;
+    margin: 14px 0 24px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.07);
+}
+
+#dashboardStats ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+#dashboardStats li,
+#businessStats p {
+    background: #fffaf4;
+    padding: 14px;
+    border-radius: 12px;
+    margin: 0;
+    border: 1px solid #ead8c2;
+}
+
+form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin: 14px 0;
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #ddd0c2;
+    border-radius: 12px;
+    font-size: 15px;
+    background: #fffdfb;
+}
+
+textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: #b68c5a;
+    box-shadow: 0 0 0 3px rgba(182, 140, 90, 0.18);
+}
+
+form button {
+    align-self: center;
+}
+
+#appointmentSearch,
+#planningDate,
+#weekCalendarDate {
+    max-width: 420px;
+}
+
+#weekCalendar {
+    overflow-x: auto;
+}
+
+#weekCalendar table {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#weekCalendar th {
+    background: #b68c5a !important;
+    color: white;
+}
+
+#weekCalendar td {
+    background: white;
+}
+
+#weekCalendar td:has(button) {
+    background: #fff7ec !important;
+}
+
+#blockedSlotsToggle,
+#blockedClientsToggle,
+#historyToggle,
+#weekCalendarToggle {
+    cursor: pointer;
+    user-select: none;
+}
+
+#appointmentsList>div,
+#historyAppointments>div,
+#servicesList>div,
+#contactMessagesList>div,
+#blockedSlotsList>div,
+#blockedClientsList>div {
+    border: 1px solid #ead8c2 !important;
+    background: #fffdfb !important;
+    border-radius: 14px !important;
+    padding: 16px !important;
+    margin: 12px 0 !important;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+}
+
+#appointmentsList strong,
+#historyAppointments strong {
+    color: #8a663d;
+}
+
+#clientFileBox>div {
+    border-color: #b68c5a !important;
+    background: #fffaf4 !important;
+}
+
+@media (max-width: 768px) {
+    .admin-dashboard {
+        padding: 18px 12px 40px;
+    }
+
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 22px;
+    }
+
+    .dashboard-header h1 {
+        font-size: 26px;
+    }
+
+    h2 {
+        font-size: 19px;
+    }
+
+    form {
+        grid-template-columns: 1fr;
+    }
+
+    button {
+        width: 100%;
+        margin: 4px 0;
+    }
+
+    #dashboardStats ul {
+        grid-template-columns: 1fr;
+    }
+}
