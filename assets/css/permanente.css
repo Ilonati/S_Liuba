@@ -498,6 +498,7 @@ a {
 
 
 .accordion-content {
+    display: none;
     max-height: 0;
     overflow: hidden;
     opacity: 0;
@@ -505,6 +506,7 @@ a {
 }
 
 .accordion-content.active {
+    display: block;
     max-height: 1000px;
     opacity: 1;
 }

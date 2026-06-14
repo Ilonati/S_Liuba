@@ -85,6 +85,151 @@ if (scrollBtn) {
     });
 }
 
+// images / lightbox
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightbox-img');
+const lightboxCloseBtn = document.getElementById('lightbox-close');
+
+let currentIndex = 0;
+let images = [];
+
+if (lightbox && lightboxImg && lightboxCloseBtn) {
+    const prevBtn = document.createElement('div');
+    const nextBtn = document.createElement('div');
+
+    prevBtn.className = 'lightbox-prev';
+    nextBtn.className = 'lightbox-next';
+    prevBtn.innerHTML = '❮';
+    nextBtn.innerHTML = '❯';
+
+    lightbox.appendChild(prevBtn);
+    lightbox.appendChild(nextBtn);
+
+    window.refreshGalleryImages = function () {
+        images = Array.from(document.querySelectorAll('.gallery-grid img'));
+
+        images.forEach((img, index) => {
+            img.onclick = () => openLightbox(index);
+        });
+    };
+
+    function openLightbox(index) {
+        window.refreshGalleryImages();
+
+        if (!images.length) return;
+
+        currentIndex = index;
+        lightboxImg.src = images[currentIndex].src;
+        lightbox.style.display = 'flex';
+    }
+
+    function showNext() {
+        if (!images.length) return;
+
+        currentIndex = (currentIndex + 1) % images.length;
+        lightboxImg.src = images[currentIndex].src;
+    }
+
+    function showPrev() {
+        if (!images.length) return;
+
+        currentIndex = (currentIndex - 1 + images.length) % images.length;
+        lightboxImg.src = images[currentIndex].src;
+    }
+
+    lightboxCloseBtn.onclick = () => {
+        lightbox.style.display = 'none';
+    };
+
+    lightbox.onclick = (e) => {
+        if (e.target === lightbox) {
+            lightbox.style.display = 'none';
+        }
+    };
+
+    nextBtn.onclick = showNext;
+    prevBtn.onclick = showPrev;
+
+    document.addEventListener('keydown', (e) => {
+        if (lightbox.style.display === 'flex') {
+            if (e.key === 'ArrowRight') showNext();
+            if (e.key === 'ArrowLeft') showPrev();
+            if (e.key === 'Escape') lightbox.style.display = 'none';
+        }
+    });
+
+    window.refreshGalleryImages();
+}
+
+async function loadPageGallery() {
+    const galleryGrid = document.getElementById("pageGalleryGrid");
+    const gallerySection = document.querySelector(".gallery-section");
+
+    if (!galleryGrid || !gallerySection) return;
+
+    const currentCategory = gallerySection.dataset.galleryCategory;
+
+    try {
+        const categoriesResponse = await fetch("http://localhost:5000/api/gallery/categories");
+        const categories = await categoriesResponse.json();
+
+        const category = categories.find(cat =>
+            cat.name === currentCategory
+        );
+
+        if (!category) {
+            console.warn("Catégorie galerie introuvable:", currentCategory);
+
+            if (window.refreshGalleryImages) {
+                window.refreshGalleryImages();
+            }
+
+            return;
+        }
+
+        const galleryResponse = await fetch("http://localhost:5000/api/gallery");
+        const photos = await galleryResponse.json();
+
+        const filteredPhotos = photos.filter(photo =>
+            Number(photo.category_id) === Number(category.id) &&
+            Number(photo.is_active) === 1
+        );
+
+        if (filteredPhotos.length) {
+            galleryGrid.insertAdjacentHTML("beforeend", filteredPhotos.map(photo => `
+                <img src="${photo.image_url}" alt="${photo.title || 'Photo galerie'}">
+            `).join(""));
+        }
+
+        if (window.refreshGalleryImages) {
+            window.refreshGalleryImages();
+        }
+
+    } catch (error) {
+        console.error("Erreur galerie:", error);
+    }
+}
+
+loadPageGallery();
+// accordion-title
+const titles = document.querySelectorAll('.accordion-title');
+titles.forEach(title => {
+    title.addEventListener('click', () => {
+        const content = title.nextElementSibling;
+        const isActive = content.classList.contains('active');
+
+
+        document.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.accordion-title').forEach(t => t.classList.remove('active'));
+
+
+        if (!isActive) {
+            title.classList.add('active');
+            content.classList.add('active');
+        }
+    });
+});
+
 /* Accordion */
 function closeAllMassage(exceptBloc = null) {
     const blocs = document.querySelectorAll('.massage_bloc');
@@ -143,10 +288,12 @@ window.addEventListener('resize', () => {
     }
 });
 
-async function loadMassageServicesFromBackend() {
-    const container = document.querySelector(".container");
+async function loadServicesFromBackend() {
+    const container = document.querySelector(".services-container");
 
     if (!container) return;
+
+    const currentCategory = container.dataset.category;
 
     try {
         const response = await fetch("http://localhost:5000/api/services");
@@ -157,11 +304,11 @@ async function loadMassageServicesFromBackend() {
 
         const services = await response.json();
 
-        const massageServices = services.filter(service =>
-            service.category === "Massage"
+        const filteredServices = services.filter(service =>
+            service.category === currentCategory
         );
 
-        massageServices.forEach(service => {
+        filteredServices.forEach(service => {
             const item = document.createElement("div");
             item.classList.add("massage");
 
@@ -190,8 +337,8 @@ async function loadMassageServicesFromBackend() {
         initMassage();
 
     } catch (error) {
-        console.error("Erreur services massage:", error);
+        console.error("Erreur services:", error);
     }
 }
 
-loadMassageServicesFromBackend();
+loadServicesFromBackend();

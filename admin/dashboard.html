@@ -101,6 +101,32 @@
 
             <div id="servicesList">Chargement des services...</div>
 
+
+            <h2 id="galleryToggle" style="cursor:pointer;">
+                Galerie ▼
+            </h2>
+
+            <div id="galleryContent" style="display:none;">
+
+                <form id="galleryForm">
+                    <select id="galleryCategory" required>
+                        <option value="">Catégorie</option>
+                    </select>
+
+                    <input type="text" id="galleryTitle" placeholder="Titre">
+                    <textarea id="galleryDescription" placeholder="Description"></textarea>
+                    <input type="file" id="galleryImageFile" accept="image/*" required>
+                    <!-- <input type="url" id="galleryImageUrl" placeholder="URL de l'image" required> -->
+
+                    <button type="submit">Ajouter photo</button>
+                </form>
+
+                <div id="galleryList">
+                    Chargement de la galerie...
+                </div>
+
+            </div>
+
             <h2 id="blockedSlotsToggle" style="cursor:pointer;">
                 Jours et horaires bloqués ▼
             </h2>

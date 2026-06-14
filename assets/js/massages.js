@@ -191,10 +191,12 @@ window.addEventListener('resize', () => {
     }
 });
 
-async function loadMassageServicesFromBackend() {
-    const container = document.querySelector(".container");
+async function loadServicesFromBackend() {
+    const container = document.querySelector(".services-container");
 
     if (!container) return;
+
+    const currentCategory = container.dataset.category;
 
     try {
         const response = await fetch("http://localhost:5000/api/services");
@@ -205,11 +207,11 @@ async function loadMassageServicesFromBackend() {
 
         const services = await response.json();
 
-        const massageServices = services.filter(service =>
-            service.category === "Massage"
+        const filteredServices = services.filter(service =>
+            service.category === currentCategory
         );
 
-        massageServices.forEach(service => {
+        filteredServices.forEach(service => {
             const item = document.createElement("div");
             item.classList.add("massage");
 
@@ -238,8 +240,8 @@ async function loadMassageServicesFromBackend() {
         initMassage();
 
     } catch (error) {
-        console.error("Erreur services massage:", error);
+        console.error("Erreur services:", error);
     }
 }
 
-loadMassageServicesFromBackend();
+loadServicesFromBackend();

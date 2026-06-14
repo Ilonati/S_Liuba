@@ -1497,3 +1497,249 @@ if (resetPasswordForm) {
         }
     });
 }
+
+// Galerie
+
+const galleryToggle = document.getElementById("galleryToggle");
+const galleryContent = document.getElementById("galleryContent");
+const galleryForm = document.getElementById("galleryForm");
+const galleryCategory = document.getElementById("galleryCategory");
+const galleryList = document.getElementById("galleryList");
+
+let galleryCategories = [];
+
+if (galleryToggle && galleryContent) {
+    galleryContent.style.display = "none";
+
+    galleryToggle.addEventListener("click", () => {
+        const isClosed = galleryContent.style.display === "none";
+
+        galleryContent.style.display = isClosed ? "block" : "none";
+        galleryToggle.textContent = isClosed ? "Galerie ▲" : "Galerie ▼";
+    });
+}
+
+async function loadGalleryCategories() {
+    if (!galleryCategory) return;
+
+    try {
+        const response = await fetch(`${API_URL}/api/gallery/categories`);
+        const categories = await response.json();
+
+        if (!response.ok) {
+            galleryCategory.innerHTML =
+                `<option value="">Impossible de charger les catégories</option>`;
+            return;
+        }
+
+        galleryCategories = categories;
+
+        galleryCategory.innerHTML =
+            `<option value="">Catégorie</option>` +
+            categories
+                .filter((category) => Number(category.is_active) === 1)
+                .map((category) => `
+                    <option value="${category.id}">
+                        ${category.name}
+                    </option>
+                `).join("");
+
+    } catch (error) {
+        console.error(error);
+        galleryCategory.innerHTML =
+            `<option value="">Erreur serveur</option>`;
+    }
+}
+
+async function loadGalleryItems() {
+    if (!galleryList) return;
+
+    try {
+        const response = await fetch(`${API_URL}/api/gallery`);
+        const items = await response.json();
+
+        if (!response.ok) {
+            galleryList.textContent =
+                "Impossible de charger la galerie.";
+            return;
+        }
+
+        if (!items.length) {
+            galleryList.textContent =
+                "Aucune photo dans la galerie.";
+            return;
+        }
+
+        galleryList.innerHTML = items.map((item) => {
+            const category = galleryCategories.find(
+                (cat) => cat.id === item.category_id
+            );
+
+            return `
+                <div style="
+                    border:1px solid #ddd;
+                    padding:12px;
+                    margin:10px 0;
+                    border-radius:10px;
+                    background:#fffdfb;
+                    display:grid;
+                    grid-template-columns:120px 1fr;
+                    gap:12px;
+                    align-items:start;
+                ">
+                    <img
+                        src="${item.image_url}"
+                        alt="${item.title || "Photo galerie"}"
+                        style="
+                            width:120px;
+                            height:90px;
+                            object-fit:cover;
+                            border-radius:8px;
+                            background:#eee;
+                        "
+                    >
+
+                    <div>
+                        <strong>${item.title || "Sans titre"}</strong><br>
+                        Catégorie: ${category ? category.name : "-"}<br>
+                        Description: ${item.description || "-"}<br>
+                        Actif: ${item.is_active ? "Oui" : "Non"}<br><br>
+
+                        <button onclick="deleteGalleryItem(${item.id})">
+                            Supprimer
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join("");
+
+    } catch (error) {
+        console.error(error);
+        galleryList.textContent = "Erreur serveur";
+    }
+}
+
+if (galleryForm) {
+    galleryForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const token = localStorage.getItem("adminToken");
+
+        const fileInput =
+            document.getElementById("galleryImageFile");
+
+        const file = fileInput.files[0];
+
+        if (!file) {
+            alert("Choisissez une image");
+            return;
+        }
+
+        try {
+
+            const uploadData = new FormData();
+            uploadData.append("file", file);
+
+            const uploadResponse = await fetch(
+                `${API_URL}/api/upload/single`,
+                {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: uploadData
+                }
+            );
+
+
+
+            const uploadResult = await uploadResponse.json();
+
+            if (!uploadResponse.ok) {
+                alert(uploadResult.message);
+                return;
+            }
+
+            if (!uploadResult.file || !uploadResult.file.url) {
+                alert("Erreur upload: URL image introuvable");
+                console.log(uploadResult);
+                return;
+            }
+
+            const imageUrl = `${API_URL}${uploadResult.file.url}`;
+
+            const galleryData = {
+                category_id: document.getElementById("galleryCategory").value,
+                title: document.getElementById("galleryTitle").value,
+                description: document.getElementById("galleryDescription").value,
+                image_url: imageUrl,
+                is_active: true
+            };
+
+
+
+            const response = await fetch(
+                `${API_URL}/api/gallery`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify(galleryData)
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                alert(result.message);
+                return;
+            }
+
+            alert("Photo ajoutée");
+
+            galleryForm.reset();
+
+            loadGalleryItems();
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert("Erreur serveur");
+        }
+
+    });
+}
+async function deleteGalleryItem(id) {
+    const token = localStorage.getItem("adminToken");
+
+    if (!confirm("Supprimer cette photo ?")) return;
+
+    try {
+        const response = await fetch(`${API_URL}/api/gallery/${id}`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            alert(result.message || "Erreur suppression photo");
+            return;
+        }
+
+        await loadGalleryItems();
+
+    } catch (error) {
+        console.error(error);
+        alert("Erreur serveur");
+    }
+}
+
+loadGalleryCategories().then(() => {
+    loadGalleryItems();
+});

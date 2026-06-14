@@ -192,7 +192,148 @@ a {
 }
 
 
+/* PHOTO */
 
+.gallery-section {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.gallery-section h2 {
+    text-align: center;
+    font-family: 'Great Vibes', cursive;
+    font-size: 3rem;
+    margin: 20px 0;
+    color: black;
+}
+
+
+
+/* Lightbox */
+.lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.lightbox-img {
+    max-width: 90%;
+    max-height: 80%;
+    border-radius: 10px;
+}
+
+.close {
+    position: absolute;
+    top: 40px;
+    right: 60px;
+    font-size: 40px;
+    color: white;
+    cursor: pointer;
+}
+
+
+.lightbox-prev,
+.lightbox-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 3rem;
+    color: white;
+    cursor: pointer;
+    padding: 10px 0px;
+    /* background: rgba(0, 0, 0, 0.3); */
+    border-radius: 50%;
+    user-select: none;
+    transition: background 0.3s ease;
+}
+
+.lightbox-prev:hover,
+.lightbox-next:hover {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.lightbox-prev {
+    left: 40px;
+}
+
+.lightbox-next {
+    right: 40px;
+}
+
+
+.lightbox-img {
+    max-width: 90%;
+    max-height: 80%;
+    border-radius: 10px;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
+    transition: transform 0.3s ease;
+}
+
+.lightbox-img:hover {
+    transform: scale(1.05);
+}
+
+
+.accordion-title {
+    text-align: center;
+    font-family: 'Great Vibes', cursive;
+    font-size: 3rem;
+    color: black;
+    margin: 20px 0;
+    cursor: pointer;
+}
+
+.accordion-title::after {
+    content: '+';
+    position: relative;
+    right: -10px;
+    font-size: 2rem;
+    transition: transform 0.3s ease;
+}
+
+.accordion-title.active::after {
+    content: '–';
+    transform: rotate(180deg);
+}
+
+.accordion-title:hover {
+    color: #090979;
+}
+
+
+.accordion-content {
+    display: none;
+    overflow: hidden;
+}
+
+.accordion-content.active {
+    display: block;
+    opacity: 1;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.gallery-grid img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.gallery-grid img:hover {
+    transform: scale(1.05);
+}
 
 /* SCROLL */
 .reveal {
