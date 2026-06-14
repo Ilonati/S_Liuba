@@ -1,4 +1,4 @@
-const API_URL = "http://sliuba-production.up.railway.app";
+const API_URL = "https://sliuba-production.up.railway.app";
 
 const loginForm = document.getElementById("loginForm");
 const loginMessage = document.getElementById("loginMessage");
