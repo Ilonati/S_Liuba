@@ -92,7 +92,31 @@ const serviceOptions = document.querySelectorAll('.service-option');
 
 let selectedService = 'Massage Palmaire';
 let selectedPrice = '35 €';
+let selectedDuration = 60;
+function getDurationFromOption(option) {
+    if (option.dataset.duration) {
+        return Number(option.dataset.duration) || 60;
+    }
 
+    const text = option.textContent;
+
+    const hoursMinutes = text.match(/(\d+)h\s*(\d+)/i);
+    if (hoursMinutes) {
+        return Number(hoursMinutes[1]) * 60 + Number(hoursMinutes[2]);
+    }
+
+    const hours = text.match(/(\d+)h/i);
+    if (hours) {
+        return Number(hours[1]) * 60;
+    }
+
+    const minutes = text.match(/(\d+)\s*min/i);
+    if (minutes) {
+        return Number(minutes[1]);
+    }
+
+    return 60;
+}
 serviceOptions.forEach((option) => {
     option.addEventListener('click', () => {
         serviceOptions.forEach((item) => item.classList.remove('selected'));
@@ -101,6 +125,9 @@ serviceOptions.forEach((option) => {
 
         selectedService = option.dataset.service || 'Service non précisé';
         selectedPrice = option.dataset.price || 'Prix non précisé';
+        selectedDuration = getDurationFromOption(option);
+
+        loadAvailableSlots();
     });
 });
 
@@ -235,7 +262,7 @@ async function loadAvailableSlots() {
 
     try {
         const response = await fetch(
-            `http://localhost:5000/api/slots?date=${dateForApi}`
+            `http://localhost:5000/api/slots?date=${dateForApi}&duration=${selectedDuration}`
         );
 
         const result = await response.json();
@@ -334,7 +361,7 @@ if (bookingForm && successMessage) {
             service_title: selectedService,
             appointment_date: formatDateForApi(selectedDate),
             appointment_time: formatTimeForApi(selectedTime),
-            duration_minutes: 60,
+            duration_minutes: selectedDuration,
             source: "client",
             notes: message
         };
@@ -552,6 +579,8 @@ function createBookingServiceOption(service) {
 
         selectedService = option.dataset.service || "Service non précisé";
         selectedPrice = option.dataset.price || "Prix non précisé";
+        selectedDuration = getDurationFromOption(option);
+        loadAvailableSlots();
     });
 
     return option;
@@ -611,6 +640,8 @@ function selectServiceFromUrl() {
 
                 selectedService = option.dataset.service;
                 selectedPrice = option.dataset.price;
+                selectedDuration = getDurationFromOption(option);
+                loadAvailableSlots();
 
                 const category = option.closest(".service-category");
                 const content = category?.querySelector(".service-category-content");

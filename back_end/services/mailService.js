@@ -43,6 +43,21 @@ function formatFrenchTime(timeValue) {
 function formatAppointmentDetails(appointment) {
     const formattedDate = formatFrenchDate(appointment.appointment_date);
     const formattedTime = formatFrenchTime(appointment.appointment_time);
+    const duration = Number(appointment.duration_minutes || 60);
+
+    let durationText = "";
+
+    if (duration >= 60) {
+        const hours = Math.floor(duration / 60);
+        const minutes = duration % 60;
+
+        durationText =
+            minutes > 0
+                ? `${hours} h ${minutes}`
+                : `${hours} h`;
+    } else {
+        durationText = `${duration} min`;
+    }
 
     return `
 Nom: ${appointment.client_name}
@@ -50,7 +65,7 @@ Email: ${appointment.client_email}
 Téléphone: ${appointment.client_phone || "-"}
 Prestation: ${appointment.service_title}
 Date: ${formattedDate} à ${formattedTime}
-Durée: ${appointment.duration_minutes || 60} minutes
+Durée: ${durationText}
 Notes: ${appointment.notes || "-"}
 `;
 }
@@ -58,6 +73,21 @@ Notes: ${appointment.notes || "-"}
 function appointmentHtmlTemplate({ title, intro, appointment, reason = null }) {
     const formattedDate = formatFrenchDate(appointment.appointment_date);
     const formattedTime = formatFrenchTime(appointment.appointment_time);
+    const duration = Number(appointment.duration_minutes || 60);
+
+    let durationText = "";
+
+    if (duration >= 60) {
+        const hours = Math.floor(duration / 60);
+        const minutes = duration % 60;
+
+        durationText =
+            minutes > 0
+                ? `${hours} h ${minutes}`
+                : `${hours} h`;
+    } else {
+        durationText = `${duration} min`;
+    }
 
     return `
         <div style="font-family:Arial,sans-serif;background:#f7f3ef;padding:30px;">
@@ -99,7 +129,10 @@ function appointmentHtmlTemplate({ title, intro, appointment, reason = null }) {
                         <p style="margin:8px 0;color:#333333;"><strong>Prestation:</strong> ${appointment.service_title}</p>
                         <p style="margin:8px 0;color:#333333;"><strong>Date:</strong> ${formattedDate}</p>
                         <p style="margin:8px 0;color:#333333;"><strong>Heure:</strong> ${formattedTime}</p>
-                        <p style="margin:8px 0;color:#333333;"><strong>Durée:</strong> ${appointment.duration_minutes || 60} minutes</p>
+                        <p style="margin:8px 0;color:#333333;">
+    <strong>Durée:</strong>
+    ${durationText}
+</p>
                         <p style="margin:8px 0;color:#333333;"><strong>Téléphone:</strong> ${appointment.client_phone || "-"}</p>
                         <p style="margin:8px 0;color:#333333;"><strong>Notes:</strong> ${appointment.notes || "-"}</p>
                     </div>
@@ -166,11 +199,7 @@ Institut S Liuba`,
         text: `Un nouveau rendez-vous a été réservé.
 
 ${details}`,
-        html: appointmentHtmlTemplate({
-            title: "Nouveau rendez-vous réservé",
-            intro: "Un nouveau rendez-vous a été réservé.",
-            appointment
-        })
+        html: adminAppointmentTemplate(appointment)
     });
 }
 
@@ -481,6 +510,127 @@ Institut S Liuba`,
             appointment
         })
     });
+}
+function adminAppointmentTemplate(appointment) {
+
+    const formattedDate =
+        formatFrenchDate(appointment.appointment_date);
+
+    const formattedTime =
+        formatFrenchTime(appointment.appointment_time);
+
+    const [firstName, ...rest] =
+        (appointment.client_name || "").split(" ");
+
+    const lastName = rest.join(" ");
+    const duration = Number(appointment.duration_minutes || 60);
+
+    let durationText = "";
+
+    if (duration >= 60) {
+        const hours = Math.floor(duration / 60);
+        const minutes = duration % 60;
+
+        durationText =
+            minutes > 0
+                ? `${hours} h ${minutes}`
+                : `${hours} h`;
+    } else {
+        durationText = `${duration} min`;
+    }
+
+    return `
+    <div style="
+        font-family:Arial,sans-serif;
+        background:#f7f3ef;
+        padding:30px;
+    ">
+
+        <div style="
+            max-width:700px;
+            margin:auto;
+            background:#ffffff;
+            border-radius:16px;
+            overflow:hidden;
+            box-shadow:0 4px 14px rgba(0,0,0,.08);
+        ">
+
+            <div style="
+                background:#b68c5a;
+                color:white;
+                padding:24px;
+                text-align:center;
+            ">
+                <img
+                    src="https://s-liuba.onrender.com/images/Logo_S_Luba.png"
+                    style="
+                        max-width:110px;
+                        display:block;
+                        margin:0 auto 15px;
+                    "
+                >
+
+                <h2 style="margin:0;color:white;">
+                    Nouveau rendez-vous réservé
+                </h2>
+            </div>
+
+            <div style="padding:30px;">
+
+                <p>
+                    <strong>Date et heure du RDV :</strong><br>
+                    ${formattedDate} à ${formattedTime}
+                </p>
+
+                <hr style="border:none;border-top:1px solid #eee;">
+
+                <p><strong>Nom :</strong> ${lastName || "-"}</p>
+
+                <p><strong>Prénom :</strong> ${firstName || "-"}</p>
+
+                <p>
+                    <strong>Email :</strong>
+                    <a href="mailto:${appointment.client_email}">
+                        ${appointment.client_email}
+                    </a>
+                </p>
+
+                <p>
+                    <strong>Téléphone :</strong>
+                    ${appointment.client_phone || "-"}
+                </p>
+
+                <hr style="border:none;border-top:1px solid #eee;">
+
+                <div style="
+                    background:#f7f3ef;
+                    padding:20px;
+                    border-radius:12px;
+                ">
+
+                    <p>
+                        <strong>Prestation :</strong><br>
+                        ${appointment.service_title}
+                    </p>
+
+                    <p>
+    <strong>Durée :</strong>
+    ${durationText}
+</p>
+
+                    <p>
+                        <strong>Notes :</strong>
+                        ${appointment.notes || "-"}
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    `;
 }
 module.exports = {
     sendAppointmentCreatedEmails,
