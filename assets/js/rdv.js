@@ -459,7 +459,7 @@ async function loadServicesForBookingFromBackend() {
                 <img src="${service.image_url || "images/photos/massage (1).jpg"}" alt="${service.title}">
                 <div>
                     <h3>${service.title}</h3>
-                   ${rdv.notes ? `<strong>Note:</strong> ${rdv.notes}<br>` : ""}
+                  ${service.notes ? `<strong>Note:</strong> ${service.notes}<br>` : ""}
                     <p>${service.short_description || service.category || ""}</p>
                     <strong>${service.duration_minutes || "-"} min · ${service.price || "Sur devis"} €</strong>
                 </div>
@@ -532,15 +532,16 @@ function createBookingServiceOption(service) {
     option.dataset.serviceId = service.id;
 
     option.innerHTML = `
-        <img src="${service.image_url || "images/photos/massage (1).jpg"}" alt="${service.title}">
-        <div>
-            <h3>${service.title}</h3>
-            ${rdv.notes ? `<strong>Note:</strong> ${rdv.notes}<br>` : ""}
-            <p>${service.short_description || service.category || ""}</p>
-            <strong>${service.duration_minutes || "-"} min · ${service.price || "Sur devis"} €</strong>
-        </div>
-        <div class="radio-dot"></div>
-    `;
+    <img src="${service.image_url || "images/photos/massage (1).jpg"}" alt="${service.title}">
+    <div>
+        <h3>${service.title}</h3>
+        ${service.notes ? `<strong>Note:</strong> ${service.notes}<br>` : ""}
+        <p>${service.short_description || service.category || ""}</p>
+
+        <strong>${service.duration_minutes || "-"} min · ${service.price || "Sur devis"} €</strong>
+    </div>
+    <div class="radio-dot"></div>
+`;
 
     option.addEventListener("click", () => {
         document
@@ -588,3 +589,44 @@ async function loadServicesIntoExistingCategories() {
 }
 
 loadServicesIntoExistingCategories();
+function selectServiceFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const serviceFromUrl = params.get("service");
+
+    if (!serviceFromUrl) return;
+
+    setTimeout(() => {
+        const options = document.querySelectorAll(".service-option");
+
+        options.forEach((option) => {
+            const serviceName = option.dataset.service;
+
+            if (serviceName === serviceFromUrl) {
+
+                document
+                    .querySelectorAll(".service-option")
+                    .forEach((item) => item.classList.remove("selected"));
+
+                option.classList.add("selected");
+
+                selectedService = option.dataset.service;
+                selectedPrice = option.dataset.price;
+
+                const category = option.closest(".service-category");
+                const content = category?.querySelector(".service-category-content");
+
+                if (category && content) {
+                    category.classList.add("active");
+                    content.style.height = content.scrollHeight + "px";
+                }
+
+                option.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+            }
+        });
+    }, 800);
+}
+
+selectServiceFromUrl();

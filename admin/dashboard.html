@@ -126,7 +126,35 @@
                 </div>
 
             </div>
+            <h2 id="certificatesToggle" style="cursor:pointer;">
+                Certificats ▼
+            </h2>
 
+            <div id="certificatesContent" style="display:none;">
+                <form id="certificateForm">
+                    <input type="text" id="certificateTitle" placeholder="Titre du certificat" required>
+                    <textarea id="certificateDescription" placeholder="Description"></textarea>
+                    <input type="file" id="certificateFile" accept="image/*,.pdf" required>
+                    <button type="submit">Ajouter certificat</button>
+                </form>
+
+                <div id="certificatesList">Chargement des certificats...</div>
+            </div>
+
+            <h2 id="faqToggle" style="cursor:pointer;">
+                FAQ ▼
+            </h2>
+
+            <div id="faqContent" style="display:none;">
+                <form id="faqForm">
+                    <input type="text" id="faqQuestion" placeholder="Question" required>
+                    <textarea id="faqAnswer" placeholder="Réponse" required></textarea>
+                    <input type="text" id="faqCategory" placeholder="Catégorie">
+                    <button type="submit">Ajouter FAQ</button>
+                </form>
+
+                <div id="faqListAdmin">Chargement FAQ...</div>
+            </div>
             <h2 id="blockedSlotsToggle" style="cursor:pointer;">
                 Jours et horaires bloqués ▼
             </h2>

@@ -466,6 +466,9 @@ async function loadServices() {
       Actif: ${service.is_active ? "Oui" : "Non"}<br><br>
 
       <button onclick="editService(${service.id})">Modifier</button>
+      <button onclick="toggleService(${service.id}, ${Number(service.is_active) === 1 ? "false" : "true"})">
+    ${Number(service.is_active) === 1 ? "Masquer" : "Afficher"}
+</button>
 <button onclick="deleteService(${service.id})">Supprimer</button>
     </div>
   `).join("");
@@ -489,7 +492,27 @@ async function deleteService(id) {
         alert("Erreur suppression service");
     }
 }
+async function toggleService(id, isActive) {
+    const token = localStorage.getItem("adminToken");
 
+    const response = await fetch(`${API_URL}/api/services/${id}/toggle`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            is_active: isActive
+        })
+    });
+
+    if (response.ok) {
+        loadServices();
+        loadDashboard();
+    } else {
+        alert("Erreur affichage service");
+    }
+}
 loadServices();
 
 async function editService(id) {
@@ -1743,3 +1766,431 @@ async function deleteGalleryItem(id) {
 loadGalleryCategories().then(() => {
     loadGalleryItems();
 });
+// Certificats
+
+const certificatesToggle = document.getElementById("certificatesToggle");
+const certificatesContent = document.getElementById("certificatesContent");
+const certificateForm = document.getElementById("certificateForm");
+const certificatesList = document.getElementById("certificatesList");
+
+if (certificatesToggle && certificatesContent) {
+    certificatesToggle.onclick = () => {
+        const isClosed = certificatesContent.style.display === "none";
+        certificatesContent.style.display = isClosed ? "block" : "none";
+        certificatesToggle.textContent = isClosed ? "Certificats ▲" : "Certificats ▼";
+    };
+}
+
+if (certificateForm) {
+    certificateForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const token = localStorage.getItem("adminToken");
+        const fileInput = document.getElementById("certificateFile");
+        const file = fileInput.files[0];
+
+        if (!file) {
+            alert("Choisissez un fichier");
+            return;
+        }
+
+        try {
+            const uploadData = new FormData();
+            uploadData.append("file", file);
+
+            const uploadResponse = await fetch(`${API_URL}/api/upload/single`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                body: uploadData
+            });
+
+            const uploadResult = await uploadResponse.json();
+
+            if (!uploadResponse.ok) {
+                alert(uploadResult.message || "Erreur upload");
+                return;
+            }
+
+            const fileUrl = `${API_URL}${uploadResult.file.url}`;
+
+            const data = {
+                title: document.getElementById("certificateTitle").value.trim(),
+                description: document.getElementById("certificateDescription").value.trim(),
+                file_url: fileUrl,
+                file_type: file.type,
+                is_active: true,
+                sort_order: 0
+            };
+
+            const response = await fetch(`${API_URL}/api/certificates`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                alert(result.message || "Erreur création certificat");
+                return;
+            }
+
+            alert("Certificat ajouté");
+            certificateForm.reset();
+            loadCertificates();
+            loadDashboard();
+
+        } catch (error) {
+            console.error(error);
+            alert("Erreur serveur");
+        }
+    });
+}
+
+async function loadCertificates() {
+    if (!certificatesList) return;
+
+    const token = localStorage.getItem("adminToken");
+
+    try {
+        const response = await fetch(`${API_URL}/api/certificates/admin`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        const certificates = await response.json();
+
+        if (!response.ok) {
+            certificatesList.textContent = "Impossible de charger les certificats.";
+            return;
+        }
+
+        if (!certificates.length) {
+            certificatesList.textContent = "Aucun certificat.";
+            return;
+        }
+
+        certificatesList.innerHTML = certificates.map((cert) => `
+    <div style="border:1px solid #ddd; padding:12px; margin:10px 0;">
+        <strong>${cert.title}</strong><br>
+
+        Description: ${cert.description || "-"}<br>
+
+        ${cert.file_url && cert.file_url.toLowerCase().includes(".pdf")
+                ? `<a href="${cert.file_url}" target="_blank">Voir PDF</a>`
+                : `<img src="${cert.file_url}" alt="${cert.title}" style="width:120px;height:90px;object-fit:cover;">`
+            }
+
+        <br><br>
+
+        <button onclick="editCertificate(${cert.id})">
+            Modifier
+        </button>
+<button onclick="toggleCertificate(${cert.id}, ${Number(cert.is_active) === 1 ? "false" : "true"})">
+    ${Number(cert.is_active) === 1 ? "Masquer" : "Afficher"}
+</button>
+        <button onclick="deleteCertificate(${cert.id})">
+            Supprimer
+        </button>
+    </div>
+`).join("");
+
+    } catch (error) {
+        console.error(error);
+        certificatesList.textContent = "Erreur serveur";
+    }
+}
+
+async function deleteCertificate(id) {
+    const token = localStorage.getItem("adminToken");
+
+    if (!confirm("Supprimer ce certificat ?")) return;
+
+    const response = await fetch(`${API_URL}/api/certificates/${id}`, {
+        method: "DELETE",
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    if (response.ok) {
+        loadCertificates();
+        loadDashboard();
+    } else {
+        alert("Erreur suppression certificat");
+    }
+}
+
+loadCertificates();
+async function editCertificate(id) {
+    const token = localStorage.getItem("adminToken");
+
+    const response = await fetch(
+        `${API_URL}/api/certificates/admin`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+
+    const certificates = await response.json();
+
+    const cert = certificates.find(
+        item => item.id === id
+    );
+
+    if (!cert) {
+        alert("Certificat introuvable");
+        return;
+    }
+
+    const title = prompt(
+        "Titre",
+        cert.title
+    );
+
+    if (title === null) return;
+
+    const description = prompt(
+        "Description",
+        cert.description || ""
+    );
+
+    if (description === null) return;
+
+    const updateResponse = await fetch(
+        `${API_URL}/api/certificates/${id}`,
+        {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                title,
+                description,
+                file_url: cert.file_url,
+                file_type: cert.file_type,
+                sort_order: cert.sort_order || 0,
+                is_active: Boolean(cert.is_active)
+            })
+        }
+    );
+
+    if (updateResponse.ok) {
+        alert("Certificat modifié");
+        loadCertificates();
+    } else {
+        alert("Erreur modification certificat");
+    }
+}
+async function toggleCertificate(id, isActive) {
+    const token = localStorage.getItem("adminToken");
+
+    const response = await fetch(`${API_URL}/api/certificates/${id}/toggle`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            is_active: isActive
+        })
+    });
+
+    if (response.ok) {
+        loadCertificates();
+        loadDashboard();
+    } else {
+        alert("Erreur affichage certificat");
+    }
+}
+// FAQ
+
+const faqToggle = document.getElementById("faqToggle");
+const faqContent = document.getElementById("faqContent");
+const faqForm = document.getElementById("faqForm");
+const faqListAdmin = document.getElementById("faqListAdmin");
+
+if (faqToggle && faqContent) {
+    faqToggle.onclick = () => {
+        const isClosed = faqContent.style.display === "none";
+        faqContent.style.display = isClosed ? "block" : "none";
+        faqToggle.textContent = isClosed ? "FAQ ▲" : "FAQ ▼";
+    };
+}
+
+if (faqForm) {
+    faqForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const token = localStorage.getItem("adminToken");
+
+        const data = {
+            question: document.getElementById("faqQuestion").value.trim(),
+            answer: document.getElementById("faqAnswer").value.trim(),
+            category: document.getElementById("faqCategory").value.trim(),
+            is_active: true,
+            sort_order: 0
+        };
+
+        const response = await fetch(`${API_URL}/api/faqs`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            alert(result.message || "Erreur création FAQ");
+            return;
+        }
+
+        alert("FAQ ajoutée");
+        faqForm.reset();
+        loadFaqs();
+        loadDashboard();
+    });
+}
+
+async function loadFaqs() {
+    if (!faqListAdmin) return;
+
+    const token = localStorage.getItem("adminToken");
+
+    const response = await fetch(`${API_URL}/api/faqs/admin`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    const faqs = await response.json();
+
+    if (!response.ok) {
+        faqListAdmin.textContent = "Impossible de charger les FAQ.";
+        return;
+    }
+
+    if (!faqs.length) {
+        faqListAdmin.textContent = "Aucune FAQ.";
+        return;
+    }
+
+    faqListAdmin.innerHTML = faqs.map((faq) => `
+        <div style="border:1px solid #ddd; padding:12px; margin:10px 0;">
+            <strong>${faq.question}</strong><br>
+            ${faq.answer}<br>
+            Catégorie: ${faq.category || "-"}<br>
+            Actif: ${faq.is_active ? "Oui" : "Non"}<br><br>
+
+           
+            <button onclick="editFaq(${faq.id})">Modifier</button>
+            <button onclick="toggleFaq(${faq.id}, ${Number(faq.is_active) === 1 ? "false" : "true"})">
+    ${Number(faq.is_active) === 1 ? "Masquer" : "Afficher"}
+</button>
+ <button onclick="deleteFaq(${faq.id})">Supprimer</button>
+        </div>
+    `).join("");
+}
+
+async function deleteFaq(id) {
+    const token = localStorage.getItem("adminToken");
+
+    if (!confirm("Supprimer cette FAQ ?")) return;
+
+    const response = await fetch(`${API_URL}/api/faqs/${id}`, {
+        method: "DELETE",
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    if (response.ok) {
+        loadFaqs();
+        loadDashboard();
+    } else {
+        alert("Erreur suppression FAQ");
+    }
+}
+
+loadFaqs();
+async function editFaq(id) {
+    const token = localStorage.getItem("adminToken");
+
+    const response = await fetch(`${API_URL}/api/faqs/admin`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    const faqs = await response.json();
+    const faq = faqs.find(item => item.id === id);
+
+    if (!faq) {
+        alert("FAQ introuvable");
+        return;
+    }
+
+    const question = prompt("Question", faq.question);
+    if (question === null) return;
+
+    const answer = prompt("Réponse", faq.answer);
+    if (answer === null) return;
+
+    const category = prompt("Catégorie", faq.category || "");
+    if (category === null) return;
+
+    const updateResponse = await fetch(`${API_URL}/api/faqs/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            question,
+            answer,
+            category,
+            is_active: Boolean(faq.is_active),
+            sort_order: faq.sort_order || 0
+        })
+    });
+
+    if (updateResponse.ok) {
+        alert("FAQ modifiée");
+        loadFaqs();
+    } else {
+        alert("Erreur modification FAQ");
+    }
+}
+async function toggleFaq(id, isActive) {
+    const token = localStorage.getItem("adminToken");
+
+    const response = await fetch(`${API_URL}/api/faqs/${id}/toggle`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            is_active: isActive
+        })
+    });
+
+    if (response.ok) {
+        loadFaqs();
+        loadDashboard();
+    } else {
+        alert("Erreur affichage FAQ");
+    }
+}
