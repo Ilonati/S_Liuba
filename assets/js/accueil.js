@@ -193,7 +193,7 @@ async function loadFaqsFromBackend() {
     if (!faqList) return;
 
     try {
-        const response = await fetch("http://localhost:5000/api/faqs");
+        const response = await fetch("http://sliuba-production.up.railway.app/api/faqs");
 
         if (!response.ok) {
             throw new Error("Erreur API FAQ");

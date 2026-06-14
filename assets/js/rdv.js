@@ -262,7 +262,7 @@ async function loadAvailableSlots() {
 
     try {
         const response = await fetch(
-            `http://localhost:5000/api/slots?date=${dateForApi}&duration=${selectedDuration}`
+            `http://sliuba-production.up.railway.app/api/slots?date=${dateForApi}&duration=${selectedDuration}`
         );
 
         const result = await response.json();
@@ -367,7 +367,7 @@ if (bookingForm && successMessage) {
         };
 
         try {
-            const response = await fetch("http://localhost:5000/api/appointments", {
+            const response = await fetch("http://sliuba-production.up.railway.app/api/appointments", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -449,7 +449,7 @@ async function loadServicesForBookingFromBackend() {
     if (!serviceList) return;
 
     try {
-        const response = await fetch("http://localhost:5000/api/services");
+        const response = await fetch("http://sliuba-production.up.railway.app/api/services");
 
         if (!response.ok) {
             throw new Error("Erreur API services");
@@ -588,7 +588,7 @@ function createBookingServiceOption(service) {
 
 async function loadServicesIntoExistingCategories() {
     try {
-        const response = await fetch("http://localhost:5000/api/services");
+        const response = await fetch("http://sliuba-production.up.railway.app/api/services");
 
         if (!response.ok) {
             throw new Error("Erreur API services");
