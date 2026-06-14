@@ -122,7 +122,7 @@ async function loadCertificatesFromBackend() {
     if (!slider) return;
 
     try {
-        const response = await fetch("http://sliuba-production.up.railway.app/api/certificates");
+        const response = await fetch("https://sliuba-production.up.railway.app/api/certificates");
 
         if (!response.ok) {
             throw new Error("Erreur API certificats");
@@ -137,7 +137,7 @@ async function loadCertificatesFromBackend() {
             const img = document.createElement("img");
 
             if (cert.file_url.startsWith("/uploads")) {
-                img.src = `http://sliuba-production.up.railway.app${cert.file_url}`;
+                img.src = `https://sliuba-production.up.railway.app${cert.file_url}`;
             } else {
                 img.src = cert.file_url;
             }

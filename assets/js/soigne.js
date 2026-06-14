@@ -170,7 +170,7 @@ async function loadPageGallery() {
     const currentCategory = gallerySection.dataset.galleryCategory;
 
     try {
-        const categoriesResponse = await fetch("http://sliuba-production.up.railway.app/api/gallery/categories");
+        const categoriesResponse = await fetch("https://sliuba-production.up.railway.app/api/gallery/categories");
         const categories = await categoriesResponse.json();
 
         const category = categories.find(cat =>
@@ -187,7 +187,7 @@ async function loadPageGallery() {
             return;
         }
 
-        const galleryResponse = await fetch("http://sliuba-production.up.railway.app/api/gallery");
+        const galleryResponse = await fetch("https://sliuba-production.up.railway.app/api/gallery");
         const photos = await galleryResponse.json();
 
         const filteredPhotos = photos.filter(photo =>
@@ -296,7 +296,7 @@ async function loadServicesFromBackend() {
     const currentCategory = container.dataset.category;
 
     try {
-        const response = await fetch("http://sliuba-production.up.railway.app/api/services");
+        const response = await fetch("https://sliuba-production.up.railway.app/api/services");
 
         if (!response.ok) {
             throw new Error("Erreur API services");
