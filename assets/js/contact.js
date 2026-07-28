@@ -96,6 +96,17 @@ if (contactForm) {
     contactForm.addEventListener("submit", async function (e) {
         e.preventDefault();
 
+        const submitButton = contactForm.querySelector('button[type="submit"]');
+        const initialButtonText = submitButton ? submitButton.textContent : "Envoyer";
+
+        if (submitButton?.disabled) return;
+
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = "Envoi en cours…";
+            submitButton.setAttribute("aria-busy", "true");
+        }
+
         const name = document.getElementById("name").value.trim();
         const prenom = document.getElementById("prenom").value.trim();
         const email = document.getElementById("email").value.trim();
@@ -120,30 +131,64 @@ if (contactForm) {
                 body: JSON.stringify(formData)
             });
 
-            const result = await response.json();
+            const responseText = await response.text();
+            let result = {};
+
+            if (responseText) {
+                try {
+                    result = JSON.parse(responseText);
+                } catch (parseError) {
+                    console.warn("Réponse non JSON reçue:", parseError);
+                }
+            }
 
             if (response.ok) {
-                successModal.classList.add("show");
                 contactForm.reset();
+
+                if (successModal) {
+                    successModal.classList.add("show");
+                    successModal.setAttribute("aria-hidden", "false");
+                    document.body.classList.add("modal-open");
+                    closeModal?.focus();
+                } else {
+                    alert("Merci ! Votre message a bien été envoyé.");
+                }
             } else {
                 alert(result.message || "Erreur. Impossible d'envoyer votre message.");
             }
 
         } catch (error) {
             console.error("Erreur:", error);
-            alert("Erreur serveur.");
+            alert("Une erreur est survenue. Veuillez vérifier votre connexion et réessayer.");
+        } finally {
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.textContent = initialButtonText;
+                submitButton.removeAttribute("aria-busy");
+            }
         }
     });
 }
 
+function hideSuccessModal() {
+    if (!successModal) return;
+    successModal.classList.remove("show");
+    successModal.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("modal-open");
+}
+
 if (closeModal) {
-    closeModal.addEventListener("click", function () {
-        successModal.classList.remove("show");
-    });
+    closeModal.addEventListener("click", hideSuccessModal);
 }
 
 window.addEventListener("click", function (event) {
     if (event.target === successModal) {
-        successModal.classList.remove("show");
+        hideSuccessModal();
+    }
+});
+
+window.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" && successModal?.classList.contains("show")) {
+        hideSuccessModal();
     }
 });

@@ -634,6 +634,10 @@ a {
     font-size: 28px;
     cursor: pointer;
     color: #4a2f50;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    line-height: 1;
 }
 
 @media (max-width: 768px) {
@@ -649,4 +653,14 @@ a {
     .contact-container h1 {
         font-size: 28px;
     }
+}
+
+.contact-form button:disabled {
+    cursor: wait;
+    opacity: 0.72;
+    transform: none;
+}
+
+body.modal-open {
+    overflow: hidden;
 }

@@ -13,15 +13,15 @@ async function createMessage(req, res) {
 
         const id = await contactRepository.createMessage(data);
 
-        try {
-            await mailService.sendContactMessageToAdmin(data);
-        } catch (emailError) {
-            console.error("Contact email failed:", emailError.message);
-        }
-
         res.status(201).json({
             message: "Message envoyé",
             id
+        });
+
+        // The message is safely stored, so confirm it without making the
+        // visitor wait for the mail server.
+        mailService.sendContactMessageToAdmin(data).catch((emailError) => {
+            console.error("Contact email failed:", emailError.message);
         });
     } catch (error) {
         console.error(error);

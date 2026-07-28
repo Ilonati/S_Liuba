@@ -269,6 +269,11 @@ ${details}`,
 
 async function sendContactMessageToAdmin(data) {
     const subject = data.subject || "Nouveau message de contact";
+    const adminEmail = process.env.ADMIN_EMAIL || process.env.MAIL_USER;
+
+    if (!adminEmail) {
+        throw new Error("ADMIN_EMAIL ou MAIL_USER manquant");
+    }
 
     const text = `
 Nouveau message reçu depuis le site.
@@ -305,7 +310,7 @@ ${data.message}
   `;
 
     await sendMail({
-        to: process.env.ADMIN_EMAIL,
+        to: adminEmail,
         subject,
         text,
         html
