@@ -1,5 +1,4 @@
 const db = require("../db");
-const BOOKING_BUFFER_MINUTES = 10;
 
 async function getAllAppointments() {
     const [rows] = await db.query(
@@ -32,18 +31,13 @@ async function checkTimeConflict({ appointment_date, appointment_time, duration_
     WHERE appointment_date = ?
       AND status NOT IN ('cancelled', 'completed', 'no_show')
       AND TIME_TO_SEC(appointment_time) < TIME_TO_SEC(?) + (? * 60)
-      AND TIME_TO_SEC(appointment_time) + ((COALESCE(duration_minutes, 60) + ?) * 60) > TIME_TO_SEC(?)
+      AND TIME_TO_SEC(appointment_time) + (COALESCE(duration_minutes, 60) * 60) > TIME_TO_SEC(?)
   `;
 
-    const occupiedDuration = (Number(duration_minutes) || 60) + BOOKING_BUFFER_MINUTES;
-
-    // duration_minutes remains the real procedure duration shown in emails;
-    // the extra buffer is used only to protect the booking calendar.
     const params = [
         appointment_date,
         appointment_time,
-        occupiedDuration,
-        BOOKING_BUFFER_MINUTES,
+        Number(duration_minutes) || 60,
         appointment_time
     ];
 

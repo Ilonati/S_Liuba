@@ -94,9 +94,9 @@ if (scrollBtn) {
 // Service selection
 const serviceOptions = document.querySelectorAll('.service-option');
 
-let selectedService = 'Massage Palmaire';
-let selectedPrice = '35 €';
-let selectedDuration = 60;
+let selectedService = '';
+let selectedPrice = '';
+let selectedDuration = null;
 function getDurationFromOption(option) {
     if (option.dataset.duration) {
         return Number(option.dataset.duration) || 60;
@@ -261,6 +261,16 @@ function formatSlotForDisplay(slot) {
 
 async function loadAvailableSlots() {
     if (!timeGrid || !selectedDate) return;
+
+    if (!selectedService || !selectedDuration) {
+        timeGrid.innerHTML = `
+            <p class="closed-message">
+                Choisissez d’abord une prestation pour voir les horaires disponibles.
+            </p>
+        `;
+        selectedTime = "";
+        return;
+    }
 
     const dateForApi = formatDateForApi(selectedDate);
 

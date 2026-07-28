@@ -634,7 +634,7 @@ async function editAppointment(id) {
         if (appointmentTime === null) return;
 
         const durationMinutes = prompt(
-            "Durée de la prestation en minutes (le corridor de 10 min est ajouté automatiquement)",
+            "Durée totale en minutes (préparation comprise)",
             rdv.duration_minutes || 60
         );
         if (durationMinutes === null) return;

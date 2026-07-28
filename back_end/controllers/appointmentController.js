@@ -2,7 +2,6 @@ const appointmentRepository = require("../repository/appointmentRepository");
 const mailService = require("../services/mailService");
 const blockedClientRepository = require("../repository/blockedClientRepository");
 const blockRepository = require("../repository/blockRepository");
-const BOOKING_BUFFER_MINUTES = 10;
 
 async function getAdminAppointments(req, res) {
     try {
@@ -102,7 +101,7 @@ async function createAppointment(req, res) {
             (block) => block.block_time !== null &&
                 appointmentStart < timeToMinutes(block.block_time) + 60 &&
                 timeToMinutes(block.block_time) <
-                    appointmentStart + durationMinutes + BOOKING_BUFFER_MINUTES
+                    appointmentStart + durationMinutes
         );
 
         if (blockedHour) {

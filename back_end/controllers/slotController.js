@@ -3,7 +3,7 @@ const blockRepository = require("../repository/blockRepository");
 
 const WORK_START_MINUTES = 9 * 60;
 const WORK_END_MINUTES = 19 * 60;
-const BOOKING_BUFFER_MINUTES = 10;
+const SLOT_STEP_MINUTES = 30;
 
 function generateDaySlots(durationMinutes) {
     const slots = [];
@@ -11,7 +11,7 @@ function generateDaySlots(durationMinutes) {
     for (
         let start = WORK_START_MINUTES;
         start + durationMinutes <= WORK_END_MINUTES;
-        start += durationMinutes + BOOKING_BUFFER_MINUTES
+        start += SLOT_STEP_MINUTES
     ) {
         slots.push(minutesToTime(start));
     }
@@ -102,9 +102,9 @@ async function getAvailableSlots(req, res) {
             const overlapsAppointment = bookedAppointments.some((appointment) =>
                 intervalsOverlap(
                     candidateStart,
-                    selectedDuration + BOOKING_BUFFER_MINUTES,
+                    selectedDuration,
                     timeToMinutes(appointment.appointment_time),
-                    Number(appointment.duration_minutes || 60) + BOOKING_BUFFER_MINUTES
+                    Number(appointment.duration_minutes || 60)
                 )
             );
 
@@ -112,7 +112,7 @@ async function getAvailableSlots(req, res) {
             const overlapsBlock = blockedTimes.some((blockStart) =>
                 intervalsOverlap(
                     candidateStart,
-                    selectedDuration + BOOKING_BUFFER_MINUTES,
+                    selectedDuration,
                     blockStart,
                     60
                 )
