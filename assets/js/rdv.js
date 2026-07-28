@@ -126,6 +126,11 @@ serviceOptions.forEach((option) => {
     option.addEventListener('click', () => {
         serviceOptions.forEach((item) => item.classList.remove('selected'));
 
+        if (option.dataset.contactOnly === "true") {
+            showContactOnlyBooking(option);
+            return;
+        }
+
         option.classList.add('selected');
 
         selectedService = option.dataset.service || 'Service non précisé';
@@ -256,6 +261,34 @@ renderCalendar();
 // Time selection from backend
 const timeGrid = document.getElementById('timeGrid');
 let selectedTime = '';
+
+function showContactOnlyBooking(option) {
+    selectedService = "";
+    selectedPrice = "";
+    selectedDuration = null;
+    selectedServiceId = null;
+    selectedTime = "";
+
+    const isPhone = window.matchMedia("(max-width: 768px) and (pointer: coarse)").matches;
+    const href = isPhone
+        ? "tel:0783714349"
+        : "https://wa.me/33783714349?text=Bonjour%2C%20je%20souhaite%20prendre%20rendez-vous.";
+    const label = isPhone
+        ? "Appeler : 07 83 71 43 49"
+        : "WhatsApp : 07 83 71 43 49";
+
+    if (timeGrid) {
+        timeGrid.innerHTML = `
+            <p class="closed-message">
+                <strong>${option.dataset.service}</strong><br>
+                Cette prestation est disponible uniquement par téléphone.<br><br>
+                <a class="btn-primary" href="${href}" ${isPhone ? "" : 'target="_blank" rel="noopener noreferrer"'}>
+                    ${label}
+                </a>
+            </p>
+        `;
+    }
+}
 
 function formatSlotForDisplay(slot) {
     return slot.slice(0, 5);
@@ -696,6 +729,11 @@ function selectServiceFromUrl() {
             normalizeServiceName(option.dataset.service) === normalizedRequestedService;
 
         if (matchesId || matchesName) {
+
+            if (option.dataset.contactOnly === "true") {
+                showContactOnlyBooking(option);
+                break;
+            }
 
             document
                 .querySelectorAll(".service-option")

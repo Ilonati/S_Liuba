@@ -1287,3 +1287,11 @@ main {
         margin-top: 4px;
     }
 }
+
+.service-option .contact-only-badge {
+    display: block;
+    margin-top: 8px;
+    color: #a22d5c;
+    font-size: 13px;
+    font-weight: 700;
+}
