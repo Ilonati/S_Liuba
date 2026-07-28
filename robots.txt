@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /back_end/
+
+Sitemap: https://s-liuba.onrender.com/sitemap.xml
