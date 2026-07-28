@@ -6,9 +6,6 @@ const transporter = nodemailer.createTransport({
     host: process.env.MAIL_HOST,
     port: Number(process.env.MAIL_PORT),
     secure: process.env.MAIL_SECURE === "true",
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 15000,
     auth: {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASS
@@ -144,7 +141,7 @@ function appointmentHtmlTemplate({ title, intro, appointment, reason = null }) {
 
 async function sendMail({ to, subject, text, html }) {
     try {
-        const info = await transporter.sendMail({
+        await transporter.sendMail({
             from: `"Institut S Liuba" <${process.env.MAIL_USER}>`,
             to,
             subject,
@@ -153,72 +150,10 @@ async function sendMail({ to, subject, text, html }) {
         });
 
         await logEmail(to, subject, "sent");
-        return {
-            success: true,
-            accepted: info.accepted || [],
-            rejected: info.rejected || []
-        };
     } catch (error) {
         console.error("Email error:", error.message);
-        try {
-            await logEmail(to, subject, "failed", error.message);
-        } catch (logError) {
-            console.error("Email log error:", logError.message);
-        }
-        return { success: false, error: error.message };
+        await logEmail(to, subject, "failed", error.message);
     }
-}
-
-async function verifyMailTransport() {
-    const configured = {
-        host: Boolean(process.env.MAIL_HOST),
-        port: Boolean(process.env.MAIL_PORT),
-        user: Boolean(process.env.MAIL_USER),
-        password: Boolean(process.env.MAIL_PASS),
-        adminEmail: Boolean(process.env.ADMIN_EMAIL)
-    };
-
-    async function verifyVariant(port, secure) {
-        const testTransporter = nodemailer.createTransport({
-            host: process.env.MAIL_HOST,
-            port,
-            secure,
-            connectionTimeout: 10000,
-            greetingTimeout: 10000,
-            socketTimeout: 15000,
-            auth: {
-                user: process.env.MAIL_USER,
-                pass: process.env.MAIL_PASS
-            }
-        });
-
-        try {
-            await testTransporter.verify();
-            return { port, secure, verified: true };
-        } catch (error) {
-            return {
-                port,
-                secure,
-                verified: false,
-                errorCode: error.code || "SMTP_ERROR",
-                errorCommand: error.command || null
-            };
-        }
-    }
-
-    const configuredPort = Number(process.env.MAIL_PORT);
-    const configuredSecure = process.env.MAIL_SECURE === "true";
-    const variants = await Promise.all([
-        verifyVariant(configuredPort, configuredSecure),
-        verifyVariant(465, true),
-        verifyVariant(587, false)
-    ]);
-
-    return {
-        configured,
-        smtpVerified: variants.some((variant) => variant.verified),
-        variants
-    };
 }
 
 async function sendAppointmentCreatedEmails(appointment) {
@@ -227,7 +162,7 @@ async function sendAppointmentCreatedEmails(appointment) {
 
     const details = formatAppointmentDetails(appointment);
 
-    const client = await sendMail({
+    await sendMail({
         to: appointment.client_email,
         subject: clientSubject,
         text: `Bonjour ${appointment.client_name},
@@ -245,7 +180,7 @@ Institut S Liuba`,
         })
     });
 
-    const admin = await sendMail({
+    await sendMail({
         to: process.env.ADMIN_EMAIL,
         subject: adminSubject,
         text: `Un nouveau rendez-vous a été réservé.
@@ -254,7 +189,6 @@ ${details}`,
         html: adminAppointmentTemplate(appointment)
     });
 
-    return { client, admin };
 }
 
 async function sendAppointmentUpdatedEmails(appointment) {
@@ -684,6 +618,5 @@ module.exports = {
     sendContactMessageToAdmin,
     sendReviewRequestEmail,
     sendAdminPasswordResetEmail,
-    sendAppointmentReminderEmail,
-    verifyMailTransport
+    sendAppointmentReminderEmail
 };

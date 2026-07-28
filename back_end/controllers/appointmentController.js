@@ -185,22 +185,11 @@ async function createAppointment(req, res) {
         const newAppointment =
             await appointmentRepository.getAppointmentById(appointmentId);
 
-        const emailDelivery =
-            await mailService.sendAppointmentCreatedEmails(newAppointment);
-
-        console.log("Appointment email delivery:", {
-            appointmentId,
-            client: emailDelivery.client?.success,
-            admin: emailDelivery.admin?.success
-        });
+        await mailService.sendAppointmentCreatedEmails(newAppointment);
 
         res.status(201).json({
             message: "Rendez-vous créé",
-            appointmentId,
-            emailDelivery: {
-                client: Boolean(emailDelivery.client?.success),
-                admin: Boolean(emailDelivery.admin?.success)
-            }
+            appointmentId
         });
 
     } catch (error) {
