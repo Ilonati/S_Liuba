@@ -182,23 +182,24 @@ async function createAppointment(req, res) {
             console.error("Erreur historique création RDV:", historyError);
         }
 
+        const newAppointment =
+            await appointmentRepository.getAppointmentById(appointmentId);
+
+        const mailDelivery = mailService
+            .sendAppointmentCreatedEmails(newAppointment)
+            .catch((mailError) => {
+                console.error("Erreur email création RDV:", mailError);
+            });
+
+        await Promise.race([
+            mailDelivery,
+            new Promise((resolve) => setTimeout(resolve, 5000))
+        ]);
+
         res.status(201).json({
             message: "Rendez-vous créé",
             appointmentId
         });
-
-        // Confirm the booking immediately. Email delivery must never keep the
-        // visitor waiting after the appointment has been stored.
-        (async () => {
-            try {
-                const newAppointment =
-                    await appointmentRepository.getAppointmentById(appointmentId);
-
-                await mailService.sendAppointmentCreatedEmails(newAppointment);
-            } catch (mailError) {
-                console.error("Erreur email création RDV:", mailError);
-            }
-        })();
 
     } catch (error) {
 

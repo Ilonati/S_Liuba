@@ -8,7 +8,8 @@ router.get("/status", (req, res) => {
     res.json({
         status: "ok",
         contactFlow: "async-mail-v2",
-        bookingDurationFlow: "total-duration-v3"
+        bookingDurationFlow: "total-duration-v3",
+        mailFlow: "bounded-delivery-v4"
     });
 });
 
