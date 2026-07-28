@@ -1245,6 +1245,11 @@ const CALENDAR_HOURS = [
     "19:00:00"
 ];
 
+function adminTimeToMinutes(timeValue) {
+    const [hours, minutes] = String(timeValue || "00:00").split(":").map(Number);
+    return hours * 60 + minutes;
+}
+
 function getMonday(date) {
     const current = new Date(date);
     const day = current.getDay();
@@ -1314,16 +1319,22 @@ function renderWeekCalendar(dateValue) {
 
                             ${weekDates.map((date) => {
         const dateApi = formatDateToApi(date);
+        const rowStart = adminTimeToMinutes(hour);
+        const rowEnd = rowStart + 60;
 
         const rdv = allAppointments.find((item) => {
             const itemDate =
                 formatDateForInput(item.appointment_date);
+            const appointmentStart = adminTimeToMinutes(item.appointment_time);
+            const appointmentEnd =
+                appointmentStart + Number(item.duration_minutes || 60);
 
             return (
                 itemDate === dateApi &&
-                item.appointment_time === hour &&
                 item.status !== "cancelled" &&
-                item.status !== "no_show"
+                item.status !== "no_show" &&
+                appointmentStart < rowEnd &&
+                rowStart < appointmentEnd
             );
         });
 
@@ -1342,23 +1353,33 @@ function renderWeekCalendar(dateValue) {
                                     `;
         }
 
+        const appointmentStart = adminTimeToMinutes(rdv.appointment_time);
+        const isStartingRow =
+            appointmentStart >= rowStart && appointmentStart < rowEnd;
+
         return `
                                     <td style="
                                         border:1px solid #ddd;
                                         padding:8px;
                                         height:80px;
                                         vertical-align:top;
-                                        background:#fffaf4;
+                                        background:${isStartingRow ? "#ead7bd" : "#f5e8d8"};
                                     ">
-                                        <strong>${rdv.client_name}</strong><br>
-                                        <small>${rdv.service_title}</small><br>
-                                        <small>Durée: ${formatAdminDuration(rdv.duration_minutes)}</small><br>
-                                        ${rdv.notes ? `<small><strong>Note:</strong> ${rdv.notes}</small><br>` : ""}
-                                        <small>Statut: ${getStatusLabel(rdv.status)}</small><br>
+                                        ${isStartingRow ? `
+                                            <strong>${formatAdminTime(rdv.appointment_time)} — ${rdv.client_name}</strong><br>
+                                            <small>${rdv.service_title}</small><br>
+                                            <small>Durée: ${formatAdminDuration(rdv.duration_minutes)}</small><br>
+                                            ${rdv.notes ? `<small><strong>Note:</strong> ${rdv.notes}</small><br>` : ""}
+                                            <small>Statut: ${getStatusLabel(rdv.status)}</small><br>
 
-                                        <button onclick="showClientFile('${rdv.client_email}')">
-                                            Fiche
-                                        </button>
+                                            <button onclick="showClientFile('${rdv.client_email}')">
+                                                Fiche
+                                            </button>
+                                        ` : `
+                                            <strong>↳ Suite du RDV</strong><br>
+                                            <small>${rdv.client_name}</small><br>
+                                            <small>${rdv.service_title}</small>
+                                        `}
                                     </td>
                                 `;
     }).join("")}
