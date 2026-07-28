@@ -1,6 +1,6 @@
 .header-hours {
     position: absolute;
-    top: 28px;
+    top: 68px;
     right: 32px;
     z-index: 120;
     width: max-content;
@@ -43,7 +43,7 @@
 
 @media (max-width: 767px) {
     .header-hours {
-        top: 12px;
+        top: 52px;
         right: 8px;
         width: 128px;
         max-width: calc(42vw - 8px);
