@@ -1185,7 +1185,10 @@ function renderDailyPlanning(dateValue) {
     const dayAppointments = allAppointments
         .filter((rdv) => {
             const rdvDate = formatDateForInput(rdv.appointment_date);
-            return rdvDate === selectedDate;
+            return rdvDate === selectedDate &&
+                rdv.status !== "completed" &&
+                rdv.status !== "cancelled" &&
+                rdv.status !== "no_show";
         })
         .sort((a, b) => {
             return a.appointment_time.localeCompare(b.appointment_time);
