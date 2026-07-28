@@ -385,10 +385,18 @@ function initProcedureBookingRows() {
             if (!link) {
                 link = document.createElement("a");
                 link.className = "massage-btn";
-                link.textContent = "Prendre rendez-vous";
                 row.appendChild(link);
             }
+            link.textContent = "Prendre rendez-vous";
             link.href = `RDV.html?service=${encodeURIComponent(service)}#booking`;
+
+            row.childNodes.forEach((node) => {
+                if (node.nodeType !== Node.TEXT_NODE || !node.textContent.includes("•")) return;
+
+                node.textContent = node.textContent
+                    .replace(/—\s*(?:Durée\s*)?/i, " — Durée ")
+                    .replace(/•\s*(?:Tarif\s*)?/i, " • Tarif ");
+            });
             rowCount++;
         });
 
