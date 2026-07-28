@@ -664,3 +664,20 @@ a {
 body.modal-open {
     overflow: hidden;
 }
+
+.form-success-message {
+    margin-top: 18px;
+    padding: 14px 16px;
+    border: 1px solid rgba(69, 133, 82, 0.35);
+    border-radius: 12px;
+    background: rgba(235, 255, 239, 0.96);
+    color: #285c34;
+    font-weight: 600;
+    line-height: 1.5;
+    text-align: center;
+    box-shadow: 0 6px 18px rgba(40, 92, 52, 0.12);
+}
+
+.form-success-message[hidden] {
+    display: none;
+}

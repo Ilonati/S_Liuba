@@ -91,10 +91,13 @@ scrollBtn.addEventListener('click', () => {
 const contactForm = document.getElementById("contactForm");
 const successModal = document.getElementById("successModal");
 const closeModal = document.getElementById("closeModal");
+const formSuccessMessage = document.getElementById("formSuccessMessage");
 
 if (contactForm) {
     contactForm.addEventListener("submit", async function (e) {
         e.preventDefault();
+
+        if (formSuccessMessage) formSuccessMessage.hidden = true;
 
         const submitButton = contactForm.querySelector('button[type="submit"]');
         const initialButtonText = submitButton ? submitButton.textContent : "Envoyer";
@@ -144,6 +147,11 @@ if (contactForm) {
 
             if (response.ok) {
                 contactForm.reset();
+
+                if (formSuccessMessage) {
+                    formSuccessMessage.hidden = false;
+                    formSuccessMessage.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                }
 
                 if (successModal) {
                     successModal.classList.add("show");
