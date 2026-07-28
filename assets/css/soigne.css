@@ -752,6 +752,27 @@ a {
     transform: translateY(-2px);
 }
 
+.procedure-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 10px 0;
+    margin: 0;
+    border-bottom: 1px solid #eadde1;
+}
+
+.procedure-row .massage-btn {
+    flex: 0 0 auto;
+    margin-top: 0;
+    white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+    .procedure-row { gap: 10px; }
+    .procedure-row .massage-btn { padding: 9px 13px; font-size: 13px; }
+}
+
 @media (max-width: 768px) {
     .soigne-hero {
         padding: 25px 15px 5px;

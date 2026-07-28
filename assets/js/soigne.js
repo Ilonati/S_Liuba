@@ -267,6 +267,73 @@ function toggleMassage(bloc) {
     }
 }
 
+function initSoinsBookingRows() {
+    const serviceMap = {
+        "REHAUSSEMENT DE CILS|Rehaussement de cils": "Rehaussement de cils",
+        "REHAUSSEMENT DE CILS|Rehaussement de cils + teinture": "Rehaussement de cils + teinture",
+        "REHAUSSEMENT DE CILS|Rehaussement de cils + teinture + lash botox": "Rehaussement de cils + teinture + lash botox",
+        "TEINTURE|Teinture des cils": "Teinture des cils",
+        "TEINTURE|Teinture des sourcils": "Teinture des sourcils",
+        "TEINTURE|Teinture et restructuration des sourcils": "Teinture et restructuration des sourcils",
+        "EXTENSIONS DE CILS|Pose cil à cil": "Pose cil à cil",
+        "EXTENSIONS DE CILS|Remplissage 2 semaines": "Remplissage cil à cil 2 semaines",
+        "EXTENSIONS DE CILS|Remplissage 3 - 4 semaines": "Remplissage cil à cil 3-4 semaines",
+        "EXTENSIONS DE CILS|Pose volume russe": "Pose volume russe",
+        "EXTENSIONS DE CILS|Volume russe - remplissage 2 semaines": "Remplissage volume russe 2 semaines",
+        "EPILATION Femmes|Épilation sourcils": "Épilation sourcils femme",
+        "EPILATION Femmes|Épilation aisselles": "Épilation aisselles femme",
+        "EPILATION Femmes|Épilation maillot classique": "Épilation maillot classique femme",
+        "EPILATION Femmes|Épilation maillot échancré": "Épilation maillot échancré femme",
+        "EPILATION Femmes|Épilation maillot intégral": "Épilation maillot intégral femme",
+        "EPILATION Hommes|Épilation sourcils": "Épilation sourcils homme",
+        "EPILATION Hommes|Épilation aisselles": "Épilation aisselles homme",
+        "EPILATION Hommes|Épilation maillot classique": "Épilation maillot classique homme",
+        "EPILATION Hommes|Épilation maillot échancré": "Épilation maillot échancré homme",
+        "EPILATION Hommes|Épilation maillot intégral": "Épilation maillot intégral homme"
+    };
+
+    document.querySelectorAll(".soigne-accordion-section .massage").forEach((card) => {
+        const title = card.querySelector(".massage_title span")?.textContent.trim();
+        const answer = card.querySelector(".massage_answer");
+        if (!title || !answer) return;
+
+        if (title.includes("SOIN du VISAGE")) {
+            const row = answer.querySelector(":scope > .massage-price");
+            const link = answer.querySelector(":scope > .massage-btn");
+            if (row && link) {
+                row.classList.add("procedure-row");
+                link.href = "RDV.html?service=Soin%20du%20visage#booking";
+                row.appendChild(link);
+            }
+        }
+
+        let count = 0;
+        answer.querySelectorAll(":scope > p").forEach((description) => {
+            const label = description.querySelector("strong")?.textContent.trim();
+            const service = serviceMap[`${title}|${label}`];
+            if (!service) return;
+
+            const priceRow = description.nextElementSibling?.classList.contains("massage-price")
+                ? description.nextElementSibling
+                : description;
+            priceRow.classList.add("procedure-row");
+            priceRow.textContent = priceRow.textContent
+                .replace(/^Durée totale/i, "Durée")
+                .replace(/—\s*(?:Durée\s*)?/i, " — Durée ")
+                .replace(/•\s*(?:Tarif\s*)?/i, " • Tarif ");
+
+            const link = document.createElement("a");
+            link.className = "massage-btn";
+            link.href = `RDV.html?service=${encodeURIComponent(service)}#booking`;
+            link.textContent = "Prendre rendez-vous";
+            priceRow.appendChild(link);
+            count++;
+        });
+
+        if (count) answer.querySelectorAll(":scope > a.massage-btn").forEach((link) => link.remove());
+    });
+}
+
 function initMassage() {
     const blocs = document.querySelectorAll('.massage_bloc');
 
@@ -277,6 +344,7 @@ function initMassage() {
     });
 }
 
+initSoinsBookingRows();
 initMassage();
 
 window.addEventListener('resize', () => {
@@ -327,9 +395,9 @@ async function loadServicesFromBackend() {
                     <div class="massage_answer-bloc">
                         <div class="massage_answer">
                             <p>${service.full_description || service.short_description || ""}</p>
-                            <p class="massage-time">Durée ${service.duration_minutes || "-"} min</p>
-                            <p class="massage-price">Tarif ${service.price || "Sur devis"} €</p>
-                            <a href="RDV.html?serviceId=${service.id}#booking" class="massage-btn">Prendre rendez-vous</a>
+                            <p class="massage-price procedure-row">Durée ${service.duration_minutes || "-"} min • Tarif ${service.price || "Sur devis"} €
+                                <a href="RDV.html?serviceId=${service.id}#booking" class="massage-btn">Prendre rendez-vous</a>
+                            </p>
                         </div>
                     </div>
                 </div>
