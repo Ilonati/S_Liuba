@@ -1,3 +1,6 @@
+const API_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    ? "http://localhost:5000"
+    : "https://sliuba-production.up.railway.app";
 
 /* translateMenu */
 function googleTranslateElementInit() {
@@ -193,7 +196,7 @@ async function loadFaqsFromBackend() {
     if (!faqList) return;
 
     try {
-        const response = await fetch("http://localhost:5000/api/faqs");
+        const response = await fetch(`${API_URL}/api/faqs`);
 
         if (!response.ok) {
             throw new Error("Erreur API FAQ");
@@ -243,4 +246,3 @@ async function loadFaqsFromBackend() {
 }
 
 loadFaqsFromBackend();
-

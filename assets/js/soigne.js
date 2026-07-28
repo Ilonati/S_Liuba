@@ -174,7 +174,7 @@ async function loadPageGallery() {
     const currentCategory = gallerySection.dataset.galleryCategory;
 
     try {
-        const categoriesResponse = await fetch("http://localhost:5000/api/gallery/categories");
+        const categoriesResponse = await fetch(`${API_URL}/api/gallery/categories`);
         const categories = await categoriesResponse.json();
 
         const category = categories.find(cat =>
@@ -191,7 +191,7 @@ async function loadPageGallery() {
             return;
         }
 
-        const galleryResponse = await fetch("http://localhost:5000/api/gallery");
+        const galleryResponse = await fetch(`${API_URL}/api/gallery`);
         const photos = await galleryResponse.json();
 
         const filteredPhotos = photos.filter(photo =>

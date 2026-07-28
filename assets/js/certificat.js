@@ -1,4 +1,8 @@
 
+const API_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    ? "http://localhost:5000"
+    : "https://sliuba-production.up.railway.app";
+
 const header = document.querySelector('.header');
 const burger = document.getElementById('burger');
 
@@ -122,7 +126,7 @@ async function loadCertificatesFromBackend() {
     if (!slider) return;
 
     try {
-        const response = await fetch("http://localhost:5000/api/certificates");
+        const response = await fetch(`${API_URL}/api/certificates`);
 
         if (!response.ok) {
             throw new Error("Erreur API certificats");
@@ -137,7 +141,7 @@ async function loadCertificatesFromBackend() {
             const img = document.createElement("img");
 
             if (cert.file_url.startsWith("/uploads")) {
-                img.src = `http://localhost:5000${cert.file_url}`;
+                img.src = `${API_URL}${cert.file_url}`;
             } else {
                 img.src = cert.file_url;
             }
