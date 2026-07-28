@@ -1,0 +1,77 @@
+.header-hours {
+    position: absolute;
+    top: 28px;
+    right: 32px;
+    z-index: 120;
+    width: max-content;
+    max-width: 260px;
+    padding: 14px 18px;
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(24, 14, 27, 0.24);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 14px;
+    box-shadow: 0 7px 22px rgba(20, 8, 22, 0.18);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+    text-align: right;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    line-height: 1.45;
+    letter-spacing: 0.015em;
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.48);
+}
+
+.header-hours__title {
+    display: block;
+    margin-bottom: 4px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.96);
+}
+
+.header-hours__time {
+    font-weight: 700;
+    color: #fff;
+}
+
+.header-hours__closed {
+    opacity: 0.82;
+}
+
+@media (max-width: 767px) {
+    .header-hours {
+        top: 12px;
+        right: 8px;
+        width: 128px;
+        max-width: calc(42vw - 8px);
+        box-sizing: border-box;
+        padding: 8px 9px;
+        border-radius: 10px;
+        font-size: 0.61rem;
+        line-height: 1.32;
+        letter-spacing: 0;
+    }
+
+    .header-hours__title {
+        margin-bottom: 2px;
+        font-size: 0.69rem;
+        line-height: 1.2;
+    }
+}
+
+@media (max-width: 390px) {
+    .header-hours {
+        right: 5px;
+        width: 116px;
+        max-width: 39vw;
+        padding: 7px;
+        font-size: 0.56rem;
+    }
+
+    .header-hours__title {
+        font-size: 0.62rem;
+    }
+}
