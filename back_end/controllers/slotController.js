@@ -13,6 +13,10 @@ function generateDaySlots(durationMinutes) {
         start <= WORK_END_MINUTES;
         start += SLOT_STEP_MINUTES
     ) {
+        if (start === WORK_END_MINUTES && durationMinutes > 60) {
+            continue;
+        }
+
         slots.push(minutesToTime(start));
     }
 
