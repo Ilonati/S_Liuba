@@ -302,13 +302,13 @@ function showContactOnlyBooking(option) {
 
     if (timeGrid) {
         timeGrid.innerHTML = `
-            <p class="closed-message">
+            <div class="contact-booking-message">
                 <strong>${option.dataset.service}</strong><br>
                 Cette prestation est disponible uniquement par téléphone.<br><br>
-                <a class="btn-primary" href="${href}" ${isPhone ? "" : 'target="_blank" rel="noopener noreferrer"'}>
+                <a class="contact-booking-btn" href="${href}" ${isPhone ? "" : 'target="_blank" rel="noopener noreferrer"'}>
                     ${label}
                 </a>
-            </p>
+            </div>
         `;
     }
 }

@@ -1288,6 +1288,36 @@ main {
     }
 }
 
+.contact-booking-message {
+    grid-column: 1 / -1;
+    padding: 22px;
+    border: 1px solid rgba(201, 149, 71, 0.28);
+    border-radius: 16px;
+    background: rgba(255, 250, 244, 0.92);
+    text-align: center;
+    color: var(--text);
+}
+
+.contact-booking-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 100%;
+    padding: 13px 22px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #e3b56f, #bf812f);
+    color: var(--white);
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 12px 28px rgba(191, 129, 47, 0.25);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.contact-booking-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 32px rgba(191, 129, 47, 0.32);
+}
+
 .service-option .contact-only-badge {
     display: block;
     margin-top: 8px;
