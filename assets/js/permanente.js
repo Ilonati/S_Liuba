@@ -334,3 +334,68 @@ async function loadPermanentServicesFromBackend() {
 }
 
 loadPermanentServicesFromBackend();
+
+function initProcedureBookingRows() {
+    const serviceMap = {
+        "Maquillage permanent - SOURCILS|Technique Poil à Poil": "Technique Poil à Poil",
+        "Maquillage permanent - SOURCILS|Technique Mixte": "Technique Mixte",
+        "Maquillage permanent - SOURCILS|Technique Poudré": "Technique Poudrée",
+        "Maquillage permanent - SOURCILS|Retouche Fixatrice 4-5 semaines": "Retouche Fixatrice Sourcils",
+        "Retouches Annuelle - SOURCILS|Technique Poil à Poil": "Retouche annuelle Poil à Poil",
+        "Retouches Annuelle - SOURCILS|Technique Mixte": "Retouche annuelle Technique Mixte",
+        "Retouches Annuelle - SOURCILS|Technique Poudrée": "Retouche annuelle Technique Poudrée",
+        "Maquillage permanent - LINER|Ras de cils": "Ras de cils",
+        "Maquillage permanent - LINER|Lash liner": "Lash liner",
+        "Maquillage permanent - LINER|Retouche Fixatrice 4-5 semaines": "Retouche Fixatrice Liner",
+        "Retouches Annuelle - LINER|Ras de cils": "Retouche annuelle Ras de cils",
+        "Retouches Annuelle - LINER|Lash liner": "Retouche annuelle Lash liner",
+        "Maquillage permanent - LÈVRES|Technique poudrée": "Technique poudrée Lèvres",
+        "Maquillage permanent - LÈVRES|Retouche Fixatrice 4-5 semaines": "Retouche Fixatrice Lèvres",
+        "Retouches Annuelle - LÈVRES|Retouche annuelle": "Retouche annuelle Lèvres",
+        "DÉTATOUAGE sans laser|Détatouage sans laser": "Détatouage sans laser",
+        "DÉTATOUAGE sans laser|Séance suivante": "Séance suivante Détatouage",
+        "DÉTATOUAGE sans laser|RDV de conseil": "Conseil détatouage",
+        "RECONSTRUCTION aréole mammaire / CAMOUFLAGE cicatrices, vergetures, vitiligo|Reconstruction aréole mammaire": "Reconstruction aréole mammaire",
+        "RECONSTRUCTION aréole mammaire / CAMOUFLAGE cicatrices, vergetures, vitiligo|Camouflage cicatrices, vergetures, vitiligo": "Camouflage cicatrices, vergetures, vitiligo"
+    };
+
+    document.querySelectorAll(".permanent-accordion-section .massage").forEach((card) => {
+        const sectionTitle = card.querySelector(".massage_title span")?.textContent.trim();
+        const answer = card.querySelector(".massage_answer");
+        if (!sectionTitle || !answer) return;
+
+        if (sectionTitle === "CONSEIL MAQUILLAGE PERMANENT") {
+            const row = answer.querySelector(":scope > .massage-price");
+            const link = answer.querySelector(":scope > a.massage-btn");
+            if (row && link) {
+                row.classList.add("procedure-row");
+                link.href = "RDV.html?service=Conseil%20maquillage%20permanent#booking";
+                row.appendChild(link);
+            }
+        }
+
+        let rowCount = 0;
+        answer.querySelectorAll(":scope > p").forEach((row) => {
+            const procedureTitle = row.querySelector("strong")?.textContent.trim();
+            const service = serviceMap[`${sectionTitle}|${procedureTitle}`];
+            if (!service) return;
+
+            row.classList.add("procedure-row");
+            let link = row.querySelector(".massage-btn");
+            if (!link) {
+                link = document.createElement("a");
+                link.className = "massage-btn";
+                link.textContent = "Prendre rendez-vous";
+                row.appendChild(link);
+            }
+            link.href = `RDV.html?service=${encodeURIComponent(service)}#booking`;
+            rowCount++;
+        });
+
+        if (rowCount) {
+            answer.querySelectorAll(":scope > a.massage-btn").forEach((link) => link.remove());
+        }
+    });
+}
+
+initProcedureBookingRows();
