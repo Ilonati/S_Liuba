@@ -161,6 +161,20 @@ function toggleMassage(bloc) {
     }
 }
 
+function initMassageBookingRows(root = document) {
+    root.querySelectorAll(".massage_answer").forEach((answer) => {
+        const price = answer.querySelector(":scope > .massage-price");
+        const button = answer.querySelector(":scope > .massage-btn");
+        if (!price || !button) return;
+
+        price.textContent = price.textContent
+            .replace(/^Durée totale/i, "Durée")
+            .replace(/^Tarif\s*/i, "Durée non précisée • Tarif ");
+        price.classList.add("massage-booking-row");
+        price.appendChild(button);
+    });
+}
+
 function initMassage() {
     const blocs = document.querySelectorAll('.massage_bloc');
 
@@ -179,6 +193,7 @@ function initMassage() {
     });
 }
 
+initMassageBookingRows();
 initMassage();
 
 /* Recalculate accordion height when resize */
@@ -230,8 +245,7 @@ async function loadServicesFromBackend() {
                     <div class="massage_answer-bloc">
                         <div class="massage_answer">
                             <p>${service.full_description || service.short_description || ""}</p>
-                            <p class="massage-time">Durée ${service.duration_minutes || "-"} min</p>
-                            <p class="massage-price">Tarif ${service.price || "Sur devis"} €</p>
+                            <p class="massage-price">Durée ${service.duration_minutes || "-"} min • Tarif ${service.price || "Sur devis"} €</p>
                             <a href="RDV.html?serviceId=${service.id}#booking" class="massage-btn">Prendre rendez-vous</a>
                         </div>
                     </div>
@@ -239,6 +253,7 @@ async function loadServicesFromBackend() {
             `;
 
             container.appendChild(item);
+            initMassageBookingRows(item);
         });
 
         initMassage();

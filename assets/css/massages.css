@@ -612,6 +612,25 @@ a {
     transform: translateY(-2px);
 }
 
+.massage-booking-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 10px 0;
+}
+
+.massage-booking-row .massage-btn {
+    flex: 0 0 auto;
+    margin-top: 0;
+    white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+    .massage-booking-row { gap: 10px; }
+    .massage-booking-row .massage-btn { padding: 9px 13px; font-size: 13px; }
+}
+
 .massage-intro {
     max-width: 850px;
     margin: 20px auto 40px;
