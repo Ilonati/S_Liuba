@@ -1,15 +1,19 @@
 const slotRepository = require("../repository/slotRepository");
 const blockRepository = require("../repository/blockRepository");
 
-const WORK_START = 9;
-const WORK_END = 19;
-const LAST_APPOINTMENT_START = 19;
+const WORK_START_MINUTES = 9 * 60;
+const WORK_END_MINUTES = 19 * 60;
+const BOOKING_BUFFER_MINUTES = 10;
 
-function generateDaySlots() {
+function generateDaySlots(durationMinutes) {
     const slots = [];
 
-    for (let hour = WORK_START; hour <= WORK_END; hour++) {
-        slots.push(`${String(hour).padStart(2, "0")}:00:00`);
+    for (
+        let start = WORK_START_MINUTES;
+        start + durationMinutes <= WORK_END_MINUTES;
+        start += durationMinutes + BOOKING_BUFFER_MINUTES
+    ) {
+        slots.push(minutesToTime(start));
     }
 
     return slots;
@@ -32,29 +36,12 @@ function minutesToTime(totalMinutes) {
     return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:00`;
 }
 
-function getBookedTimesFromAppointments(appointments) {
-    const bookedTimes = [];
-
-    appointments.forEach((appointment) => {
-        const startMinutes = timeToMinutes(appointment.appointment_time);
-        const duration = Number(appointment.duration_minutes || 60);
-        const slotsToBlock = Math.ceil(duration / 60);
-
-        for (let i = 0; i < slotsToBlock; i++) {
-            bookedTimes.push(minutesToTime(startMinutes + i * 60));
-        }
-    });
-
-    return bookedTimes;
+function intervalsOverlap(startA, durationA, startB, durationB) {
+    return startA < startB + durationB && startB < startA + durationA;
 }
 
-function removeSlotsThatDoNotFitDuration(slots, selectedDuration = 60) {
-    const lastStartMinutes = LAST_APPOINTMENT_START * 60;
-
-    return slots.filter((slot) => {
-        const startMinutes = timeToMinutes(slot);
-        return startMinutes <= lastStartMinutes;
-    });
+function isValidDuration(value) {
+    return Number.isInteger(value) && value > 0 && value <= WORK_END_MINUTES - WORK_START_MINUTES;
 }
 
 async function getAvailableSlots(req, res) {
@@ -76,7 +63,12 @@ async function getAvailableSlots(req, res) {
         }
 
         const selectedDuration = Number(duration || 60);
-        const allSlots = generateDaySlots();
+
+        if (!isValidDuration(selectedDuration)) {
+            return res.status(400).json({ message: "Durée invalide" });
+        }
+
+        const allSlots = generateDaySlots(selectedDuration);
 
         const bookedAppointments =
             await slotRepository.getBookedAppointmentsByDate(date);
@@ -100,26 +92,34 @@ async function getAvailableSlots(req, res) {
             });
         }
 
-        const bookedTimes =
-            getBookedTimesFromAppointments(bookedAppointments);
-
         const blockedTimes = blockedSlots
             .filter((block) => block.block_time !== null)
-            .map((block) => block.block_time.toString());
+            .map((block) => timeToMinutes(block.block_time));
 
-        let unavailableTimes = [
-            ...bookedTimes,
-            ...blockedTimes
-        ];
+        let availableSlots = allSlots.filter((slot) => {
+            const candidateStart = timeToMinutes(slot);
 
-        let availableSlots = allSlots.filter(
-            (slot) => !unavailableTimes.includes(slot)
-        );
+            const overlapsAppointment = bookedAppointments.some((appointment) =>
+                intervalsOverlap(
+                    candidateStart,
+                    selectedDuration + BOOKING_BUFFER_MINUTES,
+                    timeToMinutes(appointment.appointment_time),
+                    Number(appointment.duration_minutes || 60) + BOOKING_BUFFER_MINUTES
+                )
+            );
 
-        availableSlots = removeSlotsThatDoNotFitDuration(
-            availableSlots,
-            selectedDuration
-        );
+            // An hourly admin block makes that complete hour unavailable.
+            const overlapsBlock = blockedTimes.some((blockStart) =>
+                intervalsOverlap(
+                    candidateStart,
+                    selectedDuration + BOOKING_BUFFER_MINUTES,
+                    blockStart,
+                    60
+                )
+            );
+
+            return !overlapsAppointment && !overlapsBlock;
+        });
 
         availableSlots = removePastSlotsForToday(date, availableSlots);
 

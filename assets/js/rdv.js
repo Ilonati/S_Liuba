@@ -1,4 +1,8 @@
 // Google Translate
+const API_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    ? "http://localhost:5000"
+    : "https://sliuba-production.up.railway.app";
+
 function googleTranslateElementInit() {
     if (window.google && google.translate) {
         new google.translate.TranslateElement({
@@ -262,7 +266,7 @@ async function loadAvailableSlots() {
 
     try {
         const response = await fetch(
-            `http://localhost:5000/api/slots?date=${dateForApi}&duration=${selectedDuration}`
+            `${API_URL}/api/slots?date=${dateForApi}&duration=${selectedDuration}`
         );
 
         const result = await response.json();
@@ -367,7 +371,7 @@ if (bookingForm && successMessage) {
         };
 
         try {
-            const response = await fetch("http://localhost:5000/api/appointments", {
+            const response = await fetch(`${API_URL}/api/appointments`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -449,7 +453,7 @@ async function loadServicesForBookingFromBackend() {
     if (!serviceList) return;
 
     try {
-        const response = await fetch("http://localhost:5000/api/services");
+        const response = await fetch(`${API_URL}/api/services`);
 
         if (!response.ok) {
             throw new Error("Erreur API services");
@@ -588,7 +592,7 @@ function createBookingServiceOption(service) {
 
 async function loadServicesIntoExistingCategories() {
     try {
-        const response = await fetch("http://localhost:5000/api/services");
+        const response = await fetch(`${API_URL}/api/services`);
 
         if (!response.ok) {
             throw new Error("Erreur API services");

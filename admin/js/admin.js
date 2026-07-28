@@ -1,4 +1,6 @@
-const API_URL = "http://localhost:5000";
+const API_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    ? "http://localhost:5000"
+    : "https://sliuba-production.up.railway.app";
 
 const loginForm = document.getElementById("loginForm");
 const loginMessage = document.getElementById("loginMessage");
@@ -217,6 +219,7 @@ function renderAppointments(appointments) {
                 <div style="border:1px solid #ddd; padding:12px; margin:10px 0;">
                     <strong>${rdv.client_name}</strong><br>
                     ${rdv.service_title}<br>
+                    Durée: <strong>${formatAdminDuration(rdv.duration_minutes)}</strong><br>
                     ${rdv.notes ? `<strong>Note:</strong> ${rdv.notes}<br>` : ""}
                     ${formatAdminDate(rdv.appointment_date)} à ${formatAdminTime(rdv.appointment_time)}<br>
                     Statut: <strong>${getStatusLabel(rdv.status)}</strong><br><br>
@@ -241,6 +244,7 @@ function renderAppointments(appointments) {
                     <div style="border:1px solid #ccc; padding:12px; margin:10px 0; background:#f8f8f8;">
                         <strong>${rdv.client_name}</strong><br>
                         ${rdv.service_title}<br>
+                        Durée: <strong>${formatAdminDuration(rdv.duration_minutes)}</strong><br>
                         ${rdv.notes ? `<strong>Note:</strong> ${rdv.notes}<br>` : ""}
                         ${formatAdminDate(rdv.appointment_date)} à ${formatAdminTime(rdv.appointment_time)}<br>
                         Statut: <strong>${getStatusLabel(rdv.status)}</strong><br><br>
@@ -317,6 +321,16 @@ function formatAdminTime(timeValue) {
     if (!timeValue) return "-";
 
     return timeValue.toString().slice(0, 5).replace(":", "h");
+}
+
+function formatAdminDuration(durationValue) {
+    const duration = Number(durationValue || 60);
+    const hours = Math.floor(duration / 60);
+    const minutes = duration % 60;
+
+    if (!hours) return `${minutes} min`;
+    if (!minutes) return `${hours} h`;
+    return `${hours} h ${minutes} min`;
 }
 
 function formatDateForInput(dateValue) {
@@ -620,7 +634,7 @@ async function editAppointment(id) {
         if (appointmentTime === null) return;
 
         const durationMinutes = prompt(
-            "Durée en minutes",
+            "Durée de la prestation en minutes (le corridor de 10 min est ajouté automatiquement)",
             rdv.duration_minutes || 60
         );
         if (durationMinutes === null) return;
@@ -1113,6 +1127,8 @@ function showClientFile(clientEmail) {
 
                     ${rdv.service_title}<br>
 
+                    Durée: ${formatAdminDuration(rdv.duration_minutes)}<br>
+
                     ${rdv.notes ? `<strong>Note:</strong> ${rdv.notes}<br>` : ""}
 
                     Statut: ${getStatusLabel(rdv.status)}
@@ -1167,6 +1183,7 @@ function renderDailyPlanning(dateValue) {
             <strong>${formatAdminTime(rdv.appointment_time)}</strong><br>
             ${rdv.client_name}<br>
             ${rdv.service_title}<br>
+            Durée: <strong>${formatAdminDuration(rdv.duration_minutes)}</strong><br>
             ${rdv.notes ? `<strong>Note:</strong> ${rdv.notes}<br>` : ""}
             Statut: ${getStatusLabel(rdv.status)}
         </div>
@@ -1310,6 +1327,7 @@ function renderWeekCalendar(dateValue) {
                                     ">
                                         <strong>${rdv.client_name}</strong><br>
                                         <small>${rdv.service_title}</small><br>
+                                        <small>Durée: ${formatAdminDuration(rdv.duration_minutes)}</small><br>
                                         ${rdv.notes ? `<small><strong>Note:</strong> ${rdv.notes}</small><br>` : ""}
                                         <small>Statut: ${getStatusLabel(rdv.status)}</small><br>
 

@@ -2,6 +2,7 @@ const appointmentRepository = require("../repository/appointmentRepository");
 const mailService = require("../services/mailService");
 const blockedClientRepository = require("../repository/blockedClientRepository");
 const blockRepository = require("../repository/blockRepository");
+const BOOKING_BUFFER_MINUTES = 10;
 
 async function getAdminAppointments(req, res) {
     try {
@@ -32,6 +33,17 @@ function isPastDateTime(dateString, timeString) {
 
     return appointmentDateTime < now;
 }
+
+function timeToMinutes(timeString) {
+    const [hours, minutes] = String(timeString).split(":").map(Number);
+    return hours * 60 + minutes;
+}
+
+function hasValidWorkingHours(timeString, durationMinutes) {
+    const start = timeToMinutes(timeString);
+    return Number.isInteger(durationMinutes) && durationMinutes > 0 &&
+        start >= 9 * 60 && start + durationMinutes <= 19 * 60;
+}
 async function createAppointment(req, res) {
     try {
 
@@ -60,6 +72,14 @@ async function createAppointment(req, res) {
             });
         }
 
+        const durationMinutes = Number(data.duration_minutes || 60);
+
+        if (!hasValidWorkingHours(data.appointment_time, durationMinutes)) {
+            return res.status(400).json({
+                message: "Ce rendez-vous dépasse les horaires d’ouverture"
+            });
+        }
+
         const blockedSlots = await blockRepository.getBlocksByDate(
             data.appointment_date
         );
@@ -77,10 +97,12 @@ async function createAppointment(req, res) {
             });
         }
 
+        const appointmentStart = timeToMinutes(data.appointment_time);
         const blockedHour = blockedSlots.find(
-            (block) =>
-                block.block_time !== null &&
-                block.block_time.toString() === data.appointment_time
+            (block) => block.block_time !== null &&
+                appointmentStart < timeToMinutes(block.block_time) + 60 &&
+                timeToMinutes(block.block_time) <
+                    appointmentStart + durationMinutes + BOOKING_BUFFER_MINUTES
         );
 
         if (blockedHour) {
@@ -108,7 +130,8 @@ async function createAppointment(req, res) {
         const conflict =
             await appointmentRepository.checkTimeConflict({
                 appointment_date: data.appointment_date,
-                appointment_time: data.appointment_time
+                appointment_time: data.appointment_time,
+                duration_minutes: durationMinutes
             });
 
         if (conflict) {
@@ -162,10 +185,19 @@ async function updateAppointment(req, res) {
             });
         }
 
+        const durationMinutes = Number(req.body.duration_minutes || 60);
+
+        if (!hasValidWorkingHours(req.body.appointment_time, durationMinutes)) {
+            return res.status(400).json({
+                message: "Ce rendez-vous dépasse les horaires d’ouverture"
+            });
+        }
+
         const conflict =
             await appointmentRepository.checkTimeConflict({
                 appointment_date: req.body.appointment_date,
                 appointment_time: req.body.appointment_time,
+                duration_minutes: durationMinutes,
                 excludeId: id
             });
 

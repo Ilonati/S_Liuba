@@ -40,24 +40,25 @@ function formatFrenchTime(timeValue) {
     return timeValue.toString().slice(0, 5).replace(":", "h");
 }
 
+function formatDuration(durationValue) {
+    const duration = Number(durationValue || 60);
+
+    if (duration < 60) {
+        return `${duration} min`;
+    }
+
+    const hours = Math.floor(duration / 60);
+    const minutes = duration % 60;
+
+    return minutes > 0
+        ? `${hours} h ${minutes} min`
+        : `${hours} h`;
+}
+
 function formatAppointmentDetails(appointment) {
     const formattedDate = formatFrenchDate(appointment.appointment_date);
     const formattedTime = formatFrenchTime(appointment.appointment_time);
-    const duration = Number(appointment.duration_minutes || 60);
-
-    let durationText = "";
-
-    if (duration >= 60) {
-        const hours = Math.floor(duration / 60);
-        const minutes = duration % 60;
-
-        durationText =
-            minutes > 0
-                ? `${hours} h ${minutes}`
-                : `${hours} h`;
-    } else {
-        durationText = `${duration} min`;
-    }
+    const durationText = formatDuration(appointment.duration_minutes);
 
     return `
 Nom: ${appointment.client_name}
@@ -73,21 +74,7 @@ Notes: ${appointment.notes || "-"}
 function appointmentHtmlTemplate({ title, intro, appointment, reason = null }) {
     const formattedDate = formatFrenchDate(appointment.appointment_date);
     const formattedTime = formatFrenchTime(appointment.appointment_time);
-    const duration = Number(appointment.duration_minutes || 60);
-
-    let durationText = "";
-
-    if (duration >= 60) {
-        const hours = Math.floor(duration / 60);
-        const minutes = duration % 60;
-
-        durationText =
-            minutes > 0
-                ? `${hours} h ${minutes}`
-                : `${hours} h`;
-    } else {
-        durationText = `${duration} min`;
-    }
+    const durationText = formatDuration(appointment.duration_minutes);
 
     return `
         <div style="font-family:Arial,sans-serif;background:#f7f3ef;padding:30px;">
@@ -523,21 +510,7 @@ function adminAppointmentTemplate(appointment) {
         (appointment.client_name || "").split(" ");
 
     const lastName = rest.join(" ");
-    const duration = Number(appointment.duration_minutes || 60);
-
-    let durationText = "";
-
-    if (duration >= 60) {
-        const hours = Math.floor(duration / 60);
-        const minutes = duration % 60;
-
-        durationText =
-            minutes > 0
-                ? `${hours} h ${minutes}`
-                : `${hours} h`;
-    } else {
-        durationText = `${duration} min`;
-    }
+    const durationText = formatDuration(appointment.duration_minutes);
 
     return `
     <div style="
