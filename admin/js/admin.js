@@ -186,7 +186,7 @@ async function loadAppointments() {
 
         allAppointments = appointments;
 
-        renderAppointments(appointments);
+        applyAppointmentSearch();
         renderDailyPlanning(planningDate ? planningDate.value : null);
         renderWeekCalendar(weekCalendarDate ? weekCalendarDate.value : null);
     } catch (error) {
@@ -1061,26 +1061,43 @@ async function deleteBlockedSlot(id) {
 
 loadBlockedSlots();
 
+function normalizeAppointmentSearch(value) {
+    return String(value || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .toLowerCase();
+}
+
+function applyAppointmentSearch() {
+    const query = normalizeAppointmentSearch(appointmentSearch?.value);
+
+    if (!query) {
+        renderAppointments(allAppointments);
+        return;
+    }
+
+    const filtered = allAppointments.filter((rdv) => [
+        rdv.client_name,
+        rdv.client_email,
+        rdv.client_phone,
+        rdv.service_title
+    ].some((value) => normalizeAppointmentSearch(value).includes(query)));
+
+    renderAppointments(filtered);
+
+    if (historyAppointments) {
+        historyAppointments.style.display = "block";
+    }
+
+    if (historyToggle) {
+        historyToggle.textContent = "Historique des rendez-vous ▲";
+    }
+}
+
 if (appointmentSearch) {
-    appointmentSearch.addEventListener("input", () => {
-        const query = appointmentSearch.value.toLowerCase().trim();
-
-        if (!query) {
-            renderAppointments(allAppointments);
-            return;
-        }
-
-        const filtered = allAppointments.filter((rdv) => {
-            return (
-                (rdv.client_name || "").toLowerCase().includes(query) ||
-                (rdv.client_email || "").toLowerCase().includes(query) ||
-                (rdv.client_phone || "").toLowerCase().includes(query) ||
-                (rdv.service_title || "").toLowerCase().includes(query)
-            );
-        });
-
-        renderAppointments(filtered);
-    });
+    appointmentSearch.addEventListener("input", applyAppointmentSearch);
 }
 // ClientFile
 function showClientFile(clientEmail) {
