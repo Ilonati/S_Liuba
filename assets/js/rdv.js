@@ -3,6 +3,29 @@ const API_URL = window.location.hostname === "localhost" || window.location.host
     ? "http://localhost:5000"
     : "https://sliuba-production.up.railway.app";
 
+function updateRdvContactButtons() {
+    const isPhone = window.matchMedia("(max-width: 768px) and (pointer: coarse)").matches;
+
+    document.querySelectorAll('a.btn-secondary[href^="tel:0783714349"], a.btn-secondary[data-contact-button]').forEach((button) => {
+        button.dataset.contactButton = "true";
+
+        if (isPhone) {
+            button.href = "tel:0783714349";
+            button.textContent = "Appeler : 07 83 71 43 49";
+            button.removeAttribute("target");
+            button.removeAttribute("rel");
+        } else {
+            button.href = "https://wa.me/33783714349?text=Bonjour%2C%20je%20souhaite%20prendre%20rendez-vous.";
+            button.textContent = "WhatsApp : 07 83 71 43 49";
+            button.target = "_blank";
+            button.rel = "noopener noreferrer";
+        }
+    });
+}
+
+updateRdvContactButtons();
+window.addEventListener("resize", updateRdvContactButtons);
+
 function googleTranslateElementInit() {
     if (window.google && google.translate) {
         new google.translate.TranslateElement({
