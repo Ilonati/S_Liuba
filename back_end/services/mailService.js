@@ -2,10 +2,16 @@ require("dotenv").config();
 const nodemailer = require("nodemailer");
 const db = require("../db");
 
+const mailHost = process.env.MAIL_HOST || "smtp.gmail.com";
+const isGmailSmtp = mailHost.toLowerCase() === "smtp.gmail.com";
+
+// The configuration that was working in production on 28/07 at 14:34 used
+// Gmail over implicit TLS (465). Keep credentials in Railway variables, but
+// do not allow a stale MAIL_PORT/MAIL_SECURE pair to switch Gmail to STARTTLS.
 const transporter = nodemailer.createTransport({
-    host: process.env.MAIL_HOST,
-    port: Number(process.env.MAIL_PORT),
-    secure: process.env.MAIL_SECURE === "true",
+    host: mailHost,
+    port: isGmailSmtp ? 465 : Number(process.env.MAIL_PORT),
+    secure: isGmailSmtp ? true : process.env.MAIL_SECURE === "true",
     auth: {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASS
