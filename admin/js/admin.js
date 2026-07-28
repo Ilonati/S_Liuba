@@ -288,6 +288,14 @@ async function updateAppointmentStatus(id, status) {
         await loadAppointments();
         loadDashboard();
 
+        if (["completed", "cancelled", "no_show"].includes(status) && historyAppointments) {
+            historyAppointments.style.display = "block";
+
+            if (historyToggle) {
+                historyToggle.textContent = "Historique des rendez-vous ▲";
+            }
+        }
+
     } catch (error) {
         console.error(error);
         alert("Erreur serveur");

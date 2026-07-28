@@ -304,25 +304,36 @@ async function updateStatus(req, res) {
             });
         }
 
-        await appointmentRepository.createHistory(
-            id,
-            "status_change",
-            { status: appointment.status },
-            { status }
-        );
-
-        const updatedAppointment =
-            await appointmentRepository.getAppointmentById(id);
-
-        if (status === "cancelled") {
-            await mailService.sendAppointmentCancelledEmails(
-                updatedAppointment,
-                reason
+        try {
+            await appointmentRepository.createHistory(
+                id,
+                "status_change",
+                { status: appointment.status },
+                { status }
             );
+        } catch (historyError) {
+            console.error("Erreur historique statut RDV:", historyError);
         }
-        if (status === "completed") {
-            await mailService.sendReviewRequestEmail(updatedAppointment);
+
+        try {
+            const updatedAppointment =
+                await appointmentRepository.getAppointmentById(id);
+
+            if (status === "cancelled") {
+                await mailService.sendAppointmentCancelledEmails(
+                    updatedAppointment,
+                    reason
+                );
+            }
+            if (status === "completed") {
+                await mailService.sendReviewRequestEmail(updatedAppointment);
+            }
+        } catch (mailError) {
+            // The status is already saved. Email errors must not make the
+            // administrator believe that the action failed.
+            console.error("Erreur email statut RDV:", mailError);
         }
+
         res.json({
             message: "Statut modifié"
         });
