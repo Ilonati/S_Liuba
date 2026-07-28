@@ -41,7 +41,7 @@ function timeToMinutes(timeString) {
 function hasValidWorkingHours(timeString, durationMinutes) {
     const start = timeToMinutes(timeString);
     return Number.isInteger(durationMinutes) && durationMinutes > 0 &&
-        start >= 9 * 60 && start + durationMinutes <= 19 * 60;
+        start >= 9 * 60 && start <= 19 * 60;
 }
 async function createAppointment(req, res) {
     try {

@@ -10,7 +10,7 @@ function generateDaySlots(durationMinutes) {
 
     for (
         let start = WORK_START_MINUTES;
-        start + durationMinutes <= WORK_END_MINUTES;
+        start <= WORK_END_MINUTES;
         start += SLOT_STEP_MINUTES
     ) {
         slots.push(minutesToTime(start));
