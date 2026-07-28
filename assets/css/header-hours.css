@@ -43,7 +43,7 @@
 
 @media (max-width: 767px) {
     .header-hours {
-        top: 58px;
+        top: 38px;
         right: 8px;
         width: 128px;
         max-width: calc(42vw - 8px);
