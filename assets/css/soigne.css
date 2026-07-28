@@ -763,9 +763,16 @@ a {
 }
 
 .procedure-row .massage-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     flex: 0 0 auto;
+    min-height: 50px;
     margin-top: 0;
     white-space: nowrap;
+    text-align: center;
+    line-height: 1.2;
+    box-sizing: border-box;
 }
 
 .procedure-row .procedure-summary {
@@ -789,6 +796,9 @@ a {
         padding: 18px 0;
     }
     .procedure-row .massage-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         width: 100%;
         max-width: 100%;
         min-width: 0;
@@ -797,6 +807,7 @@ a {
         box-sizing: border-box;
         white-space: normal;
         font-size: 16px;
+        text-align: center;
     }
 
     .procedure-row .procedure-summary strong,
