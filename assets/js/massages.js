@@ -175,6 +175,26 @@ function initMassageBookingRows(root = document) {
     });
 }
 
+function updateMassageContactButtons() {
+    const isPhone = window.matchMedia("(max-width: 768px) and (pointer: coarse)").matches;
+
+    document.querySelectorAll('.massage_answer a[href^="tel:0783714349"], .massage_answer a[data-contact-booking]').forEach((button) => {
+        button.dataset.contactBooking = "true";
+
+        if (isPhone) {
+            button.href = "tel:0783714349";
+            button.textContent = "Appeler : 07 83 71 43 49";
+            button.removeAttribute("target");
+            button.removeAttribute("rel");
+        } else {
+            button.href = "https://wa.me/33783714349?text=Bonjour%2C%20je%20souhaite%20prendre%20rendez-vous.";
+            button.textContent = "WhatsApp : 07 83 71 43 49";
+            button.target = "_blank";
+            button.rel = "noopener noreferrer";
+        }
+    });
+}
+
 function initMassage() {
     const blocs = document.querySelectorAll('.massage_bloc');
 
@@ -194,7 +214,10 @@ function initMassage() {
 }
 
 initMassageBookingRows();
+updateMassageContactButtons();
 initMassage();
+
+window.addEventListener("resize", updateMassageContactButtons);
 
 /* Recalculate accordion height when resize */
 window.addEventListener('resize', () => {
