@@ -1331,6 +1331,7 @@ function renderWeekCalendar(dateValue) {
 
             return (
                 itemDate === dateApi &&
+                item.status !== "completed" &&
                 item.status !== "cancelled" &&
                 item.status !== "no_show" &&
                 appointmentStart < rowEnd &&
