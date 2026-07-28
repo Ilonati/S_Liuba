@@ -6,6 +6,9 @@ const transporter = nodemailer.createTransport({
     host: process.env.MAIL_HOST,
     port: Number(process.env.MAIL_PORT),
     secure: process.env.MAIL_SECURE === "true",
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
     auth: {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASS
@@ -141,7 +144,7 @@ function appointmentHtmlTemplate({ title, intro, appointment, reason = null }) {
 
 async function sendMail({ to, subject, text, html }) {
     try {
-        await transporter.sendMail({
+        const info = await transporter.sendMail({
             from: `"Institut S Liuba" <${process.env.MAIL_USER}>`,
             to,
             subject,
@@ -150,9 +153,19 @@ async function sendMail({ to, subject, text, html }) {
         });
 
         await logEmail(to, subject, "sent");
+        return {
+            success: true,
+            accepted: info.accepted || [],
+            rejected: info.rejected || []
+        };
     } catch (error) {
         console.error("Email error:", error.message);
-        await logEmail(to, subject, "failed", error.message);
+        try {
+            await logEmail(to, subject, "failed", error.message);
+        } catch (logError) {
+            console.error("Email log error:", logError.message);
+        }
+        return { success: false, error: error.message };
     }
 }
 

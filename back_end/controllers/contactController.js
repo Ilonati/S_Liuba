@@ -13,14 +13,7 @@ async function createMessage(req, res) {
 
         const id = await contactRepository.createMessage(data);
 
-        const mailDelivery = mailService.sendContactMessageToAdmin(data).catch((emailError) => {
-            console.error("Contact email failed:", emailError.message);
-        });
-
-        await Promise.race([
-            mailDelivery,
-            new Promise((resolve) => setTimeout(resolve, 5000))
-        ]);
+        await mailService.sendContactMessageToAdmin(data);
 
         res.status(201).json({
             message: "Message envoyé",

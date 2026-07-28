@@ -185,16 +185,7 @@ async function createAppointment(req, res) {
         const newAppointment =
             await appointmentRepository.getAppointmentById(appointmentId);
 
-        const mailDelivery = mailService
-            .sendAppointmentCreatedEmails(newAppointment)
-            .catch((mailError) => {
-                console.error("Erreur email création RDV:", mailError);
-            });
-
-        await Promise.race([
-            mailDelivery,
-            new Promise((resolve) => setTimeout(resolve, 5000))
-        ]);
+        await mailService.sendAppointmentCreatedEmails(newAppointment);
 
         res.status(201).json({
             message: "Rendez-vous créé",

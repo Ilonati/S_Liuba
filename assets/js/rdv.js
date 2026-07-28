@@ -417,6 +417,9 @@ if (bookingForm && successMessage) {
     bookingForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
+        successMessage.classList.remove('show');
+        successMessage.innerHTML = '';
+
         if (isBookingSubmissionInProgress) return;
 
         const name = document.getElementById('clientName').value.trim();
@@ -489,7 +492,7 @@ if (bookingForm && successMessage) {
     merci de nous contacter via la page Contact du site
     en sélectionnant le sujet :<br>
     <strong>« Annulation RDV »</strong>.<br>
-    Je vous répondrons dans les meilleurs délais.
+    Je vous répondrai dans les meilleurs délais.
                 `;
                 bookingForm.reset();
                 successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
