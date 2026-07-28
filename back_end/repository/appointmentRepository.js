@@ -26,12 +26,23 @@ async function getAppointmentById(id) {
 
 async function checkTimeConflict({ appointment_date, appointment_time, duration_minutes = 60, excludeId = null }) {
     let query = `
-    SELECT id
-    FROM appointments
-    WHERE appointment_date = ?
-      AND status NOT IN ('cancelled', 'completed', 'no_show')
-      AND TIME_TO_SEC(appointment_time) < TIME_TO_SEC(?) + (? * 60)
-      AND TIME_TO_SEC(appointment_time) + (COALESCE(duration_minutes, 60) * 60) > TIME_TO_SEC(?)
+    SELECT a.id
+    FROM appointments a
+    WHERE a.appointment_date = ?
+      AND a.status NOT IN ('cancelled', 'completed', 'no_show')
+      AND TIME_TO_SEC(a.appointment_time) < TIME_TO_SEC(?) + (? * 60)
+      AND TIME_TO_SEC(a.appointment_time) + (
+        COALESCE(
+          (SELECT s.duration_minutes
+             FROM services s
+            WHERE s.id = a.service_id
+               OR (a.service_id IS NULL AND LOWER(TRIM(s.title)) = LOWER(TRIM(a.service_title)))
+            ORDER BY (s.id = a.service_id) DESC, s.id DESC
+            LIMIT 1),
+          a.duration_minutes,
+          60
+        ) * 60
+      ) > TIME_TO_SEC(?)
   `;
 
     const params = [
@@ -42,7 +53,7 @@ async function checkTimeConflict({ appointment_date, appointment_time, duration_
     ];
 
     if (excludeId) {
-        query += " AND id != ?";
+        query += " AND a.id != ?";
         params.push(excludeId);
     }
 

@@ -22,6 +22,14 @@ async function getServiceById(id) {
     return rows[0];
 }
 
+async function getServiceByTitle(title) {
+    const [rows] = await db.query(
+        "SELECT * FROM services WHERE LOWER(TRIM(title)) = LOWER(TRIM(?)) ORDER BY id DESC LIMIT 1",
+        [title]
+    );
+    return rows[0];
+}
+
 async function createService(data) {
     const [result] = await db.query(
         `INSERT INTO services 
@@ -85,6 +93,7 @@ module.exports = {
     getAllServices,
     getActiveServices,
     getServiceById,
+    getServiceByTitle,
     createService,
     updateService,
     deleteService
@@ -112,6 +121,7 @@ module.exports = {
     getAllServices,
     getActiveServices,
     getServiceById,
+    getServiceByTitle,
     createService,
     updateService,
     deleteService,

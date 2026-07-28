@@ -2,6 +2,7 @@ const appointmentRepository = require("../repository/appointmentRepository");
 const mailService = require("../services/mailService");
 const blockedClientRepository = require("../repository/blockedClientRepository");
 const blockRepository = require("../repository/blockRepository");
+const serviceRepository = require("../repository/serviceRepository");
 
 async function getAdminAppointments(req, res) {
     try {
@@ -85,7 +86,21 @@ async function createAppointment(req, res) {
             });
         }
 
-        const durationMinutes = Number(data.duration_minutes || 60);
+        let durationMinutes = Number(data.duration_minutes || 60);
+
+        // For services managed by the administrator, the database is the
+        // source of truth. A stale page must not shorten the booked interval.
+        if (data.service_id || data.service_title) {
+            const service = data.service_id
+                ? await serviceRepository.getServiceById(data.service_id)
+                : await serviceRepository.getServiceByTitle(data.service_title);
+            if (service?.duration_minutes) {
+                durationMinutes = Number(service.duration_minutes);
+                data.service_id = data.service_id || service.id;
+            }
+        }
+
+        data.duration_minutes = durationMinutes;
 
         if (!hasValidWorkingHours(data.appointment_time, durationMinutes)) {
             return res.status(400).json({

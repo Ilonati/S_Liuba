@@ -126,21 +126,29 @@ function getDurationFromOption(option) {
         return Number(option.dataset.duration) || 60;
     }
 
-    const text = option.textContent;
+    // Static cards can mention both treatment time and preparation time in
+    // their description. The final <strong> line contains the total duration.
+    const summaryElements = option.querySelectorAll('strong');
+    const summary = summaryElements.length
+        ? summaryElements[summaryElements.length - 1].textContent
+        : option.textContent;
 
-    const hoursMinutes = text.match(/(\d+)h\s*(\d+)/i);
-    if (hoursMinutes) {
-        return Number(hoursMinutes[1]) * 60 + Number(hoursMinutes[2]);
+    const hourDurations = Array.from(
+        summary.matchAll(/(\d+)\s*h(?:\s*(\d+))?/gi),
+        (match) => Number(match[1]) * 60 + Number(match[2] || 0)
+    );
+
+    if (hourDurations.length) {
+        return hourDurations[hourDurations.length - 1];
     }
 
-    const hours = text.match(/(\d+)h/i);
-    if (hours) {
-        return Number(hours[1]) * 60;
-    }
+    const minuteDurations = Array.from(
+        summary.matchAll(/(\d+)\s*min/gi),
+        (match) => Number(match[1])
+    );
 
-    const minutes = text.match(/(\d+)\s*min/i);
-    if (minutes) {
-        return Number(minutes[1]);
+    if (minuteDurations.length) {
+        return minuteDurations[minuteDurations.length - 1];
     }
 
     return 60;
