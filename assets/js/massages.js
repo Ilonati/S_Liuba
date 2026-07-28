@@ -172,6 +172,13 @@ function initMassageBookingRows(root = document) {
             .replace(/^Tarif\s*/i, "Durée non précisée • Tarif ");
         price.classList.add("massage-booking-row");
         price.appendChild(button);
+
+        const metadata = document.createElement("span");
+        metadata.className = "massage-booking-meta";
+        Array.from(price.childNodes).forEach((node) => {
+            if (node !== button) metadata.appendChild(node);
+        });
+        price.insertBefore(metadata, button);
     });
 }
 

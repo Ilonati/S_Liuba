@@ -317,10 +317,27 @@ function initSoinsBookingRows() {
                 ? description.nextElementSibling
                 : description;
             priceRow.classList.add("procedure-row");
-            priceRow.textContent = priceRow.textContent
+            const metadata = priceRow.textContent
+                .replace(label, "")
                 .replace(/^Durée totale/i, "Durée")
-                .replace(/—\s*(?:Durée\s*)?/i, " — Durée ")
+                .replace(/^\s*—\s*(?:Durée\s*)?/i, "Durée ")
                 .replace(/•\s*(?:Tarif\s*)?/i, " • Tarif ");
+
+            priceRow.textContent = "";
+            const summary = document.createElement("span");
+            summary.className = "procedure-summary";
+
+            if (priceRow === description) {
+                const titleElement = document.createElement("strong");
+                titleElement.textContent = label;
+                summary.appendChild(titleElement);
+            }
+
+            const metadataElement = document.createElement("span");
+            metadataElement.className = "procedure-meta";
+            metadataElement.textContent = metadata.trim();
+            summary.appendChild(metadataElement);
+            priceRow.appendChild(summary);
 
             const link = document.createElement("a");
             link.className = "massage-btn";

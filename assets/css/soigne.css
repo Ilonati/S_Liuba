@@ -768,9 +768,49 @@ a {
     white-space: nowrap;
 }
 
-@media (max-width: 600px) {
-    .procedure-row { gap: 10px; }
-    .procedure-row .massage-btn { padding: 9px 13px; font-size: 13px; }
+.procedure-row .procedure-summary {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.procedure-row .procedure-meta::before {
+    content: " — ";
+}
+
+.procedure-row .procedure-summary:not(:has(strong)) .procedure-meta::before {
+    content: "";
+}
+
+@media (max-width: 900px) {
+    .procedure-row {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 14px;
+        padding: 18px 0;
+    }
+    .procedure-row .massage-btn {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        min-height: 50px;
+        padding: 12px 14px;
+        box-sizing: border-box;
+        white-space: normal;
+        font-size: 16px;
+    }
+
+    .procedure-row .procedure-summary strong,
+    .procedure-row .procedure-meta {
+        display: block;
+    }
+
+    .procedure-row .procedure-meta {
+        margin-top: 6px;
+    }
+
+    .procedure-row .procedure-meta::before {
+        content: "";
+    }
 }
 
 @media (max-width: 768px) {
