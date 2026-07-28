@@ -365,10 +365,40 @@ async function updateStatus(req, res) {
     }
 }
 
+async function deleteHistoricalAppointment(req, res) {
+    try {
+        const appointment =
+            await appointmentRepository.getAppointmentById(req.params.id);
+
+        if (!appointment) {
+            return res.status(404).json({ message: "Rendez-vous introuvable" });
+        }
+
+        if (!["completed", "cancelled", "no_show"].includes(appointment.status)) {
+            return res.status(400).json({
+                message: "Seuls les rendez-vous de l’historique peuvent être supprimés"
+            });
+        }
+
+        const deletedRows =
+            await appointmentRepository.deleteHistoricalAppointment(req.params.id);
+
+        if (!deletedRows) {
+            return res.status(404).json({ message: "Rendez-vous introuvable" });
+        }
+
+        res.json({ message: "Rendez-vous supprimé de l’historique" });
+    } catch (error) {
+        console.error("Erreur suppression historique RDV:", error);
+        res.status(500).json({ message: "Erreur serveur" });
+    }
+}
+
 
 module.exports = {
     getAdminAppointments,
     createAppointment,
     updateAppointment,
-    updateStatus
+    updateStatus,
+    deleteHistoricalAppointment
 };

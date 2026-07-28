@@ -30,4 +30,10 @@ router.patch(
     appointmentController.updateStatus
 );
 
+router.delete(
+    "/:id/history",
+    authMiddleware,
+    appointmentController.deleteHistoricalAppointment
+);
+
 module.exports = router;

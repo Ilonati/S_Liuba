@@ -194,6 +194,17 @@ form button {
     color: #8a663d;
 }
 
+.danger-button {
+    border-color: #b64a4a !important;
+    background: #fff2f2 !important;
+    color: #9d2929 !important;
+}
+
+.danger-button:hover {
+    background: #b64a4a !important;
+    color: #fff !important;
+}
+
 #clientFileBox>div {
     border-color: #b68c5a !important;
     background: #fffaf4 !important;

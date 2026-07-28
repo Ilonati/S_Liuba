@@ -250,6 +250,9 @@ function renderAppointments(appointments) {
                         Statut: <strong>${getStatusLabel(rdv.status)}</strong><br><br>
 
                         <button onclick="showClientFile('${rdv.client_email}')">Fiche client</button>
+                        <button class="danger-button" onclick="deleteHistoricalAppointment(${rdv.id})">
+                            Supprimer de l'historique
+                        </button>
                     </div>
                 `).join("");
         }
@@ -329,6 +332,40 @@ function formatAdminTime(timeValue) {
     if (!timeValue) return "-";
 
     return timeValue.toString().slice(0, 5).replace(":", "h");
+}
+
+async function deleteHistoricalAppointment(id) {
+    const appointment = allAppointments.find((item) => Number(item.id) === Number(id));
+    const clientName = appointment?.client_name || "ce client";
+    const confirmed = confirm(
+        `Supprimer définitivement le rendez-vous de ${clientName} de l'historique ?`
+    );
+
+    if (!confirmed) return;
+
+    const token = localStorage.getItem("adminToken");
+
+    try {
+        const response = await fetch(`${API_URL}/api/appointments/${id}/history`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            alert(result.message || "Impossible de supprimer ce rendez-vous");
+            return;
+        }
+
+        await loadAppointments();
+        await loadDashboard();
+    } catch (error) {
+        console.error("Erreur suppression historique:", error);
+        alert("Erreur serveur");
+    }
 }
 
 function formatAdminDuration(durationValue) {

@@ -146,6 +146,17 @@ async function updateAppointmentStatus(id, status, cancellationReason = null) {
     return result.affectedRows;
 }
 
+async function deleteHistoricalAppointment(id) {
+    const [result] = await db.query(
+        `DELETE FROM appointments
+         WHERE id = ?
+           AND status IN ('completed', 'cancelled', 'no_show')`,
+        [id]
+    );
+
+    return result.affectedRows;
+}
+
 
 async function createHistory(appointmentId, actionType, oldValue, newValue) {
     await db.query(
@@ -179,6 +190,7 @@ module.exports = {
     createAppointment,
     updateAppointment,
     updateAppointmentStatus,
+    deleteHistoricalAppointment,
     createHistory,
     getTomorrowAppointments
 };
