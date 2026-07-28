@@ -145,31 +145,31 @@ async function getAvailableSlots(req, res) {
 }
 
 function removePastSlotsForToday(dateString, slots) {
-    const today = new Date();
-    const selectedDate = new Date(dateString);
+    const parisParts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Europe/Paris",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23"
+    }).formatToParts(new Date());
 
-    const isToday =
-        today.getFullYear() === selectedDate.getFullYear() &&
-        today.getMonth() === selectedDate.getMonth() &&
-        today.getDate() === selectedDate.getDate();
+    const part = (type) => parisParts.find((item) => item.type === type)?.value;
+    const parisDate = `${part("year")}-${part("month")}-${part("day")}`;
 
-    if (!isToday) {
+    if (dateString < parisDate) {
+        return [];
+    }
+
+    if (dateString > parisDate) {
         return slots;
     }
 
-    const currentHour = today.getHours();
-    const currentMinutes = today.getMinutes();
+    const currentMinutes = Number(part("hour")) * 60 + Number(part("minute"));
 
     return slots.filter((slot) => {
-        const [slotHour, slotMinutes] = slot.split(":").map(Number);
-
-        if (slotHour > currentHour) return true;
-
-        if (slotHour === currentHour && slotMinutes > currentMinutes) {
-            return true;
-        }
-
-        return false;
+        return timeToMinutes(slot) > currentMinutes;
     });
 }
 

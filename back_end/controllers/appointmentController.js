@@ -27,10 +27,24 @@ function isSunday(dateString) {
 }
 
 function isPastDateTime(dateString, timeString) {
-    const appointmentDateTime = new Date(`${dateString}T${timeString}`);
-    const now = new Date();
+    const parisParts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Europe/Paris",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23"
+    }).formatToParts(new Date());
 
-    return appointmentDateTime < now;
+    const part = (type) => parisParts.find((item) => item.type === type)?.value;
+    const parisDate = `${part("year")}-${part("month")}-${part("day")}`;
+
+    if (dateString < parisDate) return true;
+    if (dateString > parisDate) return false;
+
+    const nowMinutes = Number(part("hour")) * 60 + Number(part("minute"));
+    return timeToMinutes(timeString) <= nowMinutes;
 }
 
 function timeToMinutes(timeString) {
