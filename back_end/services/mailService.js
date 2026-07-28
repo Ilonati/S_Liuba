@@ -169,13 +169,35 @@ async function sendMail({ to, subject, text, html }) {
     }
 }
 
+async function verifyMailTransport() {
+    const configured = {
+        host: Boolean(process.env.MAIL_HOST),
+        port: Boolean(process.env.MAIL_PORT),
+        user: Boolean(process.env.MAIL_USER),
+        password: Boolean(process.env.MAIL_PASS),
+        adminEmail: Boolean(process.env.ADMIN_EMAIL)
+    };
+
+    try {
+        await transporter.verify();
+        return { configured, smtpVerified: true };
+    } catch (error) {
+        return {
+            configured,
+            smtpVerified: false,
+            errorCode: error.code || "SMTP_ERROR",
+            errorCommand: error.command || null
+        };
+    }
+}
+
 async function sendAppointmentCreatedEmails(appointment) {
     const clientSubject = "Confirmation de votre rendez-vous - Institut S Liuba";
     const adminSubject = "Nouveau rendez-vous réservé";
 
     const details = formatAppointmentDetails(appointment);
 
-    await sendMail({
+    const client = await sendMail({
         to: appointment.client_email,
         subject: clientSubject,
         text: `Bonjour ${appointment.client_name},
@@ -193,7 +215,7 @@ Institut S Liuba`,
         })
     });
 
-    await sendMail({
+    const admin = await sendMail({
         to: process.env.ADMIN_EMAIL,
         subject: adminSubject,
         text: `Un nouveau rendez-vous a été réservé.
@@ -201,6 +223,8 @@ Institut S Liuba`,
 ${details}`,
         html: adminAppointmentTemplate(appointment)
     });
+
+    return { client, admin };
 }
 
 async function sendAppointmentUpdatedEmails(appointment) {
@@ -630,5 +654,6 @@ module.exports = {
     sendContactMessageToAdmin,
     sendReviewRequestEmail,
     sendAdminPasswordResetEmail,
-    sendAppointmentReminderEmail
+    sendAppointmentReminderEmail,
+    verifyMailTransport
 };
