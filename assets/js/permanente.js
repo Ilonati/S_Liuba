@@ -397,6 +397,16 @@ function initProcedureBookingRows() {
                     .replace(/—\s*(?:Durée\s*)?/i, " — Durée ")
                     .replace(/•\s*(?:Tarif\s*)?/i, " • Tarif ");
             });
+
+            if (!row.querySelector(":scope > .procedure-summary")) {
+                const summary = document.createElement("span");
+                summary.className = "procedure-summary";
+
+                Array.from(row.childNodes).forEach((node) => {
+                    if (node !== link) summary.appendChild(node);
+                });
+                row.insertBefore(summary, link);
+            }
             rowCount++;
         });
 

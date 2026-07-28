@@ -640,6 +640,16 @@ a {
     box-shadow: 0 8px 20px rgba(162, 45, 92, 0.16);
 }
 
+.massage_answer > p:not(.massage-booking-row):not(.massage-price) {
+    color: #444;
+    font-weight: 400;
+}
+
+.massage_answer > .massage-time {
+    color: #555 !important;
+    font-weight: 400 !important;
+}
+
 @media (max-width: 600px) {
     .massage-booking-row {
         align-items: stretch;

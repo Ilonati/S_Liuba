@@ -961,6 +961,15 @@ a {
     box-shadow: 0 8px 20px rgba(162, 45, 92, 0.16);
 }
 
+.procedure-row .procedure-summary {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.procedure-row .procedure-summary strong {
+    font-weight: 500;
+}
+
 @media (max-width: 600px) {
     .procedure-row {
         align-items: stretch;
