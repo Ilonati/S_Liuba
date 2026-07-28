@@ -178,17 +178,47 @@ async function verifyMailTransport() {
         adminEmail: Boolean(process.env.ADMIN_EMAIL)
     };
 
-    try {
-        await transporter.verify();
-        return { configured, smtpVerified: true };
-    } catch (error) {
-        return {
-            configured,
-            smtpVerified: false,
-            errorCode: error.code || "SMTP_ERROR",
-            errorCommand: error.command || null
-        };
+    async function verifyVariant(port, secure) {
+        const testTransporter = nodemailer.createTransport({
+            host: process.env.MAIL_HOST,
+            port,
+            secure,
+            connectionTimeout: 10000,
+            greetingTimeout: 10000,
+            socketTimeout: 15000,
+            auth: {
+                user: process.env.MAIL_USER,
+                pass: process.env.MAIL_PASS
+            }
+        });
+
+        try {
+            await testTransporter.verify();
+            return { port, secure, verified: true };
+        } catch (error) {
+            return {
+                port,
+                secure,
+                verified: false,
+                errorCode: error.code || "SMTP_ERROR",
+                errorCommand: error.command || null
+            };
+        }
     }
+
+    const configuredPort = Number(process.env.MAIL_PORT);
+    const configuredSecure = process.env.MAIL_SECURE === "true";
+    const variants = await Promise.all([
+        verifyVariant(configuredPort, configuredSecure),
+        verifyVariant(465, true),
+        verifyVariant(587, false)
+    ]);
+
+    return {
+        configured,
+        smtpVerified: variants.some((variant) => variant.verified),
+        variants
+    };
 }
 
 async function sendAppointmentCreatedEmails(appointment) {
