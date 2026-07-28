@@ -199,7 +199,7 @@ async function loadServicesFromBackend() {
     const currentCategory = container.dataset.category;
 
     try {
-        const response = await fetch("https://sliuba-production.up.railway.app/api/services");
+        const response = await fetch("http://localhost:5000/api/services");
 
         if (!response.ok) {
             throw new Error("Erreur API services");

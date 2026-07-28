@@ -3,6 +3,7 @@ const blockRepository = require("../repository/blockRepository");
 
 const WORK_START = 9;
 const WORK_END = 19;
+const LAST_APPOINTMENT_START = 19;
 
 function generateDaySlots() {
     const slots = [];
@@ -48,12 +49,11 @@ function getBookedTimesFromAppointments(appointments) {
 }
 
 function removeSlotsThatDoNotFitDuration(slots, selectedDuration = 60) {
-    const workEndMinutes = WORK_END * 60;
-    const duration = Number(selectedDuration || 60);
+    const lastStartMinutes = LAST_APPOINTMENT_START * 60;
 
     return slots.filter((slot) => {
         const startMinutes = timeToMinutes(slot);
-        return startMinutes + duration <= workEndMinutes;
+        return startMinutes <= lastStartMinutes;
     });
 }
 
