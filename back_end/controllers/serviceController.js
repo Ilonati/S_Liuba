@@ -44,6 +44,8 @@ async function createService(req, res) {
         }
 
         data.slug = data.slug || makeSlug(data.title);
+        // A service created by the administrator must immediately be bookable.
+        data.is_active = true;
 
         const id = await serviceRepository.createService(data);
 

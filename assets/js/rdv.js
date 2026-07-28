@@ -97,6 +97,7 @@ const serviceOptions = document.querySelectorAll('.service-option');
 let selectedService = '';
 let selectedPrice = '';
 let selectedDuration = null;
+let selectedServiceId = null;
 function getDurationFromOption(option) {
     if (option.dataset.duration) {
         return Number(option.dataset.duration) || 60;
@@ -130,6 +131,7 @@ serviceOptions.forEach((option) => {
         selectedService = option.dataset.service || 'Service non précisé';
         selectedPrice = option.dataset.price || 'Prix non précisé';
         selectedDuration = getDurationFromOption(option);
+        selectedServiceId = option.dataset.serviceId || null;
 
         loadAvailableSlots();
     });
@@ -371,7 +373,7 @@ if (bookingForm && successMessage) {
             client_name: name,
             client_email: email,
             client_phone: phone,
-            service_id: null,
+            service_id: selectedServiceId,
             service_title: selectedService,
             appointment_date: formatDateForApi(selectedDate),
             appointment_time: formatTimeForApi(selectedTime),
@@ -563,6 +565,27 @@ function getFrontendCategoryName(backendCategory) {
     return map[backendCategory] || null;
 }
 
+function getOrCreateCategoryContent(categoryTitle) {
+    const existingContent = findCategoryContentByTitle(categoryTitle);
+    if (existingContent) return existingContent;
+
+    const serviceList = document.querySelector(".service-list");
+    if (!serviceList) return null;
+
+    const category = document.createElement("div");
+    category.className = "service-category";
+    category.innerHTML = `
+        <button type="button" class="service-category-header">
+            <span>${categoryTitle}</span>
+            <span class="category-arrow">▼</span>
+        </button>
+        <div class="service-category-content"></div>
+    `;
+    serviceList.appendChild(category);
+
+    return category.querySelector(".service-category-content");
+}
+
 function createBookingServiceOption(service) {
     const option = document.createElement("div");
     option.classList.add("service-option");
@@ -594,6 +617,7 @@ function createBookingServiceOption(service) {
         selectedService = option.dataset.service || "Service non précisé";
         selectedPrice = option.dataset.price || "Prix non précisé";
         selectedDuration = getDurationFromOption(option);
+        selectedServiceId = option.dataset.serviceId || null;
         loadAvailableSlots();
     });
 
@@ -611,12 +635,12 @@ async function loadServicesIntoExistingCategories() {
         const services = await response.json();
 
         services.forEach((service) => {
-            const frontendCategory = getFrontendCategoryName(service.category);
+            const frontendCategory =
+                getFrontendCategoryName(service.category) ||
+                service.category ||
+                "Autres prestations";
 
-            if (!frontendCategory) return;
-
-            const categoryContent =
-                findCategoryContentByTitle(frontendCategory);
+            const categoryContent = getOrCreateCategoryContent(frontendCategory);
 
             if (!categoryContent) return;
 
@@ -655,6 +679,7 @@ function selectServiceFromUrl() {
                 selectedService = option.dataset.service;
                 selectedPrice = option.dataset.price;
                 selectedDuration = getDurationFromOption(option);
+                selectedServiceId = option.dataset.serviceId || null;
                 loadAvailableSlots();
 
                 const category = option.closest(".service-category");
