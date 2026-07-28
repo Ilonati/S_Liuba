@@ -43,35 +43,40 @@
 
 @media (max-width: 767px) {
     .header-hours {
-        top: 38px;
+        top: auto;
         right: 8px;
-        width: 128px;
-        max-width: calc(42vw - 8px);
+        bottom: 7px;
+        left: 8px;
+        width: auto;
+        max-width: none;
         box-sizing: border-box;
-        padding: 8px 9px;
+        padding: 7px 10px;
         border-radius: 10px;
-        font-size: 0.61rem;
-        line-height: 1.32;
+        font-size: 0.68rem;
+        line-height: 1.2;
         letter-spacing: 0;
+        text-align: center;
+        white-space: nowrap;
     }
 
-    .header-hours__title {
-        margin-bottom: 2px;
-        font-size: 0.69rem;
-        line-height: 1.2;
+    .header-hours > * {
+        display: none;
+    }
+
+    .header-hours::after {
+        content: "Sur RDV uniquement • Mar–Sam 09:00–19:00 • Lun & Dim fermé";
+        display: block;
+        color: rgba(255, 255, 255, 0.96);
+        font-weight: 600;
     }
 }
 
 @media (max-width: 390px) {
     .header-hours {
         right: 5px;
-        width: 116px;
-        max-width: 39vw;
-        padding: 7px;
-        font-size: 0.56rem;
-    }
-
-    .header-hours__title {
-        font-size: 0.62rem;
+        bottom: 5px;
+        left: 5px;
+        padding: 6px 4px;
+        font-size: 0.57rem;
     }
 }
