@@ -655,48 +655,60 @@ async function loadServicesIntoExistingCategories() {
     }
 }
 
-loadServicesIntoExistingCategories();
+function normalizeServiceName(value) {
+    return String(value || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/gi, " ")
+        .trim()
+        .toLowerCase();
+}
+
 function selectServiceFromUrl() {
     const params = new URLSearchParams(window.location.search);
     const serviceFromUrl = params.get("service");
+    const serviceIdFromUrl = params.get("serviceId");
 
-    if (!serviceFromUrl) return;
+    if (!serviceFromUrl && !serviceIdFromUrl) return;
 
-    setTimeout(() => {
-        const options = document.querySelectorAll(".service-option");
+    const options = document.querySelectorAll(".service-option");
+    const normalizedRequestedService = normalizeServiceName(serviceFromUrl);
 
-        options.forEach((option) => {
-            const serviceName = option.dataset.service;
+    for (const option of options) {
+        const matchesId = serviceIdFromUrl &&
+            option.dataset.serviceId === serviceIdFromUrl;
+        const matchesName = serviceFromUrl &&
+            normalizeServiceName(option.dataset.service) === normalizedRequestedService;
 
-            if (serviceName === serviceFromUrl) {
+        if (matchesId || matchesName) {
 
-                document
-                    .querySelectorAll(".service-option")
-                    .forEach((item) => item.classList.remove("selected"));
+            document
+                .querySelectorAll(".service-option")
+                .forEach((item) => item.classList.remove("selected"));
 
-                option.classList.add("selected");
+            option.classList.add("selected");
 
-                selectedService = option.dataset.service;
-                selectedPrice = option.dataset.price;
-                selectedDuration = getDurationFromOption(option);
-                selectedServiceId = option.dataset.serviceId || null;
-                loadAvailableSlots();
+            selectedService = option.dataset.service;
+            selectedPrice = option.dataset.price;
+            selectedDuration = getDurationFromOption(option);
+            selectedServiceId = option.dataset.serviceId || null;
+            loadAvailableSlots();
 
-                const category = option.closest(".service-category");
-                const content = category?.querySelector(".service-category-content");
+            const category = option.closest(".service-category");
+            const content = category?.querySelector(".service-category-content");
 
-                if (category && content) {
-                    category.classList.add("active");
-                    content.style.height = content.scrollHeight + "px";
-                }
-
-                option.scrollIntoView({
-                    behavior: "smooth",
-                    block: "center"
-                });
+            if (category && content) {
+                category.classList.add("active");
+                content.style.height = content.scrollHeight + "px";
             }
-        });
-    }, 800);
+
+            option.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+            break;
+        }
+    }
 }
 
-selectServiceFromUrl();
+loadServicesIntoExistingCategories().then(selectServiceFromUrl);

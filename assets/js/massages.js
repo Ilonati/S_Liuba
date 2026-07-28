@@ -1,3 +1,7 @@
+const API_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    ? "http://localhost:5000"
+    : "https://sliuba-production.up.railway.app";
+
 /* translateMenu */
 function googleTranslateElementInit() {
     new google.translate.TranslateElement({
@@ -199,7 +203,7 @@ async function loadServicesFromBackend() {
     const currentCategory = container.dataset.category;
 
     try {
-        const response = await fetch("http://localhost:5000/api/services");
+        const response = await fetch(`${API_URL}/api/services`);
 
         if (!response.ok) {
             throw new Error("Erreur API services");
@@ -228,7 +232,7 @@ async function loadServicesFromBackend() {
                             <p>${service.full_description || service.short_description || ""}</p>
                             <p class="massage-time">Durée ${service.duration_minutes || "-"} min</p>
                             <p class="massage-price">Tarif ${service.price || "Sur devis"} €</p>
-                            <a href="RDV.html#booking" class="massage-btn">Prendre rendez-vous</a>
+                            <a href="RDV.html?serviceId=${service.id}#booking" class="massage-btn">Prendre rendez-vous</a>
                         </div>
                     </div>
                 </div>
