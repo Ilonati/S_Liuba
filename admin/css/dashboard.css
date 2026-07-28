@@ -205,12 +205,61 @@ form button {
     color: #fff !important;
 }
 
+.danger-button:disabled {
+    cursor: not-allowed !important;
+    opacity: 0.5;
+    background: #f4eaea !important;
+    color: #8d7070 !important;
+}
+
+.history-bulk-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    position: sticky;
+    top: 8px;
+    z-index: 5;
+}
+
+.history-select-all,
+.history-item-selector {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    color: #704f2d;
+}
+
+.history-item-selector {
+    float: right;
+    margin: 0 0 8px 12px;
+    font-size: 13px;
+}
+
+.history-checkbox,
+#selectAllHistory {
+    width: 18px;
+    height: 18px;
+    accent-color: #b68c5a;
+}
+
 #clientFileBox>div {
     border-color: #b68c5a !important;
     background: #fffaf4 !important;
 }
 
 @media (max-width: 768px) {
+    .history-bulk-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .history-item-selector {
+        float: none;
+        margin: 0 0 10px;
+    }
     .admin-dashboard {
         padding: 18px 12px 40px;
     }

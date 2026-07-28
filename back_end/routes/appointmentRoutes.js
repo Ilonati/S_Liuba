@@ -36,4 +36,10 @@ router.delete(
     appointmentController.deleteHistoricalAppointment
 );
 
+router.post(
+    "/history/delete",
+    authMiddleware,
+    appointmentController.deleteHistoricalAppointments
+);
+
 module.exports = router;

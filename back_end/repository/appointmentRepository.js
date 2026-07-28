@@ -157,6 +157,24 @@ async function deleteHistoricalAppointment(id) {
     return result.affectedRows;
 }
 
+async function deleteHistoricalAppointments(ids) {
+    const normalizedIds = ids
+        .map(Number)
+        .filter((id) => Number.isInteger(id) && id > 0);
+
+    if (!normalizedIds.length) return 0;
+
+    const placeholders = normalizedIds.map(() => "?").join(", ");
+    const [result] = await db.query(
+        `DELETE FROM appointments
+         WHERE id IN (${placeholders})
+           AND status IN ('completed', 'cancelled', 'no_show')`,
+        normalizedIds
+    );
+
+    return result.affectedRows;
+}
+
 
 async function createHistory(appointmentId, actionType, oldValue, newValue) {
     await db.query(
@@ -191,6 +209,7 @@ module.exports = {
     updateAppointment,
     updateAppointmentStatus,
     deleteHistoricalAppointment,
+    deleteHistoricalAppointments,
     createHistory,
     getTomorrowAppointments
 };

@@ -239,9 +239,24 @@ function renderAppointments(appointments) {
             historyAppointments.textContent =
                 "Aucun rendez-vous dans l'historique.";
         } else {
-            historyAppointments.innerHTML =
-                historyRdvs.map((rdv) => `
+            historyAppointments.innerHTML = `
+                <div class="history-bulk-actions">
+                    <label class="history-select-all">
+                        <input type="checkbox" id="selectAllHistory" onchange="toggleAllHistoryAppointments(this.checked)">
+                        <span>Tout sélectionner</span>
+                    </label>
+                    <button id="deleteSelectedHistory" class="danger-button" type="button"
+                        onclick="deleteSelectedHistoricalAppointments()" disabled>
+                        Supprimer la sélection
+                    </button>
+                </div>
+            ` + historyRdvs.map((rdv) => `
                     <div style="border:1px solid #ccc; padding:12px; margin:10px 0; background:#f8f8f8;">
+                        <label class="history-item-selector" title="Sélectionner ce rendez-vous">
+                            <input class="history-checkbox" type="checkbox" value="${rdv.id}"
+                                onchange="updateHistoryBulkControls()">
+                            <span>Sélectionner</span>
+                        </label>
                         <strong>${rdv.client_name}</strong><br>
                         ${rdv.service_title}<br>
                         Durée: <strong>${formatAdminDuration(rdv.duration_minutes)}</strong><br>
@@ -332,6 +347,72 @@ function formatAdminTime(timeValue) {
     if (!timeValue) return "-";
 
     return timeValue.toString().slice(0, 5).replace(":", "h");
+}
+
+function getSelectedHistoryIds() {
+    return Array.from(document.querySelectorAll(".history-checkbox:checked"))
+        .map((checkbox) => Number(checkbox.value));
+}
+
+function updateHistoryBulkControls() {
+    const checkboxes = Array.from(document.querySelectorAll(".history-checkbox"));
+    const selectedIds = getSelectedHistoryIds();
+    const selectAll = document.getElementById("selectAllHistory");
+    const deleteButton = document.getElementById("deleteSelectedHistory");
+
+    if (selectAll) {
+        selectAll.checked = checkboxes.length > 0 && selectedIds.length === checkboxes.length;
+        selectAll.indeterminate = selectedIds.length > 0 && selectedIds.length < checkboxes.length;
+    }
+
+    if (deleteButton) {
+        deleteButton.disabled = selectedIds.length === 0;
+        deleteButton.textContent = selectedIds.length
+            ? `Supprimer la sélection (${selectedIds.length})`
+            : "Supprimer la sélection";
+    }
+}
+
+function toggleAllHistoryAppointments(checked) {
+    document.querySelectorAll(".history-checkbox").forEach((checkbox) => {
+        checkbox.checked = checked;
+    });
+    updateHistoryBulkControls();
+}
+
+async function deleteSelectedHistoricalAppointments() {
+    const ids = getSelectedHistoryIds();
+    if (!ids.length) return;
+
+    const confirmed = confirm(
+        `Supprimer définitivement ${ids.length} rendez-vous sélectionné(s) de l'historique ?`
+    );
+    if (!confirmed) return;
+
+    const token = localStorage.getItem("adminToken");
+
+    try {
+        const response = await fetch(`${API_URL}/api/appointments/history/delete`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ ids })
+        });
+
+        const result = await response.json();
+        if (!response.ok) {
+            alert(result.message || "Impossible de supprimer la sélection");
+            return;
+        }
+
+        await loadAppointments();
+        await loadDashboard();
+    } catch (error) {
+        console.error("Erreur suppression groupée historique:", error);
+        alert("Erreur serveur");
+    }
 }
 
 async function deleteHistoricalAppointment(id) {

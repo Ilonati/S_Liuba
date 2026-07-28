@@ -394,11 +394,39 @@ async function deleteHistoricalAppointment(req, res) {
     }
 }
 
+async function deleteHistoricalAppointments(req, res) {
+    try {
+        const ids = Array.isArray(req.body?.ids) ? req.body.ids : [];
+
+        if (!ids.length) {
+            return res.status(400).json({ message: "Aucun rendez-vous sélectionné" });
+        }
+
+        const deletedCount =
+            await appointmentRepository.deleteHistoricalAppointments(ids);
+
+        if (!deletedCount) {
+            return res.status(400).json({
+                message: "Aucun rendez-vous de l’historique n’a été supprimé"
+            });
+        }
+
+        res.json({
+            message: `${deletedCount} rendez-vous supprimé(s) de l’historique`,
+            deletedCount
+        });
+    } catch (error) {
+        console.error("Erreur suppression groupée historique RDV:", error);
+        res.status(500).json({ message: "Erreur serveur" });
+    }
+}
+
 
 module.exports = {
     getAdminAppointments,
     createAppointment,
     updateAppointment,
     updateStatus,
-    deleteHistoricalAppointment
+    deleteHistoricalAppointment,
+    deleteHistoricalAppointments
 };

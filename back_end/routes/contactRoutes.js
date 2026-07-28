@@ -10,7 +10,7 @@ router.get("/status", (req, res) => {
         contactFlow: "async-mail-v2",
         bookingDurationFlow: "total-duration-v3",
         mailFlow: "bounded-delivery-v4",
-        adminHistoryFlow: "deletable-v1"
+        adminHistoryFlow: "bulk-deletable-v2"
     });
 });
 
