@@ -443,7 +443,11 @@ if (bookingForm && successMessage) {
 
         const submitButton = bookingForm.querySelector('[type="submit"]');
         isBookingSubmissionInProgress = true;
-        if (submitButton) submitButton.disabled = true;
+        const initialButtonText = submitButton ? submitButton.textContent : '';
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = 'Confirmation en cours…';
+        }
 
         try {
             const response = await fetch(`${API_URL}/api/appointments`, {
@@ -454,14 +458,24 @@ if (bookingForm && successMessage) {
                 body: JSON.stringify(appointmentData)
             });
 
-            const result = await response.json();
+            const responseText = await response.text();
+            let result = {};
+
+            if (responseText) {
+                try {
+                    result = JSON.parse(responseText);
+                } catch (parseError) {
+                    console.warn('Réponse RDV non JSON:', parseError);
+                }
+            }
 
             successMessage.classList.add('show');
 
             if (response.ok) {
                 successMessage.innerHTML = `
-                    Merci ${name} ✨<br> Votre rendez-vous a bien été réservé.<br>
-                     Un email de confirmation vous a été envoyé.<br>
+                    <strong>Merci ${name} ✨</strong><br>
+                    Votre rendez-vous a bien été réservé.<br>
+                    Vous recevrez également un email de confirmation.<br>
 
     ✨Si vous souhaitez modifier ou annuler votre rendez-vous,
     merci de nous contacter via la page Contact du site
@@ -470,6 +484,7 @@ if (bookingForm && successMessage) {
     Je vous répondrons dans les meilleurs délais.
                 `;
                 bookingForm.reset();
+                successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 await loadAvailableSlots();
             } else {
                 successMessage.innerHTML =
@@ -486,7 +501,10 @@ if (bookingForm && successMessage) {
             successMessage.innerHTML = "Erreur serveur. Merci de réessayer plus tard.";
         } finally {
             isBookingSubmissionInProgress = false;
-            if (submitButton) submitButton.disabled = false;
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.textContent = initialButtonText;
+            }
         }
     });
 }
