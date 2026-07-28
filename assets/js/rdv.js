@@ -334,6 +334,7 @@ loadAvailableSlots();
 // Form + Backend RDV
 const bookingForm = document.getElementById('bookingForm');
 const successMessage = document.getElementById('successMessage');
+let isBookingSubmissionInProgress = false;
 
 function formatDateForApi(date) {
     const year = date.getFullYear();
@@ -351,6 +352,8 @@ function formatTimeForApi(time) {
 if (bookingForm && successMessage) {
     bookingForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+
+        if (isBookingSubmissionInProgress) return;
 
         const name = document.getElementById('clientName').value.trim();
         const phone = document.getElementById('clientPhone').value.trim();
@@ -382,6 +385,10 @@ if (bookingForm && successMessage) {
             notes: message
         };
 
+        const submitButton = bookingForm.querySelector('[type="submit"]');
+        isBookingSubmissionInProgress = true;
+        if (submitButton) submitButton.disabled = true;
+
         try {
             const response = await fetch(`${API_URL}/api/appointments`, {
                 method: "POST",
@@ -407,15 +414,23 @@ if (bookingForm && successMessage) {
     Je vous répondrons dans les meilleurs délais.
                 `;
                 bookingForm.reset();
+                await loadAvailableSlots();
             } else {
                 successMessage.innerHTML =
                     result.message || "Impossible de réserver ce rendez-vous.";
+
+                if (response.status === 409) {
+                    await loadAvailableSlots();
+                }
             }
 
         } catch (error) {
             console.error("Erreur RDV:", error);
             successMessage.classList.add('show');
             successMessage.innerHTML = "Erreur serveur. Merci de réessayer plus tard.";
+        } finally {
+            isBookingSubmissionInProgress = false;
+            if (submitButton) submitButton.disabled = false;
         }
     });
 }

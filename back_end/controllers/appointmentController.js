@@ -55,8 +55,7 @@ function timeToMinutes(timeString) {
 function hasValidWorkingHours(timeString, durationMinutes) {
     const start = timeToMinutes(timeString);
     return Number.isInteger(durationMinutes) && durationMinutes > 0 &&
-        start >= 9 * 60 && start <= 19 * 60 &&
-        (start < 19 * 60 || durationMinutes <= 60);
+        start >= 9 * 60 && start + durationMinutes <= 19 * 60;
 }
 async function createAppointment(req, res) {
     try {
@@ -157,16 +156,27 @@ async function createAppointment(req, res) {
         const appointmentId =
             await appointmentRepository.createAppointment(data);
 
-        await appointmentRepository.createHistory(
-            appointmentId,
-            "created",
-            null,
-            data
-        );
-        const newAppointment =
-            await appointmentRepository.getAppointmentById(appointmentId);
+        try {
+            await appointmentRepository.createHistory(
+                appointmentId,
+                "created",
+                null,
+                data
+            );
+        } catch (historyError) {
+            console.error("Erreur historique création RDV:", historyError);
+        }
 
-        await mailService.sendAppointmentCreatedEmails(newAppointment);
+        try {
+            const newAppointment =
+                await appointmentRepository.getAppointmentById(appointmentId);
+
+            await mailService.sendAppointmentCreatedEmails(newAppointment);
+        } catch (mailError) {
+            // The appointment is already safely stored. An email failure must
+            // never tell the client that the booking itself failed.
+            console.error("Erreur email création RDV:", mailError);
+        }
 
         res.status(201).json({
             message: "Rendez-vous créé",
