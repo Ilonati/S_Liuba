@@ -406,6 +406,24 @@ function initProcedureBookingRows() {
                     if (node !== link) summary.appendChild(node);
                 });
                 row.insertBefore(summary, link);
+
+                const titleElement = summary.querySelector("strong");
+                if (titleElement) {
+                    const title = titleElement.textContent.trim();
+                    const metadata = summary.textContent
+                        .replace(title, "")
+                        .replace(/^\s*—\s*/, "")
+                        .trim();
+
+                    summary.innerHTML = "";
+                    titleElement.textContent = title;
+                    summary.appendChild(titleElement);
+
+                    const metadataElement = document.createElement("span");
+                    metadataElement.className = "procedure-meta";
+                    metadataElement.textContent = metadata;
+                    summary.appendChild(metadataElement);
+                }
             }
             rowCount++;
         });

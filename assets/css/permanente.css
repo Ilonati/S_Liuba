@@ -972,6 +972,10 @@ a {
     font-weight: 500;
 }
 
+.procedure-row .procedure-meta::before {
+    content: " — ";
+}
+
 @media (max-width: 900px) {
     .procedure-row {
         align-items: stretch;
@@ -990,6 +994,19 @@ a {
         font-size: 16px;
         line-height: 1.25;
         white-space: normal;
+    }
+
+    .procedure-row .procedure-summary strong,
+    .procedure-row .procedure-meta {
+        display: block;
+    }
+
+    .procedure-row .procedure-meta {
+        margin-top: 6px;
+    }
+
+    .procedure-row .procedure-meta::before {
+        content: "";
     }
 }
 
