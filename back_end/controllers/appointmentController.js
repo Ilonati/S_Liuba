@@ -88,8 +88,7 @@ async function createAppointment(req, res) {
 
         let durationMinutes = Number(data.duration_minutes || 60);
 
-        // For services managed by the administrator, the database is the
-        // source of truth. A stale page must not shorten the booked interval.
+
         if (data.service_id || data.service_title) {
             const service = data.service_id
                 ? await serviceRepository.getServiceById(data.service_id)
@@ -130,7 +129,7 @@ async function createAppointment(req, res) {
             (block) => block.block_time !== null &&
                 appointmentStart < timeToMinutes(block.block_time) + 60 &&
                 timeToMinutes(block.block_time) <
-                    appointmentStart + durationMinutes
+                appointmentStart + durationMinutes
         );
 
         if (blockedHour) {
@@ -182,10 +181,21 @@ async function createAppointment(req, res) {
             console.error("Erreur historique création RDV:", historyError);
         }
 
+        // const newAppointment =
+        //     await appointmentRepository.getAppointmentById(appointmentId);
+
+        // await mailService.sendAppointmentCreatedEmails(newAppointment);
+
+        // res.status(201).json({
+        //     message: "Rendez-vous créé",
+        //     appointmentId
+        // });
         const newAppointment =
             await appointmentRepository.getAppointmentById(appointmentId);
 
-        await mailService.sendAppointmentCreatedEmails(newAppointment);
+        mailService.sendAppointmentCreatedEmails(newAppointment).catch((err) =>
+            console.error("Erreur email création RDV:", err)
+        );
 
         res.status(201).json({
             message: "Rendez-vous créé",
@@ -251,10 +261,20 @@ async function updateAppointment(req, res) {
             oldAppointment,
             req.body
         );
+        // const updatedAppointment =
+        //     await appointmentRepository.getAppointmentById(id);
+
+        // await mailService.sendAppointmentUpdatedEmails(updatedAppointment);
+
+        // res.json({
+        //     message: "Rendez-vous modifié"
+        // });
         const updatedAppointment =
             await appointmentRepository.getAppointmentById(id);
 
-        await mailService.sendAppointmentUpdatedEmails(updatedAppointment);
+        mailService.sendAppointmentUpdatedEmails(updatedAppointment).catch((err) =>
+            console.error("Erreur email modification RDV:", err)
+        );
 
         res.json({
             message: "Rendez-vous modifié"
