@@ -1,31 +1,8 @@
 require("dotenv").config();
-const nodemailer = require("nodemailer");
 const db = require("../db");
 
-const mailHost = process.env.MAIL_HOST || "smtp.gmail.com";
-const isGmailSmtp = mailHost.toLowerCase() === "smtp.gmail.com";
-
-
-// const transporter = nodemailer.createTransport({
-//     host: mailHost,
-//     port: isGmailSmtp ? 465 : Number(process.env.MAIL_PORT),
-//     secure: isGmailSmtp ? true : process.env.MAIL_SECURE === "true",
-//     auth: {
-//         user: process.env.MAIL_USER,
-//         pass: process.env.MAIL_PASS
-//     }
-// });
-const transporter = nodemailer.createTransport({
-    host: mailHost,
-    port: isGmailSmtp ? 465 : Number(process.env.MAIL_PORT),
-    secure: isGmailSmtp ? true : process.env.MAIL_SECURE === "true",
-    family: 4,
-    connectionTimeout: 10000,
-    auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS
-    }
-});
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const MAIL_FROM = process.env.MAIL_FROM || "Institut S Liuba <onboarding@resend.dev>";
 
 async function logEmail(recipientEmail, subject, status, errorMessage = null) {
     await db.query(
@@ -156,13 +133,25 @@ function appointmentHtmlTemplate({ title, intro, appointment, reason = null }) {
 
 async function sendMail({ to, subject, text, html }) {
     try {
-        await transporter.sendMail({
-            from: `"Institut S Liuba" <${process.env.MAIL_USER}>`,
-            to,
-            subject,
-            text,
-            html
+        const response = await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${RESEND_API_KEY}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                from: MAIL_FROM,
+                to,
+                subject,
+                text,
+                html
+            })
         });
+
+        if (!response.ok) {
+            const errorBody = await response.text();
+            throw new Error(`Resend API error (${response.status}): ${errorBody}`);
+        }
 
         await logEmail(to, subject, "sent");
     } catch (error) {
