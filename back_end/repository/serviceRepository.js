@@ -89,15 +89,15 @@ async function deleteService(id) {
     await db.query("DELETE FROM services WHERE id = ?", [id]);
 }
 
-module.exports = {
-    getAllServices,
-    getActiveServices,
-    getServiceById,
-    getServiceByTitle,
-    createService,
-    updateService,
-    deleteService
-};
+// module.exports = {
+//     getAllServices,
+//     getActiveServices,
+//     getServiceById,
+//     getServiceByTitle,
+//     createService,
+//     updateService,
+//     deleteService
+// };
 
 
 async function toggleServiceStatus(id, isActive) {

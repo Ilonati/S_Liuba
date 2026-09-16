@@ -92,13 +92,13 @@ async function deleteService(req, res) {
     }
 }
 
-module.exports = {
-    getPublicServices,
-    getAdminServices,
-    createService,
-    updateService,
-    deleteService
-};
+// module.exports = {
+//     getPublicServices,
+//     getAdminServices,
+//     createService,
+//     updateService,
+//     deleteService
+// };
 
 async function toggleServiceStatus(req, res) {
     try {
